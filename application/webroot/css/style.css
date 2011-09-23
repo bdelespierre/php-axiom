@@ -1,0 +1,111 @@
+/**
+ * Axiom: a lightweight PHP framework
+ *
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ */
+
+@CHARSET "UTF-8";
+
+body {
+	max-width: 755px;
+	margin: 0px auto;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 0.75em;
+	border-top: 0.5em solid #2f6eb6;
+}
+
+body > div {
+	text-align: center;
+}
+
+body > div > p {
+	font-family: "Trebuchet MS";
+	font-size: 150%;
+	font-style: italic;
+	font-weight: bold;
+	color: #2f6eb6;
+}
+
+h2 {
+	color: #2f6eb6;
+	border-bottom: 1px solid #2f6eb6;
+}
+
+h3 {
+	color: #6b9ed9;
+	margin-top: 2em;
+}
+
+pre, a {
+	color: #333;
+	margin: 1em;
+	padding: 0.5em;
+	border: 1px solid #333;
+	background-color: #eee;
+	font-size: 120%;
+	font-family: monospace;
+}
+
+a, a:hover, a:active, a:visited, a:link {
+	text-decoration: none;
+	display: block;
+}
+
+#licence {
+	height: 20em;
+	overflow-y: scroll;
+}
+
+/**
+ * NEWS
+ * -----------------------------------------------------------------------------------------------------------------------------------------
+ */
+
+.news, 
+.news-comments {
+	text-align: left;
+}
+
+.news .news-head,
+.news-comments .news-comments-head {
+	position: relative;
+}
+
+.news-comments {
+	padding-left: 5em;
+}
+
+.news-head .news-date,
+.news-comments-head .news-comment-date {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+
+.news .news-body,
+.news-comments .news-comment-body,
+.news form.news-comments-add {
+	margin: 0px;
+	padding: .3em;
+	background-color: #dedede;
+	border: 1px solid #ccc;
+}
+
+.news form.news-comments-add {
+	margin: .3em 0em .3em 5em;
+	padding: .4em;
+}
+
+.news form.news-comments-add > div {
+	margin: .3em 0em;
+}
+
+.news form.news-comments-add label {
+	display: inline-block;
+	width: 30%;
+}
+
+.news form.news-comments-add textarea {
+	vertical-align: middle;
+}
