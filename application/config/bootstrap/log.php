@@ -11,4 +11,4 @@ require_once LIBRARY_PATH . '/loggers/Logger.class.php';
 require_once LIBRARY_PATH . '/loggers/TextLogger.class.php';
 
 Log::setConfig();
-Log::addLogger(new TextLogger(APPLICATION_PATH . '/ressources/temp/logs/app.log'));
+Log::addLogger(new TextLogger(APPLICATION_PATH . '/ressource/log/app.log'));
