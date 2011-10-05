@@ -46,7 +46,7 @@ class ViewManager {
         self::setContentType($format = ($f = self::$_response->getOutputFormat()) ? $f : self::$_config['default_output_format']);
         
         $section = strtolower(str_replace('Controller', '', $controller));
-        $view = strtolower(($v = self::$_response->getResponseView()) ? $v : $action);
+        $view    = strtolower(($v = self::$_response->getResponseView()) ? $v : $action);
         
         if (file_exists($__filename = realpath(self::$_config['view_path']) . "/{$section}/{$view}.{$format}.php")) { }
         elseif (file_exists($__filename = realpath(self::$_config['default_view_path']) . "/{$section}/{$view}.{$format}.php")) { }

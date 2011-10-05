@@ -176,6 +176,14 @@ class Response {
     }
     
     /**
+     * Reset the response view to default
+     * @return void
+     */
+    public function resetResponseView () {
+        $this->_response_view = null;
+    }
+    
+    /**
      * Get output format
      * @return string
      */
