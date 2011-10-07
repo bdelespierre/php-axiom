@@ -79,7 +79,7 @@ class Lang {
         if (!isset($lang_file))
             $lang_file = self::$_config['lang_dir'] . '/' . self::$_config['lang_file'];
         
-        if (!file_exists($lang_file)) {
+        if (!is_file($lang_file)) {
             throw new MissingFileException($lang_file, 2029);
         }
         

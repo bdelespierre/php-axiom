@@ -59,7 +59,7 @@ class Autoloader {
      * @return boolean
      */
     public static function add ($path) {
-        if (!file_exists($path))
+        if (!is_file($path))
             throw new RuntimeException("Path $path not found", 2044);
             
         return self::$_config['paths'][] = $path;

@@ -48,8 +48,8 @@ class ViewManager {
         $section = strtolower(str_replace('Controller', '', $controller));
         $view    = strtolower(($v = self::$_response->getResponseView()) ? $v : $action);
         
-        if (file_exists($__filename = realpath(self::$_config['view_path']) . "/{$section}/{$view}.{$format}.php")) { }
-        elseif (file_exists($__filename = realpath(self::$_config['default_view_path']) . "/{$section}/{$view}.{$format}.php")) { }
+        if (is_file($__filename = realpath(self::$_config['view_path']) . "/{$section}/{$view}.{$format}.php")) { }
+        elseif (is_file($__filename = realpath(self::$_config['default_view_path']) . "/{$section}/{$view}.{$format}.php")) { }
         else return;
         
         try {
@@ -171,7 +171,7 @@ class ViewManager {
     }
     
     public static function setViewPath ($path) {
-        if (file_exists($path)) {
+        if (is_file($path)) {
             self::$_config['view_path'] = $path;
         }
         else
@@ -206,8 +206,8 @@ class ViewManager {
      * @return string
      */
     public static function partial ($section, $view, $format = "html") {
-        if (file_exists($__filename = realpath(self::$_config['view_path']) . "/{$section}/{$view}.{$format}.php")) { }
-        elseif (file_exists($__filename = realpath(self::$_config['default_view_path']) . "/{$section}/{$view}.{$format}.php")) { }
+        if (is_file($__filename = realpath(self::$_config['view_path']) . "/{$section}/{$view}.{$format}.php")) { }
+        elseif (is_file($__filename = realpath(self::$_config['default_view_path']) . "/{$section}/{$view}.{$format}.php")) { }
         else return false;
         
         try {

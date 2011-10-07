@@ -336,7 +336,7 @@ class Mail {
      * @return string
      */
     public function addAttachment ($path, $content_type, $filename = null) {
-        if (!file_exists($path))
+        if (!is_file($path))
             throw new MissingFileException($path, 2024);
             
         if (is_dir($path))
