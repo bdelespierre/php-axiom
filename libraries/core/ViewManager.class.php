@@ -43,13 +43,15 @@ class ViewManager {
     public static function load ($controller, $action) {
         foreach (self::$_response->getHeaders() as $header)
             header($header);
-        self::setContentType($format = ($f = self::$_response->getOutputFormat()) ? $f : self::$_config['default_output_format']);
+        self::setContentType($__format = ($f = self::$_response->getOutputFormat()) ? $f : self::$_config['default_output_format']);
         
-        $section = strtolower(str_replace('Controller', '', $controller));
-        $view    = strtolower(($v = self::$_response->getResponseView()) ? $v : $action);
+        $__section = strtolower(str_replace('Controller', '', $controller));
+        $__view    = strtolower(($v = self::$_response->getResponseView()) ? $v : $action);
         
-        if (is_file($__filename = realpath(self::$_config['view_path']) . "/{$section}/{$view}.{$format}.php")) { }
-        elseif (is_file($__filename = realpath(self::$_config['default_view_path']) . "/{$section}/{$view}.{$format}.php")) { }
+        // TODO replace with self::getViewPath
+        
+        if (is_file($__filename = realpath(self::$_config['view_path']) . "/{$__section}/{$__view}.{$__format}.php")) { }
+        elseif (is_file($__filename = realpath(self::$_config['default_view_path']) . "/{$__section}/{$__view}.{$__format}.php")) { }
         else return;
         
         try {
@@ -73,8 +75,10 @@ class ViewManager {
                 throw new RuntimeException("Exception during view loading", 2004);
         }
         
-        if (self::$_response->layout())
-            include self::getLayoutFilePath($format);
+        if (self::$_response->layout()) {
+            if ($__layout = self::getLayoutFilePath($__format))
+            include self::getLayoutFilePath($__format);
+        }
         else
             echo ${self::$_config['layout_content_var']};
     }
@@ -129,8 +133,12 @@ class ViewManager {
      * @retunr string
      */
     public static function getLayoutFilePath ($format = "html") {
-        // FIXME adapt to View Path for modules !
-        return self::$_config['default_view_path'] . "/layouts/" . self::$_config['layout_file'] . ".{$format}.php";
+        if (is_file($path = self::$_config['view_path'] . "/layouts/" . self::$_config['layout_file'] . ".{$format}.php"))
+            return $path;
+        if (is_file($path = self::$_config['default_view_path'] . "/layouts/" . self::$_config['layout_file'] . ".{$format}.php"))
+            return $path;
+        
+        return false;
     }
     
     /**
