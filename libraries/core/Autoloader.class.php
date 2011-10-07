@@ -33,12 +33,12 @@ class Autoloader {
             'paths' => array(
                 APPLICATION_PATH . '/controller',
                 APPLICATION_PATH . '/model',
-                LIBRARY_PATH,
-                LIBRARY_PATH . '/exceptions',
-                LIBRARY_PATH . '/helpers',
-                LIBRARY_PATH . '/loggers',
-                LIBRARY_PATH . '/feeds',
-				LIBRARY_PATH . '/uploader',
+                LIBRARY_PATH . '/core',
+                LIBRARY_PATH . '/exception',
+                LIBRARY_PATH . '/helper',
+                LIBRARY_PATH . '/log',
+                LIBRARY_PATH . '/feed',
+				LIBRARY_PATH . '/upload',
             ),
             'extension' => '.class.php',
         );

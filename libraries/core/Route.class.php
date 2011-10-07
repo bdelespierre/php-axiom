@@ -20,9 +20,9 @@ class Route {
     
     public function __construct ($template, array $params = array(), array $options = array()) {
         $this->_template = $template;
-        $this->_params = $params;
-        $this->_options = $options;
-        $this->_keys = array();
+        $this->_params   = $params;
+        $this->_options  = $options;
+        $this->_keys     = array();
     }
     
     public function match ($url) {

@@ -46,8 +46,11 @@ class Router {
      * @return void
      */
     public static function setConfig ($config = array()) {
+        
+        // FIXME Not used right now !
+        
         $default = array(
-            'controller_path' => dirname(dirname(__FILE__)) . '/application/controller',
+            'controller_path' => APPLICATION_PATH . '/controller',
         );
         self::$_config = array_merge($config, $default);
     }

@@ -40,7 +40,7 @@ class Request {
     public function __construct () {
         $this->_request_parameters = $_REQUEST;
         
-        // TODO Add browser capabilities class
+        // TODO Connect Browscap class
         $this->_browser_capabilities = null;
     }
     

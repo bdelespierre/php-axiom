@@ -107,10 +107,10 @@ class ViewManager {
     public static function setConfig ($configuration = array()) {
         $default = array(
             'default_output_format' => 'html',
-            'default_view_path' => dirname(dirname(__FILE__)) . "/application/view",
-            'view_path' => dirname(dirname(__FILE__)) . "/application/view/",
-            'layout_file' => 'default',
-            'layout_content_var' => 'page_content',
+            'default_view_path'     => APPLICATION_PATH . "/view",
+            'view_path'             => APPLICATION_PATH . "/view",
+            'layout_file'           => 'default',
+            'layout_content_var'    => 'page_content',
         );
         self::$_config = array_merge($default, $configuration);
     }
@@ -129,7 +129,8 @@ class ViewManager {
      * @retunr string
      */
     public static function getLayoutFilePath ($format = "html") {
-        return dirname(dirname(__FILE__)) . "/application/view/layouts/" . self::$_config['layout_file'] . ".{$format}.php";
+        // FIXME adapt to View Path for modules !
+        return self::$_config['default_view_path'] . "/layouts/" . self::$_config['layout_file'] . ".{$format}.php";
     }
     
     /**

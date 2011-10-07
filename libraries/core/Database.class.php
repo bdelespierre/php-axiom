@@ -38,13 +38,13 @@ class Database {
      */
     public static function setConfig ($config = array()) {
         $defaults = array(
-            'type' => 'mysql',
+            'type'     => 'mysql',
             'database' => 'axiom',
             'username' => 'root',
             'password' => '',
-            'host' => 'localhost',
-            'dsn' => null,
-            'options' => array(),
+            'host'     => 'localhost',
+            'dsn'      => null,
+            'options'  => array(),
         );
         
         self::$_config = $config + $defaults;

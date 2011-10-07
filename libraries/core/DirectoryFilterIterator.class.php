@@ -21,6 +21,9 @@ class DirectoryFilterIterator extends FilterIterator {
     
     /**
      * Default constructor
+     *
+     * TODO add exclusion pattern here
+     *
      * @param DirectoryIterator $iterator
      */
     public function __construct(DirectoryIterator $iterator) {

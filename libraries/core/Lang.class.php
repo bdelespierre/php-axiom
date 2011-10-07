@@ -43,12 +43,12 @@ class Lang {
      */
     public static function setConfig ($config = array()) {
         $default = array(
-            'locale' => 'fr',
-            'locales' => array('fr'),
+            'locale'      => 'fr',
+            'locales'     => array('fr'),
             'date_format' => 'd/m/y h:i:s',
-            'lang_dir' => dirname(dirname(__FILE__)) . '/application/locale/langs',
-            'lang_file' => 'fr.ini',
-            'base_url' => '/',
+            'lang_dir'    => APPLICATION_PATH . '/locale/langs',
+            'lang_file'   => 'fr.ini',
+            'base_url'    => '/',
         );
         
         self::$_config = array_merge($default, $config);
@@ -107,7 +107,7 @@ class Lang {
      */
     public static function setLocale ($lang, $reload_translations = true) {
         if ($lang !== self::getLocale() && in_array($lang, self::$_config['locales'])) {
-            self::$_config['locale'] = $lang;
+            self::$_config['locale']    = $lang;
             self::$_config['lang_file'] = "$lang.ini";
             
             if ($reload_translations)
@@ -176,10 +176,10 @@ class Lang {
                 $quality = 1.0;
             }
             
-            $countries = explode('-', $match[1]);
-            $region = array_shift($countries);
+            $countries   = explode('-', $match[1]);
+            $region      = array_shift($countries);
             $country_sub = explode('_', $region);
-            $region = array_shift($country_sub);
+            $region      = array_shift($country_sub);
             
             foreach($countries as $country)
                 $languages[$region . '_' . strtoupper($country)] = $quality;
@@ -207,8 +207,8 @@ class Lang {
         }
         
         $args = func_get_args();
-        $key = array_shift($args);
-        $msg = (string)self::$_translations[$key];
+        $key  = array_shift($args);
+        $msg  = (string)self::$_translations[$key];
         switch (count($args)) {
             case 0: return $msg; break;
             case 1: return sprintf($msg, $args[0]); break;
