@@ -30,18 +30,16 @@ class Request {
     
     /**
      * Browser Capabilities
-     * @var array
+     * @var Browscap
      */
-    protected $_browser_capabilities;
+    protected $_browscap;
     
     /**
      * Default constructor
      */
     public function __construct () {
         $this->_request_parameters = $_REQUEST;
-        
-        // TODO Connect Browscap class
-        $this->_browser_capabilities = null;
+        $this->_browscap = new Browscap(APPLICATION_PATH . '/ressource/cache');
     }
     
     /**
@@ -120,7 +118,7 @@ class Request {
      * Get the browser capabilities
      * @return array
      */
-    public function getBrowserCapabilities() {
-        return $this->_browser_capabilities;
+    public function getBrowser() {
+        return $this->_browscap->getBrowser();
     }
 }
