@@ -219,7 +219,7 @@ class Response {
      * @param $enabled =true
      * @return void
      */
-    public function setLayout ($enabled = true) {
+    public function enableLayout ($enabled = true) {
         $this->_layout_enabled = (boolean)$enabled;
     }
     

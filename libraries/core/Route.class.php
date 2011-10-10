@@ -6,18 +6,66 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
+/**
+ * Route Class
+ *
+ * Class intented to manage and to
+ * recognize routes.
+ *
+ * A route is identified by matching
+ * a pattern against the $url parameter.
+ * This pattern is provided to the
+ * Route insance by using a template,
+ * such as /{:controller}/{:action}.
+ * See Router::connect for more details.
+ *
+ * @author Delespierre
+ * @version $rev$
+ * @subpackage Route
+ */
 class Route {
     
+    /**
+     * Template string
+     * @internal
+     * @var string
+     */
     protected $_template;
     
+    /**
+     * PCRE pattern compiled from template
+     * @internal
+     * @var string
+     */
     protected $_pattern;
     
+    /**
+     * PCRE pattern keys
+     * @internal
+     * @var array
+     */
     protected $_keys;
 
+    /**
+     * Route parameters
+     * @internal
+     * @var array
+     */
     protected $_params;
 
+    /**
+     * Route options
+     * @internal
+     * @var array
+     */
     protected $_options;
     
+    /**
+     * Default constructor
+     * @param string $template
+     * @param array $params optional parameters to populate the Route instance with
+     * @param array $options arbitraty options array wich can be retrieved with Route::getOptions
+     */
     public function __construct ($template, array $params = array(), array $options = array()) {
         $this->_template = $template;
         $this->_params   = $params;
@@ -25,6 +73,12 @@ class Route {
         $this->_keys     = array();
     }
     
+    /**
+     * Tells if the Route instance
+     * match the given url.
+     * @param string $url
+     * @return boolean
+     */
     public function match ($url) {
         $url = '/' . trim($url, '/');
         
@@ -41,6 +95,12 @@ class Route {
         return false;
     }
     
+    /**
+     * Compiles the pattern into a PCRE expression.
+     * @internal
+     * @param string $template
+     * @return void
+     */
     protected function _compileTemplate ($template) {
         $token = strtok($template, '/');
         $pattern_pieces = array();
@@ -77,18 +137,36 @@ class Route {
         $this->_pattern = '~^/' . implode('/', $pattern_pieces) . '$~';
     }
     
+    /**
+     * Get the Route parameters
+     * @return array
+     */
     public function getParams () {
         return $this->_params;
     }
     
+    /**
+     * Get the Route options
+     * @return array
+     */
     public function getOptions () {
         return $this->_options;
     }
     
+    /**
+     * Get the Route template
+     * (useful for debugging)
+     * @return string
+     */
     public function getTemplate () {
         return $this->_template;
     }
     
+    /**
+     * Get teh Route PCRE pattern
+     * (useful for debugging)
+     * @return string
+     */
     public function getPattern () {
         return $this->_pattern;
     }

@@ -221,6 +221,15 @@ class Router {
         }
     }
     
+    /**
+     * Handler for RedirectException.
+     *
+     * Will send the proper header to the
+     * browser and optionnaly load the
+     * ErrorController::redirection view.
+     *
+     * @return void
+     */
     public static function redirect (RedirectException $exception) {
         header((string)$exception);
         
@@ -230,18 +239,36 @@ class Router {
         }
     }
     
+    /**
+     * Parses a route param string into an array.
+     *
+     * This method allows the Routes to be connected
+     * by providing strings as parameters instead of
+     * array for practical reasons.
+     * Thse calls are identicals:
+     * * Router::connect('/a/b', 'FooController::bar');
+     * * Router::connect('/a/b', array('controller' => 'FooController', 'action' => 'bar'));
+     *
+     * @internal
+     * @param string $params
+     * @return array
+     */
     protected static function _parseParamString ($params) {
         list($controller, $action) = (strpos($params, '::') !== false) ? explode('::', $params) : array($params, 'index');
         return array('controller' => $controller, 'action' => $action);
     }
     
+    /**
+     * Get the route instance that matches the given URL.
+     * @internal
+     * @param string $url
+     */
     protected static function _getRoute ($url) {
         foreach (self::$_routes as $route) {
-            if (!$params = $route->match($url))
-                continue;
-            
-            Log::debug("Selected Route: " . $route->getTemplate());
-            return $route;
+            if ($params = $route->match($url)) {
+                Log::debug("Choosen route: " . $route->getTemplate() . " [params] " . json_encode($route->getParams()));
+                return $route;
+            }
         }
         return false;
     }

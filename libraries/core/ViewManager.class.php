@@ -24,12 +24,14 @@ class ViewManager {
     
     /**
      * Layout vars
+     * @internal
      * @var array
      */
     protected static $_layout_vars = array();
     
     /**
      * Response object
+     * @internal
      * @var Response
      */
     protected static $_response;
@@ -43,16 +45,17 @@ class ViewManager {
     public static function load ($controller, $action) {
         foreach (self::$_response->getHeaders() as $header)
             header($header);
+        
         self::setContentType($__format = ($f = self::$_response->getOutputFormat()) ? $f : self::$_config['default_output_format']);
         
-        $__section = strtolower(str_replace('Controller', '', $controller));
-        $__view    = strtolower(($v = self::$_response->getResponseView()) ? $v : $action);
+        $__section  = strtolower(str_replace('Controller', '', $controller));
+        $__view     = strtolower(($v = self::$_response->getResponseView()) ? $v : $action);
+        $__filename = self::getViewFilePath($__section, $__view, $__format);
         
-        // TODO replace with self::getViewPath
-        
-        if (is_file($__filename = realpath(self::$_config['view_path']) . "/{$__section}/{$__view}.{$__format}.php")) { }
-        elseif (is_file($__filename = realpath(self::$_config['default_view_path']) . "/{$__section}/{$__view}.{$__format}.php")) { }
-        else return;
+        if (!$__filename) {
+            Log::warning("No view defined for {$__section}/{$__view} with format {$__format}");
+            return;
+        }
         
         try {
             ob_start();
@@ -77,10 +80,28 @@ class ViewManager {
         
         if (self::$_response->layout()) {
             if ($__layout = self::getLayoutFilePath($__format))
-            include self::getLayoutFilePath($__format);
+                include $__layout;
+            else
+                Log::warning("No layout for format {$__format}");
         }
         else
             echo ${self::$_config['layout_content_var']};
+    }
+    
+	/**
+     * Set the configuration
+     * @param array $configuration = array()
+     * @return void
+     */
+    public static function setConfig ($configuration = array()) {
+        $default = array(
+            'default_output_format' => 'html',
+            'default_view_path'     => APPLICATION_PATH . "/view",
+            'view_path'             => APPLICATION_PATH . "/view",
+            'layout_file'           => 'default',
+            'layout_content_var'    => 'page_content',
+        );
+        self::$_config = array_merge($default, $configuration);
     }
     
     /**
@@ -104,22 +125,6 @@ class ViewManager {
     }
     
     /**
-     * Set the configuration
-     * @param array $configuration = array()
-     * @return void
-     */
-    public static function setConfig ($configuration = array()) {
-        $default = array(
-            'default_output_format' => 'html',
-            'default_view_path'     => APPLICATION_PATH . "/view",
-            'view_path'             => APPLICATION_PATH . "/view",
-            'layout_file'           => 'default',
-            'layout_content_var'    => 'page_content',
-        );
-        self::$_config = array_merge($default, $configuration);
-    }
-    
-    /**
      * Set layout file
      * @param string $file
      * @return void
@@ -129,16 +134,18 @@ class ViewManager {
     }
     
     /**
-     * Get the layout file path
-     * @retunr string
+     * Get the layout file path.
+     *
+     * Will return the absolute path
+     * of the proper layout or false
+     * if such layout doesn't exists.
+     *
+     * @internal
+     * @param string $format
+     * @return string
      */
-    public static function getLayoutFilePath ($format = "html") {
-        if (is_file($path = self::$_config['view_path'] . "/layouts/" . self::$_config['layout_file'] . ".{$format}.php"))
-            return $path;
-        if (is_file($path = self::$_config['default_view_path'] . "/layouts/" . self::$_config['layout_file'] . ".{$format}.php"))
-            return $path;
-        
-        return false;
+    protected static function getLayoutFilePath ($format = "html") {
+        return self::getViewFilePath('layouts', self::$_config['layout_file'], $format);
     }
     
     /**
@@ -179,11 +186,32 @@ class ViewManager {
     }
     
     public static function setViewPath ($path) {
-        if (is_file($path)) {
+        if (is_file($path))
             self::$_config['view_path'] = $path;
-        }
         else
             throw new MissingFileException($path, 2006);
+    }
+    
+    /**
+     * Gets the view file.
+     *
+     * Will retrun the absolute path
+     * of the view file or false if such
+     * file doesn't exists.
+     *
+     * @internal
+     * @param string $section
+     * @param string $view
+     * @param string $format
+     * @return string
+     */
+    protected static function getViewFilePath ($section, $view, $format) {
+        if (is_file($path = realpath(self::$_config['view_path']) . "/{$section}/{$view}.{$format}.php"))
+            return $path;
+        if (is_file($path = realpath(self::$_config['default_view_path']) . "/{$section}/{$view}.{$format}.php"))
+            return $path;
+            
+        return false;
     }
     
     /**
@@ -205,7 +233,7 @@ class ViewManager {
      * Note: this method is intended for specific
      * purposes only. DO NOT chain partials
      * nor call partial everytime for practical
-     * reasons for this method can be considered
+     * reasons because this method can be considered
      * as heavily demanding.
      *
      * @param string $section
@@ -214,9 +242,10 @@ class ViewManager {
      * @return string
      */
     public static function partial ($section, $view, $format = "html") {
-        if (is_file($__filename = realpath(self::$_config['view_path']) . "/{$section}/{$view}.{$format}.php")) { }
-        elseif (is_file($__filename = realpath(self::$_config['default_view_path']) . "/{$section}/{$view}.{$format}.php")) { }
-        else return false;
+        if (!$__filename = self::getViewFilePath($section, $view, $format)) {
+            Log::warning("Partial loading failed: no view for {$section}/{$view} with format {$format}");
+            return false;
+        }
         
         try {
             extract(self::$_layout_vars);
@@ -228,6 +257,7 @@ class ViewManager {
         }
         catch (Exception $e) {
             ob_end_clean();
+            Log::handleException($e);
             return false;
         }
         return $buffer;

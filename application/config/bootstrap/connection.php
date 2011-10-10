@@ -9,11 +9,11 @@
 require_once LIBRARY_PATH . "/core/Database.class.php";
 
 Database::setConfig(array(
-    'host' => 'localhost',
+    'host'     => 'localhost',
     'database' => 'axiom',
-    'username' => 'root',
+    'username' => 'axiom',
     'password' => '',
-    'type' => 'mysql',
+    'type'     => 'mysql',
 ));
 
 Database::open();
