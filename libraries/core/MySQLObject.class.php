@@ -143,6 +143,20 @@ class MySQLObject extends Model {
         parent::__construct($id);
     }
     
+    public static function all ($table, array $search_params = array(), array $limit = array(), MySQLObject $mysql_obj = null) {
+        if (!isset($mysql_obj))
+            $mysql_obj = new self;
+        
+        $query = "SELECT `" . implode('`,`', $mysql_obj->getColumnNames) . " FROM `{$table}`";
+        
+        if (!empty($search_params)) {
+            $pieces = array();
+            foreach ($search_params as $key => $value)
+                $pieces[] = "`{$key}`=:{$key}";
+            // TODO FINISH THIS STUPID METHOD !!
+        }
+    }
+    
     /**
      * Get the table columns
      * @return array
