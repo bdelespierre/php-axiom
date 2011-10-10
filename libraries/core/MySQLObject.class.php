@@ -142,4 +142,20 @@ class MySQLObject extends Model {
         $this->_table = $table;
         parent::__construct($id);
     }
+    
+    /**
+     * Get the table columns
+     * @return array
+     */
+    public function getColumnNames () {
+        return array_keys($this->_structure);
+    }
+    
+    /**
+     * Get the complete table structure
+     * @return array
+     */
+    public function getStructure () {
+        return $this->_structure;
+    }
 }
