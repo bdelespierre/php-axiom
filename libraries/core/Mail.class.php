@@ -113,7 +113,7 @@ class Mail {
         if (!self::validateEmail($from))
             throw new InvalidArgumentException('First parameter is expected to be a valid email', 2014);
             
-        $this->_from = $subject;
+        $this->_from = $from;
             
         $to = (array)$to;
         foreach ($to as $destination)
@@ -138,7 +138,7 @@ class Mail {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return false;
         }
-     
+        
         if (function_exists('checkdnsrr')) {
             $host = substr($email, strpos($email, '@') + 1);
             return checkdnsrr($host, 'MX');
@@ -167,7 +167,7 @@ class Mail {
      * if the destination is invalid.
      *
      * @throws InvalidArgumentException
-     * @param unknown_type $to
+     * @param string $to
      * @return void
      */
     public function addDestination ($to) {
@@ -293,7 +293,7 @@ class Mail {
      * @return void
      */
     public function setSubject ($subject) {
-        $this->_subject = filter_var(trim($subject), FILTER_SANITIZE_ENCODED);
+        $this->_subject = strip_tags(trim($subject));
     }
     
     /**
@@ -313,7 +313,8 @@ class Mail {
      * @return string
      */
     public function addMessagePart ($message, $content_type = null, $charset = "utf-8") {
-        $part  = $content_type ? "Content-Type: $content_type; charset=$charset" . $this->_header_separator: "";
+        $part  = $content_type ? "Content-Type: {$content_type}; charset={$charset}": "";
+        $part .= "{$this->_header_separator}{$this->_header_separator}";
         $part .= $message . $this->_header_separator;
         $this->_message_parts[$key = uniqid("part-")] = $part;
         
@@ -358,7 +359,8 @@ class Mail {
             throw new RuntimeException("Cannot read $path", 2027);
             
         $part  = "Content-Type: $content_type; name=$filename" . $this->_header_separator;
-        $part .= "Content-transfer-encoding: base64" . $this->_header_separator;
+        $part .= "Content-transfer-encoding: base64";
+        $part .= $this->_header_separator . $this->_header_separator;
         $part .= chunk_split(base64_encode($content));
         $part .= $this->_header_separator;
         $this->_message_parts[$key = uniqid("part-")] = $part;
@@ -405,9 +407,13 @@ class Mail {
         $message = (string)$this;
         $headers = "";
         $results = array();
+        
+        if (empty($message))
+            throw new RuntimeException("Cannot send empty mail");
 
         foreach ($this->_headers as $name => $value)
             $headers .= "{$name}: {$value}{$this->_header_separator}";
+        $headers .= $this->_header_separator;
         
         foreach ($this->_to as $destination)
             $results[$destination] = mail($destination, $this->_subject, $message, $headers);
@@ -429,15 +435,20 @@ class Mail {
      * @return string
      */
     public function __toString () {
-        $c = count($this->_message_parts);
-        $this->setHeader(self::HEADER_FROM, $this->_from);
-        
-        if ($c > 1) {
-            $boundary = md5(uniqid(microtime(), true));
-            $this->setHeader(self::HEADER_CONTENT_TYPE, "multipart/mixed;boundary=$boundary");
-            return implode($s = "--{$boundary}{$this->_header_separator}", $this->_message_parts) . $s;
+        try {
+            $c = count($this->_message_parts);
+            $this->setHeader(self::HEADER_FROM, $this->_from);
+            
+            if ($c > 1) {
+                $boundary = md5(uniqid(microtime(), true));
+                $this->setHeader(self::HEADER_CONTENT_TYPE, "multipart/mixed;boundary=$boundary");
+                return implode($s = "--{$boundary}{$this->_header_separator}", $this->_message_parts) . $s;
+            }
+            
+            return $c == 1 ? array_shift($this->_message_parts) : "";
         }
-        
-        return $c == 1 ? array_shift($this->_message_parts) : "";
+        catch (Exception $e) {
+            return "";
+        }
     }
 }
