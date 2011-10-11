@@ -143,18 +143,54 @@ class MySQLObject extends Model {
         parent::__construct($id);
     }
     
+    /**
+     * Obtain a collection of MySQL for a given table.
+     *
+     * You may pass some search parameters and limit to
+     * restrict the choices length.
+     *
+     * The last parameter $mysql_obj is intended to be
+     * used as a custom iterator cursor over the collection.
+     * This object will also be used to determine the
+     * columns of the table.
+     * If the $mysql_obj parameter isn't provided, a new
+     * instance of MySQLObject will be generated.
+     *
+     * Will return false if the generated query fails.
+     *
+     * @param string $table
+     * @param array $search_params
+     * @param array $limit
+     * @param MySQLObject $mysql_obj
+     * @return PDOStatementIterator
+     */
     public static function all ($table, array $search_params = array(), array $limit = array(), MySQLObject $mysql_obj = null) {
         if (!isset($mysql_obj))
-            $mysql_obj = new self;
+            $mysql_obj = new self($table);
         
-        $query = "SELECT `" . implode('`,`', $mysql_obj->getColumnNames) . " FROM `{$table}`";
+        $query = "SELECT `" . implode('`,`', $mysql_obj->getColumnNames()) . "` FROM `{$table}`";
         
         if (!empty($search_params)) {
             $pieces = array();
             foreach ($search_params as $key => $value)
                 $pieces[] = "`{$key}`=:{$key}";
-            // TODO FINISH THIS STUPID METHOD !!
+            $query .= " WHERE " . implode(' AND ', $pieces);
         }
+        
+        if (count($limit) == 1) {
+            $query .= " LIMIT {$limit[0]}";
+        }
+        
+        if (count($limit) == 2) {
+            $query .= " LIMIT {$limit[0]},{$limit[1]}";
+        }
+        
+        $stmt = Database::prepare($query);
+        if ($stmt->execute($search_params)) {
+            $stmt->setFetchMode(PDO::FETCH_INTO, $mysql_obj);
+            return new PDOStatementIterator($stmt);
+        }
+        return false;
     }
     
     /**
