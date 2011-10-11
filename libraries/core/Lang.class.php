@@ -10,7 +10,7 @@
  * Lang Managemnt Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package core
  * @subpackage Lang
  */
 class Lang {

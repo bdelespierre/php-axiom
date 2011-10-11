@@ -10,7 +10,7 @@
  * Helper Interface
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage Helper
  */
 interface Helper {

@@ -30,7 +30,7 @@
  * will define explicitely the queries behavior.
  *
  * @author Delespierre
- * @version $Rev$
+ * @package core
  * @subpackage MySQLObject
  */
 class MySQLObject extends Model {

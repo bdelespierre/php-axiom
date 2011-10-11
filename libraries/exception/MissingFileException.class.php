@@ -10,7 +10,7 @@
  * Missing File Exception
  *
  * @author Delespierre
- * @version $Rev$
+ * @package exception
  * @subpackage MissingFileException
  */
 class MissingFileException extends RuntimeException {

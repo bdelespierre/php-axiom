@@ -14,7 +14,7 @@
  * (excluding .. and .)
  *
  * @author Delespierre
- * @version $Rev$
+ * @package core
  * @subpackage DirectoryFilterIterator
  */
 class DirectoryFilterIterator extends FilterIterator {

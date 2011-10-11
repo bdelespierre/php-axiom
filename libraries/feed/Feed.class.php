@@ -6,12 +6,32 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
+/**
+ * Generic Feed Class
+ *
+ * @author Delespierre
+ * @package feed
+ * @subpackage Feed
+ */
 class Feed extends ArrayIterator {
     
+    /**
+     * Feed meta informations
+     * @var array
+     */
     protected static $_meta_inf = array();
     
+    /**
+     * Feed configuration
+     * @var array
+     */
     protected static $_config = array();
     
+    /**
+     * Configure
+     * @param array $config
+     * @return void
+     */
     public static function setConfig (array $config = array()) {
         $defaults = array(
             'default_type' => 'Rss',
@@ -20,6 +40,11 @@ class Feed extends ArrayIterator {
         self::$_config = $config + $defaults;
     }
     
+    /**
+     * Set all feeds meta informations
+     * @param array $meta_inf
+     * @return void
+     */
     public static function setMetaInf (array $meta_inf = array()) {
         $defaults = array(
             'title' => 'Axiom Generic Feed',
@@ -37,6 +62,10 @@ class Feed extends ArrayIterator {
         self::$_meta_inf = $meta_inf + $defaults;
     }
     
+    /**
+     * Default constructor
+     * @param array $items
+     */
     public function __construct (array $items = array()) {
         parent::__construct(array(
             'meta' => self::$_meta_inf,
@@ -44,6 +73,15 @@ class Feed extends ArrayIterator {
         ));
     }
     
+    /**
+     * Getter helper
+     *
+     * Allow the use of every $feed->getXXX() as $feed->XXX
+     *
+     * @param string $key
+     * @throws InvalidArgumentException
+     * @return mixed
+     */
     public function __get ($key) {
         if (method_exists($this, $method = "get" . ucfirst($key)))
             return $this->$method();
@@ -51,6 +89,15 @@ class Feed extends ArrayIterator {
             throw new InvalidArgumentException("$key does not exist", 4008);
     }
     
+    /**
+     * Setter helper
+     *
+     * Allow the use of $feed->setXXX(YYY) as $feed->XXX = YYY
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
     public function __set ($key, $value) {
         if (method_exists($this, $method = "get" . ucfirst($key)))
             return $this->$method($value);
@@ -58,10 +105,25 @@ class Feed extends ArrayIterator {
             throw new InvalidArgumentException("$key does not exist", 4008);
     }
     
+    /**
+     * Constructor static helper
+     * @param array $items
+     * @return Feed
+     */
     public static function export (array $items = array()) {
         return new self($items);
     }
     
+    /**
+     * Add a feed entry and return it to allow chaining calls.
+     *
+     * The first parameter is optionnal, if you don't set
+     * it manually, an empty FeedEntry will be created
+     * and returned so you can manipulate it.
+     *
+     * @param FeedEntry $entry
+     * @return FeedEntry
+     */
     public function add (FeedEntry $entry = null) {
         if (!$entry)
             $entry = new FeedEntry;
@@ -69,14 +131,28 @@ class Feed extends ArrayIterator {
         return $this['items'][] = $entry;
     }
     
+    /**
+     * Get all feed entries attached to the feed
+     * @return array
+     */
     public function getEntries () {
         return $this['items'];
     }
     
+    /**
+     * Get meta-inf id parameter
+     * @return string
+     */
     public function getId () {
         return $this['meta']['id'];
     }
     
+    /**
+     * Set meta-inf id parameter
+     * @throws InvalidArgumentException
+     * @param string $id
+     * @return void
+     */
     public function setId ($id) {
         if (!$id = filter_var($id, FILTER_SANITIZE_ENCODED))
             throw new InvalidArgumentException("Invalid ID", 4009);
@@ -84,19 +160,41 @@ class Feed extends ArrayIterator {
         $this['meta']['id'] = $id;
     }
     
+    /**
+     * Get meta-inf title
+     * @return string
+     */
     public function getTitle () {
         return $this['meta']['title'];
     }
     
+    /**
+     * Set meta-inf title
+     * @param string $title
+     * @return void
+     */
     public function setTitle ($title) {
         $title = strip_tags($title);
         $this['meta']['title'] = $title;
     }
     
+    /**
+     * Get meta-inf date
+     * @return string
+     */
     public function getDate () {
         return $this['meta']['date'];
     }
     
+    /**
+     * Set meta-inf date.
+     *
+     * This method accepts both strings and integers.
+     *
+     * @throws InvalidArgumentException
+     * @param mixed $date
+     * @return void
+     */
     public function setDate ($date) {
         if ($time = strtotime($date))
             $date = date('r', $time);
@@ -106,10 +204,21 @@ class Feed extends ArrayIterator {
         $this['meta']['date'] = $date;
     }
     
+    /**
+     * Get meta-inf author
+     * @return array
+     */
     public function getAuthor () {
         return $this['meta']['author'];
     }
     
+    /**
+     * Set meta-inf author
+     *
+     * @throws InvalidArgumentException
+     * @param array $author
+     * @return void
+     */
     public function setAuthor (array $author) {
         $author = array_intersect_key($author, array_flip(array('mail', 'name', 'uri')));
         
@@ -128,35 +237,72 @@ class Feed extends ArrayIterator {
         $this['meta']['author'] = $author;
     }
     
+    /**
+     * Get meta-inf lang
+     * @return string
+     */
     public function getLang () {
         return $this['meta']['lang'];
     }
     
+    /**
+     * Set meta-inf lang
+     * @param string $lang
+     * @return void
+     */
     public function setLang ($lang) {
         $this['meta']['lang'] = $lang;
     }
     
+    /**
+     * Get meta-inf description
+     * @return string
+     */
     public function getDescription () {
         return $this['meta']['description'];
     }
     
+    /**
+     * Set meta-inf description
+     * @param string $description
+     * @return void
+     */
     public function setDescription ($description) {
         $description = strip_tags($description);
         $this['meta']['description'] = $description;
     }
     
+    /**
+     * Get meta-inf copyright
+     * @return string
+     */
     public function getCopyright () {
         return $this['meta']['copyright'];
     }
     
+    /**
+     * Set meta-inf copyright
+     * @param string $copyright
+     * @return void
+     */
     public function setCopyright ($copyright) {
         $this['meta']['copyright'] = $copyright;
     }
     
+    /**
+     * Get meta-inf link
+     * @return string
+     */
     public function getLink () {
         return $this['meta']['link'];
     }
     
+    /**
+     * Set meta-inf link
+     * @throws InvalidArgumentException
+     * @param string $url
+     * @return void
+     */
     public function setLink ($url) {
         if (!$url = filter_var($url, FILTER_VALIDATE_URL))
             throw new InvalidArgumentException("Invalid URL", 4015);
@@ -164,6 +310,12 @@ class Feed extends ArrayIterator {
         $this['meta']['link'];
     }
     
+    /**
+     * Build the feed using a feed writer conector
+     * @param string $type
+     * @throws RuntimeException
+     * @return FeedWriter
+     */
     public function build ($type = null) {
         if (!$type)
             $type = ucfirst(strtolower(self::$_config['default_type']));

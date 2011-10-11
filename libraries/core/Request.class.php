@@ -10,7 +10,7 @@
  * Request Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package core
  * @subpackage Request
  */
 class Request {

@@ -10,7 +10,7 @@
  * Table Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage TableHelper
  */
 class TableHelper extends BaseHelper {

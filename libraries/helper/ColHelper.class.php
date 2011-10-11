@@ -10,7 +10,7 @@
  * Column Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage ColHelper
  */
 class ColHelper extends BaseHelper {

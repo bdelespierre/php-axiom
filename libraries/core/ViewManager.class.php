@@ -10,7 +10,7 @@
  * View Manager Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package core
  * @subpackage ViewManager
  */
 class ViewManager {

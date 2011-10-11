@@ -11,7 +11,7 @@
  *
  * @abstract
  * @author Delespierre
- * @version $Rev$
+ * @package core
  * @subpackage Model
  */
 abstract class Model {

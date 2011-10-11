@@ -6,6 +6,13 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
+/**
+ * Text Logger Class
+ *
+ * @author Delespierre
+ * @package log
+ * @subpackage TextLogger
+ */
 class TextLogger extends Logger {
     
     /**

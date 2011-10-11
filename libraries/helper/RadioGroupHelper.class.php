@@ -10,7 +10,7 @@
  * Radio Group Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage RadioGroupHelper
  */
 class RadioGroupHelper extends BaseHelper {

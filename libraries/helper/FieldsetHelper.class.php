@@ -10,7 +10,7 @@
  * Fieldset Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage FieldsetHelper
  */
 class FieldsetHelper extends BaseHelper {

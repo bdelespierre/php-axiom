@@ -10,7 +10,7 @@
  * Module Manager
  *
  * @author Delespierre
- * @version $Rev$
+ * @package core
  * @subpackage ModuleManager
  */
 class ModuleManager {
@@ -21,8 +21,16 @@ class ModuleManager {
      */
     protected static $_module_list = array();
     
+    /**
+     * Loaded module cache
+     * @var array
+     */
     protected static $_loaded_modules = array();
     
+    /**
+     * Modules meta-infs cache
+     * @var array
+     */
     protected static $_modules_infs = array();
     
     /**

@@ -6,12 +6,31 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
+/**
+ * RSS Feed Writer Class
+ *
+ * @author Delespierre
+ * @package feed
+ * @subpackage RssFeedWriter
+ */
 class RssFeedWriter extends FeedWriter {
     
+    /**
+     * RSS element
+     * @var DOMElement
+     */
     protected $_rss;
     
+    /**
+     * Channel element
+     * @var DOMElement
+     */
     protected $_channel;
     
+    /**
+     * Default constructor
+     * @param Feed $feed
+     */
     public function __construct (Feed $feed) {
         parent::__construct($feed);
         
@@ -23,6 +42,10 @@ class RssFeedWriter extends FeedWriter {
         $this->buildItems();
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see FeedWriter::buildFeedInfo()
+     */
     protected function buildFeedInfo () {
         $this->_channel->appendChild(new DOMElement('title', $this->_feed->getTitle()));
         $this->_channel->appendChild(new DOMElement('link', $this->_feed->getLink()));
@@ -32,6 +55,10 @@ class RssFeedWriter extends FeedWriter {
         $this->_channel->appendChild(new DOMElement('copyright'), $this->_feed->getCopyright());
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see FeedWriter::buildItems()
+     */
     protected function buildItems () {
         foreach ($this->_feed->getEntries() as $entry) {
             

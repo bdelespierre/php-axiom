@@ -10,7 +10,7 @@
  * Checkbox Group Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage CheckboxGroupHelper
  */
 class CheckboxGroupHelper extends BaseHelper {

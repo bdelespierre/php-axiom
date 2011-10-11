@@ -20,7 +20,7 @@
  * See Router::connect for more details.
  *
  * @author Delespierre
- * @version $rev$
+ * @package core
  * @subpackage Route
  */
 class Route {

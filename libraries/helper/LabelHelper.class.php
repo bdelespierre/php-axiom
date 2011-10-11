@@ -10,7 +10,7 @@
  * Label Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage LabelHelper
  */
 class LabelHelper extends BaseHelper {

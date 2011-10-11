@@ -10,7 +10,7 @@
  * Response Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package core
  * @subpackage Response
  */
 class Response {

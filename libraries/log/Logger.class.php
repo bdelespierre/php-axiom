@@ -6,8 +6,19 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
+/**
+ * Logger Abstract Class
+ *
+ * @abstract
+ * @author Delespierre
+ * @package log
+ * @subpackage Logger
+ */
 abstract class Logger {
     
+    /**
+     * Constants
+     */
     const ERR = 1;
     const NOTICE = 2;
     const WARNING = 4;

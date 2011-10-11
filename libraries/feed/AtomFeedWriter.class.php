@@ -6,8 +6,19 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
+/**
+ * Atom Feed Writer Class
+ *
+ * @author Delespierre
+ * @package feed
+ * @subpackage AtomFeedWriter
+ */
 class AtomFeedWriter extends FeedWriter {
     
+    /**
+     * Default constructor
+     * @param Feed $feed
+     */
     public function __construct (Feed $feed) {
         parent::__construct($feed);
         
@@ -19,6 +30,10 @@ class AtomFeedWriter extends FeedWriter {
         $this->buildItems();
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see FeedWriter::buildFeedInfo()
+     */
     protected function buildFeedInfo () {
         $this->_atom->appendChild(new DOMElement('id', $this->_feed->getId()));
         $this->_atom->appendChild(new DOMElement('title', $this->_feed->getTitle()));
@@ -44,6 +59,10 @@ class AtomFeedWriter extends FeedWriter {
         }
     }
     
+    /**
+     * (non-PHPdoc)
+     * @see FeedWriter::buildItems()
+     */
     protected function buildItems () {
         foreach ($this->_feed->getEntries() as $entry) {
             

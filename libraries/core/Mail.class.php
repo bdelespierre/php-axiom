@@ -9,8 +9,13 @@
 /**
  * Mail Class
  *
+ * Warning: You may add as many parts
+ * as you want into the mail using
+ * Mail::addPart but keep the text
+ * part as first part.
+ *
  * @author Delespierre
- * @version $Rev$
+ * @package core
  * @subpackage Mail
  */
 class Mail {

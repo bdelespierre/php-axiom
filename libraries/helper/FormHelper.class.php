@@ -10,7 +10,7 @@
  * Form Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage FormHelper
  */
 class FormHelper extends BaseHelper {

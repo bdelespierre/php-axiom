@@ -10,7 +10,7 @@
  * Table Data Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage TableDataHelper
  */
 class TableDataHelper extends BaseHelper {

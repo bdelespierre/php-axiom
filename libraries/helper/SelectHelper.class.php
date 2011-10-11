@@ -10,7 +10,7 @@
  * Select Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage SelectHelper
  */
 class SelectHelper extends BaseHelper {

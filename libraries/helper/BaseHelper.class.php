@@ -11,7 +11,7 @@
  *
  * @abstract
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage BaseHelper
  */
 abstract class BaseHelper implements Helper {

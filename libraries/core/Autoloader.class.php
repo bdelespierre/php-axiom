@@ -10,7 +10,7 @@
  * Autoloader Class
  *
  * @author Delespierre
- * @version $Rev: 65 $
+ * @package core
  * @subpackage Autoloader
  */
 class Autoloader {

@@ -10,7 +10,7 @@
  * Router Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package core
  * @subpackage Router
  */
 class Router {

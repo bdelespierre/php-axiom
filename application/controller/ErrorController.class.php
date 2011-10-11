@@ -10,7 +10,7 @@
  * Error Controller
  *
  * @author Delespierre
- * @version $Rev$
+ * @package controller
  * @subpackage ErrorController
  */
 class ErrorController extends BaseController {

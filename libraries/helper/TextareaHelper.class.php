@@ -10,7 +10,7 @@
  * Texarea Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage TextareaHelper
  */
 class TextareaHelper extends BaseHelper {

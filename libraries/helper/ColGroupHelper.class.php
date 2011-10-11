@@ -10,7 +10,7 @@
  * Column Group Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage ColGroupHelper
  */
 class ColGroupHelper extends BaseHelper {

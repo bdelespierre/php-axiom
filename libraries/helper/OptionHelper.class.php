@@ -10,7 +10,7 @@
  * Option Helper CLass
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage OptionHelper
  */
 class OptionHelper extends BaseHelper {

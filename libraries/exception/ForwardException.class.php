@@ -10,7 +10,7 @@
  * Foward Exception
  *
  * @author Delespierre
- * @version $Rev: 46 $
+ * @package exception
  * @subpackage ForwardException
  */
 class ForwardException extends LogicException {

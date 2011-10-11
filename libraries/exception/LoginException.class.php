@@ -10,7 +10,7 @@
  * Login Exception Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package exception
  * @subpackage LoginException
  */
 class LoginException extends RuntimeException {

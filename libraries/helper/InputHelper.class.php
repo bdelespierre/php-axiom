@@ -10,7 +10,7 @@
  * Input Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage InputHelper
  */
 class InputHelper extends BaseHelper {

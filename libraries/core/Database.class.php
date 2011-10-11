@@ -10,7 +10,7 @@
  * Database Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package core
  * @subpackage Database
  */
 class Database {

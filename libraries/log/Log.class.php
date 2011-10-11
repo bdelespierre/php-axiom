@@ -6,11 +6,25 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
+/**
+ * Log Class
+ *
+ * This class is capable of capturing PHP errors and
+ * exception.
+ * This class acts as a chain of responsibilities
+ * where commands are instance of Logger.
+ *
+ * @author Delespierre
+ * @package log
+ * @subpackage Log
+ */
 class Log {
     
+    /**
+     * Configuration
+     * @var array
+     */
     protected static $_config;
-    
-    protected static $_meta_inf;
     
     /**
      * First logger in the chain
@@ -24,8 +38,17 @@ class Log {
      */
     protected static $_last;
     
+    /**
+     * Log messages history (per request)
+     * @var array
+     */
     protected static $_message_history = array();
     
+    /**
+     * Configure
+     * @param array $config
+     * @return void
+     */
     public static function setConfig (array $config = array()) {
         $defaults = array(
             'ignore_repeated_messages' => true,
@@ -42,6 +65,12 @@ class Log {
             self::registerExceptionHandler();
     }
     
+    /**
+     * Push a message onto the chain
+     * @param string $msg
+     * @param integer $priority
+     * @return void
+     */
     public static function message ($msg, $priority) {
         if (!isset(self::$_first))
             return;
@@ -54,18 +83,43 @@ class Log {
         self::$_first->message(self::$_message_history[] = $msg, $priority);
     }
     
+    /**
+     * Push an error message onto the chain
+     * @param string $msg
+     * @return void
+     */
     public static function error ($msg) {
         self::message($msg, Logger::ERR);
     }
     
+    /**
+     * Push a notice message onto the chain
+     * @param string $msg
+     * @return void
+     */
     public static function notice ($msg) {
         self::message($msg, Logger::NOTICE);
     }
     
+    /**
+     * Push a warning message onto the chain
+     * @param string $msg
+     * @return void
+     */
     public static function warning ($msg) {
         self::message($msg, Logger::WARNING);
     }
     
+    /**
+     * Push a debug message onto the chain.
+     *
+     * You may additionnaly pass a backtrace infromation
+     * for debugging purposes.
+     *
+     * @param string $msg
+     * @param array $bt
+     * @return void
+     */
     public static function debug ($msg, array $bt = array()) {
         if ($bt)
             $msg .= " in {$bt[0]['file']} on line {$bt[0]['line']}";
@@ -73,6 +127,11 @@ class Log {
         self::message($msg, Logger::DEBUG);
     }
     
+    /**
+     * Attach a logger to the chain
+     * @param Logger $logger
+     * @return void
+     */
     public static function addLogger (Logger $logger) {
         if (!isset(self::$_first))
             self::$_first = self::$_last = $logger;
@@ -80,14 +139,32 @@ class Log {
             self::$_last->setNext(self::$_last = $logger);
     }
     
+    /**
+     * Register Log as PHP error handler
+     * @param integer $error_types
+     * @return string
+     */
     public static function registerErrorHandler ($error_types = -1) {
         return set_error_handler(array(__CLASS__, 'handleError'));
     }
     
+    /**
+     * Unregister Log as PHP error handler
+     * @return boolean
+     */
     public static function restoreErrorHandler () {
         return restore_error_handler();
     }
     
+    /**
+     * PHP error handler
+     * @param integer $errno
+     * @param string $errstr
+     * @param string $errfile
+     * @param integer $errline
+     * @throws ErrorException
+     * @return void
+     */
     public static function handleError ($errno, $errstr, $errfile, $errline) {
         $error = "(PHP Error) $errstr in $errfile on line $errline";
         switch ($errno) {
@@ -112,10 +189,18 @@ class Log {
         }
     }
     
+    /**
+     * Register Log as PHP exception handler
+     * @return boolean
+     */
     public static function registerExceptionHandler () {
         return set_exception_handler(array(__CLASS__, 'handleException'));
     }
     
+    /**
+     * Unregister Log as PHP exception handler
+     * @return boolean
+     */
     public static function restoreExceptionHandler () {
         return restore_exception_handler();
     }
@@ -144,6 +229,10 @@ class Log {
         self::error($error);
     }
     
+    /**
+     * Get messages history
+     * @return array
+     */
     public static function getHistory () {
         return self::$_message_history;
     }

@@ -10,7 +10,7 @@
  * Table Row Group Helper Class
  *
  * @author Delespierre
- * @version $Rev$
+ * @package helper
  * @subpackage TableRowGroupHelper
  */
 class TableRowGroupHelper extends BaseHelper {
