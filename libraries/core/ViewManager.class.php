@@ -271,3 +271,27 @@ class ViewManager {
 function partial ($section, $view, $format = "html") {
     return ViewManager::partial($section, $view, $format);
 }
+
+/**
+ * Format URL
+ * @param string $url
+ * @param string $lang = false
+ * @return string
+ */
+function url ($url, $lang = false) {
+    if (!$lang)
+        $lang = Lang::getLocale();
+        
+    $url = trim($url, '/');
+    return rtrim(getenv("REWRITE_BASE"), '/') . "/$lang/$url";
+}
+
+/**
+ * Format src
+ * @param string $ressource
+ * @return string
+ */
+function src ($ressource) {
+    $ressource = trim($ressource, '/');
+    return rtrim(getenv("REWRITE_BASE"), '/') . "/$ressource";
+}

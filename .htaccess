@@ -1,9 +1,12 @@
 <IfModule mod_rewrite.c>
+    SetEnv REWRITE_BASE /axiom
+</IfModule>
+
+
+<IfModule mod_rewrite.c>
     RewriteEngine on
     RewriteBase /axiom
-	RewriteCond %{REQUEST_FILENAME} !guestbook.php
     RewriteRule ^$ application/webroot/    [L]
-	RewriteCond %{REQUEST_FILENAME} !guestbook.php
     RewriteRule (.*) application/webroot/$1 [L]
 </IfModule>
 

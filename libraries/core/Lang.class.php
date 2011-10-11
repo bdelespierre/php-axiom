@@ -48,7 +48,6 @@ class Lang {
             'date_format' => 'd/m/y h:i:s',
             'lang_dir'    => APPLICATION_PATH . '/locale/langs',
             'lang_file'   => 'fr.ini',
-            'base_url'    => '/',
         );
         
         self::$_config = array_merge($default, $config);
@@ -222,36 +221,6 @@ class Lang {
                 break;
         }
     }
-    
-    public static function getBaseUrl () {
-        return self::$_config['base_url'];
-    }
-    
-    /**
-     * Format URL
-     * @param string $route
-     * @param string $action = ""
-     * @param string $lang = false
-     * @return string
-     */
-    public static function url ($url, $lang = false) {
-        if (!$lang)
-            $lang = self::getLocale();
-            
-        return self::$_config['base_url'] . "$lang/$url";
-    }
-    
-    /**
-     * Format src
-     * @param string $ressource
-     * @return string
-     */
-    public static function src ($ressource) {
-        if (strpos($ressource, '/') === 0)
-            $ressource = substr($ressource, 1);
-            
-        return self::$_config['base_url'] . $ressource;
-    }
 }
 
 /**
@@ -268,22 +237,6 @@ function i18n ($key) {
         case 5: return Lang::i18n($args[0], $args[1], $args[2], $args[3], $args[4]); break;
         default: return call_user_func_array(array('Lang', 'i18n'), $args); break;
     }
-}
-
-/**
- * (Non PHP-doc)
- * @see Lang::url
- */
-function url ($url, $lang = false) {
-    return Lang::url($url, $lang);
-}
-
-/**
- * (Non PHP-doc)
- * @see Lang::src
- */
-function src ($ressource) {
-    return Lang::src($ressource);
 }
 
 /**
