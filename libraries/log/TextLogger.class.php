@@ -61,7 +61,7 @@ class TextLogger extends Logger {
             return;
         }
         if ($format)
-            $this->format = $format;
+            $this->format = $format === false ? "[%s] %s: %s\n" : $format;
     }
     
     /**
@@ -69,7 +69,6 @@ class TextLogger extends Logger {
      * @see Logger::writeMessage()
      */
     public function writeMessage ($msg, $severity) {
-        $format = isset($this->format) ? $this->format : "[%s] %s: %s\n";
-        $this->_file->fwrite(sprintf($format, date('r'), $severity, $msg));
+        $this->_file->fwrite(sprintf($this->format, date('r'), $severity, $msg));
     }
 }
