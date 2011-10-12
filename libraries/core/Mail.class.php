@@ -341,7 +341,7 @@ class Mail {
      * @throws InvalidArgumentException
      * @return string
      */
-    public function addAttachment ($path, $content_type, $filename = null) {
+    public function addAttachment ($path, $content_type = null, $filename = null) {
         if (!is_file($path))
             throw new MissingFileException($path, 2024);
             
@@ -358,7 +358,7 @@ class Mail {
         else if (function_exists('mime_content_type'))
             $content_type = mime_content_type($path);
         else if (empty($content_type))
-            throw new LogicException("Could not determine content-type for $path", 2026);
+            $content_type = "application/octet-stream";
             
         if (!$content = file_get_contents($path, false))
             throw new RuntimeException("Cannot read $path", 2027);
