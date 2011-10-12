@@ -2,7 +2,6 @@
     SetEnv REWRITE_BASE /axiom
 </IfModule>
 
-
 <IfModule mod_rewrite.c>
     RewriteEngine on
     RewriteBase /axiom
