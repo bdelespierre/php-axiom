@@ -85,10 +85,11 @@ class Session {
     
     /**
      * Start the session
-     * @return boolean
+     * @return void
      */
     public static function start () {
-        return session_start();
+        if (!self::started())
+            session_start();
     }
     
     /**
@@ -115,5 +116,13 @@ class Session {
      */
     public static function name ($name = false) {
         return $name !== false ? session_name($name) : session_name();
+    }
+    
+    /**
+     * Tell if session is started
+     * @return boolean
+     */
+    public static function started () {
+        return self::id() !== "";
     }
 }
