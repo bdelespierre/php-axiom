@@ -62,41 +62,6 @@ if (!function_exists("array_safe_filter")) {
 }
 
 /**
- * Converts any value to its declaration value.
- *
- * This function is useful when you need to
- * generate pieces of codes, more specificly
- * when you create a callback using the
- * callback() function.
- *
- * @internal
- * @param mixed $value
- * @return string
- */
-function native2str ($value) {
-    if (is_string($value))
-        $str = "'{$value}'";
-    elseif (is_int($value))
-        $str = "{$value}";
-    elseif (is_bool($value))
-        $str = $value ? "true" : "false";
-    elseif (is_float($value))
-        $str = strpos($value, '.') === false ? "{$value}.0" : $value;
-    elseif (is_object($value))
-        $str = "Object";
-    elseif (is_array($value)) {
-        $arr = array();
-        foreach ($value as $key => $svalue)
-            $arr[] = native2str($key) . '=>' . native2str($svalue);
-        $arr = implode(',', $arr);
-        $str = "array({$arr})";
-    }
-    else
-        $str = "null";
-    return $str;
-}
-
-/**
  * Create an annonymous function according
  * to its declaration.
  *
@@ -104,30 +69,20 @@ function native2str ($value) {
  * PHP 5.3 closures does and may have an
  * use statement in it.
  *
- * E.G:
- * * $alpha = callback('($a,$b) use ($c,&$d) { return $a+$b+$c+$d; }');
+ * Because the use statement is impossible
+ * to emulate properly, it was simply removed.
  *
- * @param unknown_type $fct
+ * E.G:
+ * * $alpha = callback('function ($a,$b) { return $a+$b+$c+$d; }');
+ *
+ * @param string $fct
+ * @return string
  */
 function callback ($fct) {
-    if (!preg_match('~^\(\s*(?P<args>(&?\s*\$\w+\s*,?\s*)*)\s*\)\s*(use\s*\(\s*(?P<use>(&?\s*\$\w+\s*,?\s*)+)\s*\))?\s*\{(?P<code>.*)\}$~',
-        $fct, $matches))
+    if (!preg_match('~(function)?\s*\((?P<args>[^\)]*)\)\s*\{(?P<code>.*)\}~', $fct, $matches))
         return false;
 	
     $args = $matches['args'];
-    $use  = $matches['use'];
     $code = $matches['code'];
-    if (!empty($use)) {
-        foreach (explode(',', $use) as $var) {
-			trim($var);
-            $value = isset($GLOBALS[substr($var,1)]) ? $GLOBALS[substr($var,1)] : null;
-			
-            if (($offset = strpos($var, '&') !== false) || is_object($value))
-                $code = 'global ' . substr($var, $offset+1) . ";" . $code;
-            else
-                $code = "{$var}=" . native2str($value) . ";" . $code;
-        }
-    }
-	
     return create_function($args, $code);
 }

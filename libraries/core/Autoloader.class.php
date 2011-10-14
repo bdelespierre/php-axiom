@@ -39,6 +39,7 @@ class Autoloader {
                 LIBRARY_PATH . '/log',
                 LIBRARY_PATH . '/feed',
 				LIBRARY_PATH . '/upload',
+				LIBRARY_PATH . '/captcha',
             ),
             'extensions' => '.class.php'
         );

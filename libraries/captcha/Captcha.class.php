@@ -45,22 +45,16 @@ class Captcha {
             $answer = explode(',', self::$_dictionnary_struct[$lang][$question]);
         }
         elseif (self::$_config['dictionnary_type'] == 'dynamic') {
-            $fct = self::$_dictionnary_struct[$lang][$question];
-            if (!preg_match('~($\w+,?)*\|.*;~', $fct))
-                throw new RuntimeException("Cannot understand alpha function defintion");
+            if (!$alpha = callback(self::$_dictionnary_struct[$lang][$question]))
+                throw new RuntimeException("Cannot understand alpha function definition");
                 
-            list($args, $code) = explode('|', $fct);
-            if (!$alpha = create_function($args, $code))
-                throw new RuntimeException("Invalid alpha function definition");
-                
-            $argc = count(explode(',', $args));
+            $argc = substr_count($question, '%d');
             $argv = array();
-            for ($i=0; $i<$argc; $i++) {
-                $argv[$i] = rand(0,9);
-            }
-            
+            for ($i=0; $i<$argc; $i++)
+                $argv[] = rand(0,9);
+
             $question = call_user_func_array('sprintf', $argv);
-            $answer = call_user_func_array($alpha, $argv);
+            $answer   = call_user_func_array($alpha, $argv);
         }
         else {
             throw new RuntimeException("Unrecognized dictionnary type " . self::$_config['dictionnary_type']);
@@ -68,5 +62,14 @@ class Captcha {
             
         self::$_session->captcha_ans = $answer;
         return $question;
+    }
+    
+    public static function verify ($answer) {
+        if (empty(self::$_session)) {
+            self::$_session = new Session;
+            self::$_session->start();
+        }
+        
+        return self::$_session->captcha_ans == trim($answer);
     }
 }
