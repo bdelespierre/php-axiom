@@ -12,6 +12,8 @@ define('APPLICATION_PATH', dirname(dirname(dirname(__FILE__))) . '/application')
 
 require dirname(__FILE__) . '/bootstrap/settings.php';
 
+require dirname(__FILE__) . '/bootstrap/util.php';
+
 require dirname(__FILE__) . '/bootstrap/autoload.php';
 
 require dirname(__FILE__) . '/bootstrap/log.php';

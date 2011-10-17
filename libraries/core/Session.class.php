@@ -46,9 +46,13 @@ class Session {
     public static function setConfig (array $config = array()) {
         $default = array(
             'index' => null,
+            'name'  => 'php-axiom',
         );
         
         self::$_config = $config + $default;
+        
+        if (self::$_config['name'])
+            self::name(self::$_config['name']);
     }
     
     /**
@@ -85,11 +89,12 @@ class Session {
     
     /**
      * Start the session
-     * @return void
+     * @return boolean
      */
     public static function start () {
         if (!self::started())
-            session_start();
+            return session_start();
+        return false;
     }
     
     /**
@@ -124,5 +129,15 @@ class Session {
      */
     public static function started () {
         return self::id() !== "";
+    }
+    
+    /**
+     * Renew the session
+     * @return boolean
+     */
+    public static function renew () {
+        self::start();
+        self::destroy();
+        return self::start();
     }
 }
