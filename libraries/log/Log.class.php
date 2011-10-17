@@ -168,11 +168,14 @@ class Log {
     public static function handleError ($errno, $errstr, $errfile, $errline) {
         $error = "(PHP Error) $errstr in $errfile on line $errline";
         switch ($errno) {
+            case E_STRICT:
             case E_WARNING:
             case E_USER_WARNING:
                 self::warning($error);
                 break;
                 
+            case E_DEPRECATED:
+            case E_USER_DEPRECATED:
             case E_NOTICE:
             case E_USER_NOTICE:
                 self::notice($error);
