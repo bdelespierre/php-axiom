@@ -72,7 +72,7 @@ abstract class BaseController {
         if ($controller == 'BaseController')
             throw new RuntimeException("Redirection is impossible on $controller", 2041);
         
-        if (!Autoloader::load($controller))
+        if (!class_exists($controller, true))
             throw new BadMethodCallException("Cannot find $controller", 2042);
             
         throw new ForwardException($controller, $action);
