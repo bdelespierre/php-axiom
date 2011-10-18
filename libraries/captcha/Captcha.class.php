@@ -1,13 +1,70 @@
 <?php
+/**
+ * Axiom: a lightweight PHP framework
+ *
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ */
 
+/**
+ * Captcha Class
+ *
+ * Provides text captcha management.
+ * Text captcha are simple question a
+ * bot could not possibly answer, thus
+ * protects a form from non-human users.
+ *
+ * Question are defined in dictionnaries
+ * which are defined in ini files as described
+ * in Captcha::setConfig method.
+ *
+ * Question can be static or dynamic:
+ * - static question accepts a set of possible
+ *   results as answers like
+ *   Q: What is the capital of China
+ *   A: pekin or beijing are both valid answers
+ * - Dynamic question accepts only one possible
+ *   answer, the question parameters are
+ *   randomly generated like
+ *   Q: What is 1 + 2 ?
+ *   A: 3
+ *
+ * @author Delespierre
+ * @package captcha
+ * @subpackage Captcha
+ */
 class Captcha {
     
+    /**
+     * Internal configuration
+     * @internal
+     * @static
+     * @var array
+     */
     protected static $_config;
     
+    /**
+     * Dictionnary cache
+     * @internal
+     * @static
+     * @var array
+     */
     protected static $_dictionnary_struct;
     
+    /**
+     * Session handle
+     * @internal
+     * @static
+     * @var Session
+     */
     protected static $_session;
     
+    /**
+     * Set Config
+     * @static
+     * @param array $config
+     * @return void
+     */
     public static function setConfig (array $config = array()) {
         $default = array(
             'dictionnaries_path' => APPLICATION_PATH . '/ressource/captcha',
@@ -18,11 +75,35 @@ class Captcha {
         self::$_config = $config + $default;
     }
     
+    /**
+     * Parses the dictionnary pointed by $path
+     * and saves the parse results in class cache
+     * @internal
+     * @static
+     * @param string $path
+     * @throws RuntimeException
+     * @return void
+     */
     protected static function _parseDictionnary ($path) {
         if (!self::$_dictionnary_struct = parse_ini_file($path, true))
             throw new RuntimeException("Cannot parse {$path}");
     }
     
+    /**
+     * Generates a captcha for the given lang.
+     *
+     * Returns the question after setting the
+     * answer in session for next use.
+     *
+     * Will throw a RuntimeException if the given
+     * lang is not found in dictionnary.
+     *
+     * @static
+     * @param string $lang
+     * @throws MissingFileException
+     * @throws RuntimeException
+     * @return string
+     */
     public static function generate ($lang) {
         if (empty(self::$_dictionnary_struct)) {
             if (!is_file($path = realpath(self::$_config['dictionnaries_path']) . '/' . self::$_config['dictionnary']))
@@ -65,6 +146,18 @@ class Captcha {
         return $question;
     }
     
+    /**
+     * Verify the answer agains the last
+     * generated question.
+     *
+     * Return true if the provided answer
+     * match any of possible question
+     * results.
+     *
+     * @see Captcha::generate
+     * @param string $answer
+     * @return boolean
+     */
     public static function verify ($answer) {
         if (empty(self::$_session)) {
             self::$_session = new Session;
