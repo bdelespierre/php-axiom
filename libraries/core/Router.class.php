@@ -162,7 +162,7 @@ class Router {
         if (strpos(strtolower($controller), 'controller') === false)
             $controller .= 'Controller';
         
-        if (!class_exists($controller, true))
+        if (!Autoloader::load($controller))
             list($controller, $action) = array('ErrorController', 'http404');
         
         self::load($controller, $action);

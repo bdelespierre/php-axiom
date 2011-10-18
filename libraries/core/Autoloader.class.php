@@ -85,9 +85,16 @@ class Autoloader {
     /**
      * Load the given class
      * @param string $class
-     * @return void
+     * @return boolean
      */
     public static function load ($class) {
-        return spl_autoload($class);
+        try {
+            spl_autoload($class);
+            return true;
+        }
+        catch (Exception $e) {
+            return false;
+        }
     }
+    
 }
