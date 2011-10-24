@@ -13,10 +13,6 @@ Router::setConfig();
 /**
  * Default Routes
  */
-Router::connect('/{:lang}/{:controller}/{:action}');
-Router::connect('/{:lang}/{:controller}');
-Router::connect('/{:lang}', 'IndexController::index');
-
-Router::connect('/{:controller}/{:action}');
-Router::connect('/{:controller}');
+Router::connect('/{:lang::?}/{:controller}/{:action::?}');
+Router::connect('/{:lang::?}', 'IndexController::index');
 Router::connect('/', 'IndexController::index');

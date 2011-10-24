@@ -80,7 +80,7 @@ class Route {
      * @return boolean
      */
     public function match ($url) {
-        $url = '/' . trim($url, '/');
+        $url = '/' . trim($url, '/') . '/';
         
         if (empty($this->_pattern))
             $this->_compileTemplate($this->_template);
@@ -88,7 +88,7 @@ class Route {
         if (preg_match($this->_pattern, $url, $matches)) {
             unset($matches[0]);
             if (!empty($this->_keys) && !empty($matches)) {
-                $this->_params = array_merge($this->_params, array_combine($this->_keys, $matches));
+                $this->_params = array_merge($this->_params, array_intersect_key($matches, $this->_keys));
             }
             return true;
         }
@@ -106,35 +106,34 @@ class Route {
         $pattern_pieces = array();
         $current_key = 1;
         do {
-            if (preg_match('~{:(.+)}~', $token, $matches)) {
-                if ($matches[1] === 'lang') {
-                    $key = 'lang';
-                    $subpattern = "([a-z]{2})";
+            if (preg_match('~\{:(?P<key>\w+)(:(?P<tpl>[^\}:]*))?(:(?P<opt>[^\}:]*))?\}~', $token, $matches)) {
+                if ($matches['key'] == 'lang' && empty($matches['tpl'])) {
+                    $matches['tpl'] = '[a-z]{2}';
                 }
-                elseif ($matches[1] === 'id') {
-                    $key = 'id';
-                    $subpattern = "([0-9]+)";
+                if ($matches['key'] == 'id' && empty($matches['tpl'])) {
+                    $matches['tpl'] = '\d+';
                 }
-                elseif ($matches[1] === 'controller' || $matches[1] === 'action') {
-                    $key = $matches[1];
-                    $subpattern = "(\w{3,})";
+                if (($matches['key'] == 'controller' || $matches['key'] == 'action') && empty($matches['tpl'])) {
+                    $matches['tpl'] = "\w{3,}";
                 }
-                elseif (($offset = strpos($matches[1], ':')) !== false) {
-                    list($key, $subpattern) = explode(':', $matches[1]);
-                    $subpattern = "($subpattern)";
+                if (empty($matches['tpl'])) {
+                    $matches['tpl'] = "[^/]+";
                 }
-                else {
-                    $key = $matches[1];
-                    $subpattern = "([^/]+)";
+                
+                $subpattern = "(?P<{$matches['key']}>{$matches['tpl']})/";
+                
+                if (isset($matches['opt']) && strpos($matches['opt'], '?') !== false) {
+                    $subpattern = "({$subpattern})?";
                 }
+                
+                $this->_keys[$matches['key']] = $matches['key'];
                 $pattern_pieces[] = $subpattern;
-                $this->_keys[$current_key++] = $key;
             }
             else {
-                $pattern_pieces[] = $token;
+                $pattern_pieces[] = $token . '/';
             }
         } while ($token = strtok('/'));
-        $this->_pattern = '~^/' . implode('/', $pattern_pieces) . '$~';
+        $this->_pattern = '~^/' . implode($pattern_pieces) . '$~';
     }
     
     /**
