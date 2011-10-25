@@ -34,12 +34,12 @@ if (!function_exists("lcfirst")) {
 if (!function_exists("array_keys_prefix")) {
     function array_keys_prefix (array $array, $prefix) {
         if (empty($array))
-            return array();
-        
+        return array();
+
         $keys = array_keys($array);
         foreach ($keys as $key => $value)
             $keys[$key] = $prefix . $value;
-            
+
         return array_combine($keys, $array);
     }
 }
@@ -80,9 +80,44 @@ if (!function_exists("array_safe_filter")) {
  */
 function callback ($fct) {
     if (!preg_match('~(function)?\s*\((?P<args>[^\)]*)\)\s*\{(?P<code>.*)\}~', $fct, $matches))
-        return false;
-	
+    return false;
+
     $args = $matches['args'];
     $code = $matches['code'];
     return create_function($args, $code);
+}
+
+/**
+ * Calculates the cartesian product of
+ * any number of array in parameters.
+ *
+ * E.G.
+ *   array_cartesian_prodict(array(1,2), array(3,4))
+ * Will product
+ *   [ [1,3], [1,4], [2,3], [2,4] ]
+ * @param array $a ...
+ * @return array
+ */
+function array_cartesian_product () {
+    if (!$c = func_num_args())
+        return array();
+    
+    if ($c == 1) {
+        foreach ((array)func_get_arg(0) as $v)
+            $r[] = (array)$v;
+        return $r;
+    }
+
+    $a = func_get_args();
+    $f = array_shift($a);
+    $s = call_user_func_array(__FUNCTION__, $a);
+
+    foreach ((array)$f as $v) {
+        foreach ($s as $w) {
+            array_unshift($w, $v);
+            $r[] = $w;
+        }
+    }
+
+    return $r;
 }
