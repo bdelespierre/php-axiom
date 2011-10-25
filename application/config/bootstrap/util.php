@@ -90,12 +90,8 @@ function callback ($fct) {
 /**
  * Calculates the cartesian product of
  * any number of array in parameters.
- *
- * E.G.
- *   array_cartesian_prodict(array(1,2), array(3,4))
- * Will product
- *   [ [1,3], [1,4], [2,3], [2,4] ]
- * @param array $a ...
+ * @param mixed $a
+ * @param mixed $b ...
  * @return array
  */
 function array_cartesian_product () {
