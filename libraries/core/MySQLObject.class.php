@@ -30,7 +30,7 @@
  * will define explicitely the queries behavior.
  *
  * @author Delespierre
- * @package core
+ * @version $Rev$
  * @subpackage MySQLObject
  */
 class MySQLObject extends Model {
@@ -112,7 +112,9 @@ class MySQLObject extends Model {
         if (!is_string($table) || empty($table))
             throw new InvalidArgumentException("First parameter is expected to be valid string");
             
-        if ($stmt = Database::query("DESC `$table`")) {
+        $table = self::_sanitizeTablename($table);
+            
+        if ($stmt = Database::query("DESC $table")) {
             $this->_structure = array();
             foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $column) {
                 if (isset($column['Key']) && strpos($column['Key'], 'PRI') !== false)
@@ -123,6 +125,15 @@ class MySQLObject extends Model {
             return true;
         }
         return false;
+    }
+    
+    /**
+     * Sanitize the tablename
+     * @param string $table
+     * @return string
+     */
+    protected static function _sanitizeTablename ($table) {
+        return '`' . implode('`.`', explode('.', str_replace(array('`', ' '), '', $table))) . '`';
     }
     
     /**
@@ -139,7 +150,7 @@ class MySQLObject extends Model {
         if (!$this->_getTableStructure($table))
             throw new RuntimeException("Cannot determine {$table} structure");
             
-        $this->_table = $table;
+        $this->_table = self::_sanitizeTablename($table);
         parent::__construct($id);
     }
     
@@ -167,6 +178,8 @@ class MySQLObject extends Model {
     public static function all ($table, array $search_params = array(), array $limit = array(), MySQLObject $mysql_obj = null) {
         if (!isset($mysql_obj))
             $mysql_obj = new self($table);
+            
+        $table = self::_sanitizeTablename($table);
         
         $query = "SELECT `" . implode('`,`', $mysql_obj->getColumnNames()) . "` FROM `{$table}`";
         
