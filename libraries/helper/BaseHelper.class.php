@@ -125,12 +125,12 @@ abstract class BaseHelper implements Helper {
         }
         $node = "<{$this->_node_name} " . implode(' ', $attr);
 
-        if (!count($this->_children) && !$this->_node_value)
+        if (!count($this->_children) && ($this->_node_value === null))
             return $node . " />";
         else
             $node .= ">";
         	
-        if ($this->_node_value)
+        if ($this->_node_value !== null)
             $node .= $this->_node_value;
 
         if (count($this->_children))
