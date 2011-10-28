@@ -32,6 +32,12 @@ class TableRowGroupHelper extends BaseHelper {
     protected $_filter = array();
     
     /**
+     * Cell display callbacks
+     * @var array
+     */
+    protected $_callbacks = array();
+    
+    /**
      * Default constructor.
      *
      * The $type parameter can be either
@@ -90,6 +96,53 @@ class TableRowGroupHelper extends BaseHelper {
     }
     
     /**
+     * Get any defined column callback
+     * @param string $key
+     */
+    public function getColumnCallback ($key) {
+        return isset($this->_callbacks[$key]) ? $this->_callbacks[$key] : null;
+    }
+    
+    /**
+     * Set a column display transformation callback
+     *
+     * Provded callback can be either
+     * - a valid PHP callback
+     * - a string representing a PHP function
+     *
+     * @param string $key
+     * @param mixed $callback
+     * @return TableGroupHelper
+     */
+    public function setColumnCallback ($key, $callback) {
+        if (is_string($callback) && !is_callable($callback))
+            $callback = callback($callback);
+        
+        if (!is_callable($callback))
+            throw new InvalidArgumentException("Invalid callback provided");
+            
+        $this->_callbacks[$key] = $callback;
+        return $this;
+    }
+    
+    /**
+     * Set multiple callbacks at once
+     * @param array $callbacks
+     * @return TableGroupHelper
+     */
+    public function setColumnCallbacks (array $callbacks) {
+        try {
+            foreach ($callbacks as $key => $callback)
+                $this->setColumnCallback($key, $callback);
+        }
+        catch (Exception $e) {
+            $this->_callbacks = array();
+            throw new RuntimeException("Cannot set callbacks");
+        }
+        return $this;
+    }
+    
+    /**
      * Add multiple rows at once.
      *
      * The $cell_type parameter can be either data, head or auto.
@@ -141,6 +194,10 @@ class TableRowGroupHelper extends BaseHelper {
         if (!empty($this->_filter))
             $values = array_intersect_key($values, array_flip($this->_filter));
         
+        foreach (array_intersect_key($values, $this->_callbacks) as $key => $value) {
+            $values[$key] = $this->_callbacks[$key]($value);
+        }
+            
         $this->appendChild(TableRowHelper::export($values, $cell_type));
         return $this;
     }

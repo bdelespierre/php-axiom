@@ -34,7 +34,7 @@ if (!function_exists("lcfirst")) {
 if (!function_exists("array_keys_prefix")) {
     function array_keys_prefix (array $array, $prefix) {
         if (empty($array))
-        return array();
+            return array();
 
         $keys = array_keys($array);
         foreach ($keys as $key => $value)
@@ -80,7 +80,7 @@ if (!function_exists("array_safe_filter")) {
  */
 function callback ($fct) {
     if (!preg_match('~(function)?\s*\((?P<args>[^\)]*)\)\s*\{(?P<code>.*)\}~', $fct, $matches))
-    return false;
+        return false;
 
     $args = $matches['args'];
     $code = $matches['code'];

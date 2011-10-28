@@ -54,9 +54,12 @@ class TableHelper extends BaseHelper {
     /**
      * Alias of TableHelper::setHead
      * @param array $columns
+     * @param boolean $filter use these columns as filter
      * @return TableHelper
      */
-    public function setColumnNames (array $columns) {
+    public function setColumnNames (array $columns, $filter = true) {
+        if ($filter)
+            $this->body->setFilter(array_keys($columns));
         return $this->setHead(array($columns));
     }
     

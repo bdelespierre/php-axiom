@@ -66,22 +66,22 @@ class MySQLObject extends Model {
         
         switch ($statement) {
             case 'create':
-                $query = "INSERT INTO `{$this->_table}` SET " . implode(',', $pieces);
+                $query = "INSERT INTO {$this->_table} SET " . implode(',', $pieces);
                 break;
                 
             case 'retrieve':
                 $query = "SELECT " . implode(',', $columns) . " " .
-                		 "FROM `{$this->_table}` " .
+                		 "FROM {$this->_table} " .
                 		 "WHERE `{$this->_id_key}`=:{$this->_id_key}";
                 break;
                 
             case 'update':
-                $query = "UPDATE `{$this->_table}` SET " . implode(',', $pieces) . " " .
+                $query = "UPDATE {$this->_table} SET " . implode(',', $pieces) . " " .
                          "WHERE `{$this->_id_key}`=:{$this->_id_key}";
                 break;
                 
             case 'delete':
-                $query = "DELETE FROM `{$this->_table}` WHERE `{$this->_id_key}`=:{$this->_id_key}";
+                $query = "DELETE FROM {$this->_table} WHERE `{$this->_id_key}`=:{$this->_id_key}";
                 break;
                 
             default:
@@ -181,7 +181,7 @@ class MySQLObject extends Model {
             
         $table = self::_sanitizeTablename($table);
         
-        $query = "SELECT `" . implode('`,`', $mysql_obj->getColumnNames()) . "` FROM `{$table}`";
+        $query = "SELECT `" . implode('`,`', $mysql_obj->getColumnNames()) . "` FROM {$table}";
         
         if (!empty($search_params)) {
             $pieces = array();
