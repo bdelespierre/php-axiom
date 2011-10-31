@@ -174,8 +174,6 @@ class Log {
                 self::warning($error);
                 break;
                 
-            case E_DEPRECATED:
-            case E_USER_DEPRECATED:
             case E_NOTICE:
             case E_USER_NOTICE:
                 self::notice($error);
