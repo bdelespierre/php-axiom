@@ -38,6 +38,30 @@ class TableRowGroupHelper extends BaseHelper {
     protected $_callbacks = array();
     
     /**
+     * Content columns to be added before values
+     * @var mixed
+     */
+    protected $_before_content;
+    
+    /**
+     * Content columns to be added before values replacement callback
+     * @var callback
+     */
+    protected $_before_callback;
+    
+    /**
+     * Content columns to be added after values
+     * @var mixed
+     */
+    protected $_after_content;
+    
+    /**
+     * Content columns to be added after values callback
+     * @var callback
+     */
+    protected $_after_callback;
+    
+    /**
      * Default constructor.
      *
      * The $type parameter can be either
@@ -143,6 +167,59 @@ class TableRowGroupHelper extends BaseHelper {
     }
     
     /**
+     * Add column(s) before row content.
+     *
+     * You may pass a callback to transform those cells and/or
+     * to change replace parameters.
+     * The callback must take a first parameter the cell(s)
+     * you are inserting (as array if multiple cells) and
+     * the rows to be inserted as second parameter.
+     * The second parameter will be provided during the
+     * array construction.
+     *
+     * E.G
+     * > // add a message with a provided parameter before each table row
+     * > $table->body->before("Id : %d", 'function ($cell, $values) { return sprintf($cell[0], $values["id"]); }');
+     *
+     * @param mixed $content
+     * @param callback $replace_callback
+     */
+    public function before ($content, $replace_callback = null) {
+        if ($replace_callback) {
+            if (is_string($replace_callback) && !is_callable($replace_callback))
+                $replace_callback = callback($replace_callback);
+            
+            if (!is_callable($replace_callback))
+                throw new InvalidArgumentException("Provided callback is invalid");
+        }
+        
+        $this->_before_content = (array)$content;
+        $this->_before_callback = $replace_callback;
+        return $this;
+    }
+    
+    /**
+     * Works exactly as TableRowGroupHelper::before does but
+     * add new column(s) after content.
+     *
+     * @param mixed $content
+     * @param callback $replace_callback
+     */
+    public function after ($content, $replace_callback = null) {
+        if ($replace_callback) {
+            if (is_string($replace_callback) && !is_callable($replace_callback))
+                $replace_callback = callback($replace_callback);
+            
+            if (!is_callable($replace_callback))
+                throw new InvalidArgumentException("Provided callback is invalid");
+        }
+            
+        $this->_after_content = (array)$content;
+        $this->_after_callback = $replace_callback;
+        return $this;
+    }
+    
+    /**
      * Add multiple rows at once.
      *
      * The $cell_type parameter can be either data, head or auto.
@@ -185,8 +262,11 @@ class TableRowGroupHelper extends BaseHelper {
             $values = array($values);
         elseif ($values instanceof Model)
             $values = $values->getData();
-        elseif (!is_array($values) && !$values instanceof Traversable)
-            throw new InvalidArgumentException("First parameter is expected to be scalar, array or Model, ".get_class($values)." given", 3002);
+        elseif (!is_array($values) && !$values instanceof Traversable) {
+            throw new InvalidArgumentException(
+            	"First parameter is expected to be scalar, array or Model, ".get_class($values)." given", 3002
+            );
+        }
             
         if ($cell_type == "auto")
             $cell_type = ($this->_type == "thead" || $this->_type == "head")  ? "head" : "data";
@@ -197,7 +277,29 @@ class TableRowGroupHelper extends BaseHelper {
         foreach (array_intersect_key($values, $this->_callbacks) as $key => $value) {
             $values[$key] = $this->_callbacks[$key]($value);
         }
-            
+        
+        if (!empty($this->_before_content)) {
+            if (!empty($this->_before_callback)) {
+                $alpha = $this->_before_callback;
+                $before = (array)$alpha($this->_before_content, $values);
+            }
+            else
+                $before = $this->_before_content;
+                
+            $values = array_merge($before, array_values($values));
+        }
+        
+        if (!empty($this->_after_content)) {
+            if (!empty($this->_after_callback)) {
+                $alpha = $this->_after_callback;
+                $after = (array)$alpha($this->_after_content, $values);
+            }
+            else
+                $after = $this->_after_content;
+                
+            $values = array_merge(array_values($values), $after);
+        }
+        
         $this->appendChild(TableRowHelper::export($values, $cell_type));
         return $this;
     }
