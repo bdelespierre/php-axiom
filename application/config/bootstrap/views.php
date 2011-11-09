@@ -19,4 +19,5 @@ ViewManager::addLayoutVars(array(
     'description' => 'Sample Description',
     'keywords' => array('foo', 'bar'),
     'title' => 'Default Title',
+    'base_url' => getenv('REWRITE_BASE')
 ));
