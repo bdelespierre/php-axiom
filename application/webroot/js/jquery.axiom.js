@@ -71,20 +71,25 @@ jQuery.axiom = {
 	},
 	
 	/**
-	 * Triggers a synchronous call to retrieve translations from the server
-	 * @param String lang [optional]
-	 * @param String url [optional] a custom URL to retrieve translations
+	 * Triggers a synchronous call to retrieve translations from the server.
+	 * The params object may take lang, url or modules parameters.
+	 * @param Object params [optional]
 	 * @return {jQuery.axiom}
 	 */
-	loadTranslations: function (lang, url) {
-		if (typeof lang == 'undefined')
-			lang = this.lang;
+	loadTranslations: function () {
+		var d = {
+			lang: this.lang,
+			url: 'ajax/translations',
+			modules: []
+		};
 		
+		$.extend(d, arguments[0] || {});
 		$.ajax({
-			url: this.formatUrl(url || 'ajax/translations'),
+			url: this.formatUrl(d.url || 'ajax/translations', d.lang),
+			data: { modules: d.modules},
 			dataType: 'json',
 			async: false,
-			context: $.axiom,
+			context: this,
 			success: function (json) {
 				this.translations = json;
 				if (this.debug && typeof console !== 'undefined')
@@ -107,7 +112,7 @@ jQuery.axiom = {
 	 */
 	i18n: function (key) {
 		if (typeof this.translations == 'undefined')
-			this.loadTranslations();
+			throw "Translations not loaded";
 		
 		if (typeof $.sprintf == 'undefined')
 			throw "Sprintf plugin not loaded";

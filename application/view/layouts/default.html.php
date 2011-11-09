@@ -30,8 +30,6 @@
     			baseUrl: '<?=$base_url?>',
     			lang   : '<?=$lang?>'
 			});
-
-			$.axiom.loadTranslations();
 		});
 		</script>
 	</body>
