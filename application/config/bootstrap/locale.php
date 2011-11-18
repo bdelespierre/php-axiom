@@ -10,8 +10,7 @@ require_once LIBRARY_PATH . '/core/Lang.class.php';
 
 Lang::setConfig(array(
     'locale' => 'fr',
-    'locales' => array('en', 'fr'),
-    'base_url' => '/axiom/',
+    'locales' => array('en', 'fr')
 ));
 
 Lang::loadLanguage();

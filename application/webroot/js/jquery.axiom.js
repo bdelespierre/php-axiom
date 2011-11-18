@@ -86,7 +86,7 @@ jQuery.axiom = {
 		$.extend(d, arguments[0] || {});
 		$.ajax({
 			url: this.formatUrl(d.url || 'ajax/translations', d.lang),
-			data: { modules: d.modules},
+			data: { modules: d.modules },
 			dataType: 'json',
 			async: false,
 			context: this,

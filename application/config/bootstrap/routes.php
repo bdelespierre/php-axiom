@@ -10,9 +10,12 @@ require_once LIBRARY_PATH . '/core/Router.class.php';
 
 Router::setConfig();
 
-/**
- * Default Routes
- */
+// Project Routes
+Router::connect('/foo/bar', 'FooController::bar');
+Router::connect('/{:lang::?}/test', 'TestController', array('module' => 'tests'));
+
+// Default Routes
+
 Router::connect('/{:lang::?}/{:controller}/{:action::?}');
 Router::connect('/{:lang::?}', 'IndexController::index');
 Router::connect('/', 'IndexController::index');
