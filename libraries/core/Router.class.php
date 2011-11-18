@@ -152,7 +152,7 @@ class Router {
             if (ModuleManager::exists($route))
                 ModuleManager::load($route);
             
-            $controller = $route;
+            $controller = ucfirst($route);
             $action     = !empty($action) ? $action : 'index';
         }
         else {
