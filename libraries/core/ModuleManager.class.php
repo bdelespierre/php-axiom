@@ -136,7 +136,7 @@ class ModuleManager {
      * @return boolena
      */
     public static function exists ($module) {
-        return (bool)array_keys(self::$_module_list, $module, true);
+        return array_key_exists(self::$_module_list, $module);
     }
     
     /**
