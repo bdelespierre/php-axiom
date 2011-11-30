@@ -21,7 +21,7 @@ class MissingFileException extends RuntimeException {
      * @param integer $code = 0
      * @param Exception $previous = null
      */
-    public function __construct ($filename, $code = 0, Exception $previous = null) {
-        parent::__construct("File $filename not found", $code, $previous);
+    public function __construct ($filename, $code = 0) {
+        parent::__construct("File $filename not found", $code);
     }
 }

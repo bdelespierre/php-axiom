@@ -140,6 +140,7 @@ class Router {
             
             if (!empty($options['module'])) {
                 try {
+                    Log::debug("Switching to module context: {$options['module']}");
                     ModuleManager::load($options['module']);
                 }
                 catch (Exception $e) {
@@ -149,8 +150,10 @@ class Router {
             }
         }
         elseif (is_string($route)) {
-            if (ModuleManager::exists($route))
+            if (ModuleManager::exists($route)) {
+                Log::debug("Switching to module context: {$route}");
                 ModuleManager::load($route);
+            }
             
             $controller = ucfirst($route);
             $action     = !empty($action) ? $action : 'index';
@@ -183,7 +186,7 @@ class Router {
             call_user_func_array(array($controller, '_init'), array(&self::$_request, &self::$_response));
             if (!is_callable(array($controller, $action)))
                 throw new BadMethodCallException("No such action for $controller", 2003);
-            
+            Log::debug("Invoke: {$controller}::{$action}");
             self::$_response->addAll(call_user_func(array($controller, $action)));
         }
         catch (BadMethodCallException $e) {

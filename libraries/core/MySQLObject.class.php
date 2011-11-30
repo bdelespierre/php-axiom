@@ -155,10 +155,11 @@ class MySQLObject extends Model {
     }
     
     /**
-     * Obtain a collection of MySQL for a given table.
+     * Obtain a collection of MySQL Objects for a given table.
      *
-     * You may pass some search parameters and limit to
-     * restrict the choices length.
+     * You may pass search parameters to restrict the choices length.
+     * You may pass the LIMIT, GROUP BY and ORDER BY clauses using
+     * the $options parameter.
      *
      * The last parameter $mysql_obj is intended to be
      * used as a custom iterator cursor over the collection.
@@ -171,11 +172,11 @@ class MySQLObject extends Model {
      *
      * @param string $table
      * @param array $search_params
-     * @param array $limit
+     * @param array $options
      * @param MySQLObject $mysql_obj
      * @return PDOStatementIterator
      */
-    public static function all ($table, array $search_params = array(), array $limit = array(), MySQLObject $mysql_obj = null) {
+    public static function all ($table, array $search_params = array(), array $options = array(), MySQLObject $mysql_obj = null) {
         if (!isset($mysql_obj))
             $mysql_obj = new self($table);
             
@@ -185,22 +186,69 @@ class MySQLObject extends Model {
         
         if (!empty($search_params)) {
             $pieces = array();
-            foreach ($search_params as $key => $value)
-                $pieces[] = "`{$key}`=:{$key}";
+            
+            foreach ($search_params as $key => $value) {
+                if ((($offset = strpos($key, '<' )) !== false) || (($offset = strpos($key, '>' )) !== false)
+                 || (($offset = strpos($key, '>=')) !== false) || (($offset = strpos($key, '>=')) !== false)) {
+                    $new_key = trim(substr($key, 0, $offset));
+                    $pieces[] = "{$key}:{$new_key}";
+                    $search_params[$new_key] = $value;
+                    unset($search_params[$key]);
+                }
+                else {
+                    $pieces[] = "`{$key}`=:{$key}";
+                }
+            }
+            
             $query .= " WHERE " . implode(' AND ', $pieces);
         }
         
-        if (count($limit) == 1) {
-            $query .= " LIMIT {$limit[0]}";
+        if (!empty($options['order_by'])) {
+            $pieces = array();
+            
+            foreach($options['order_by'] as $field)
+                $pieces[] = "`{$field}`";
+            
+            $query .= " ORDER BY ".implode(',' ,$pieces);
+            
+            if (isset($options['order_by_type']) && in_array(strtoupper($options['order_by_type']), array('ASC', 'DESC')))
+                $query .= " " . strtoupper($options['order_by_type']);
         }
         
-        if (count($limit) == 2) {
-            $query .= " LIMIT {$limit[0]},{$limit[1]}";
+        if (!empty($options['group_by'])) {
+            $pieces = array();
+            
+            foreach($options['group_by'] as $field)
+                $pieces[] = "`{$field}`";
+            
+            $query .= " GROUP BY ".implode(',' ,$pieces);
         }
+        
+        if (!empty($options['count'])) {
+            if (count($options['limit']) == 1) {
+                $options['limit'] = (array)$options['limit'];
+                $query .= " LIMIT {$options['limit'][0]}";
+            }
+            
+            if (count($options['limit']) == 2) {
+                $query .= " LIMIT {$options['limit'][0]},{$options['limit'][1]}";
+            }
+        }
+        
+        Log::debug('Query: '. $query);
         
         $stmt = Database::prepare($query);
         if ($stmt->execute($search_params)) {
             $stmt->setFetchMode(PDO::FETCH_INTO, $mysql_obj);
+            
+            if (PHP_VERSION_ID < 50200) {
+                $cquery = preg_replace('~SELECT.*FROM~', 'SELECT COUNT(*) FROM', $query);
+                $cstmt = Database::prepare($query);
+                !empty($search_params) ? $cstmt->execute($search_params) : $cstmt->execute();
+                $count = (int)$cstmt->fetchColumn();
+                $it->setCount($count);
+            }
+            
             return new PDOStatementIterator($stmt);
         }
         return false;

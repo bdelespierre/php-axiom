@@ -52,6 +52,8 @@ class ViewManager {
         $__view     = strtolower(($v = self::$_response->getResponseView()) ? $v : $action);
         $__filename = self::getViewFilePath($__section, $__view, $__format);
         
+        Log::debug("Contextual view path is " . self::$_config['view_path']);
+        
         if (!$__filename) {
             Log::warning("No view defined for {$__section}/{$__view} with format {$__format}");
             return;
@@ -82,7 +84,7 @@ class ViewManager {
             if ($__layout = self::getLayoutFilePath($__format))
                 include $__layout;
             else
-                Log::warning("No layout for format {$__format}");
+                Log::warning("No such layout {$__layout}");
         }
         else
             echo ${self::$_config['layout_content_var']};
@@ -186,7 +188,7 @@ class ViewManager {
     }
     
     public static function setViewPath ($path) {
-        if (is_file($path))
+        if (is_dir($path))
             self::$_config['view_path'] = $path;
         else
             throw new MissingFileException($path, 2006);
