@@ -52,7 +52,7 @@ class ViewManager {
         $__view     = strtolower(($v = self::$_response->getResponseView()) ? $v : $action);
         $__filename = self::getViewFilePath($__section, $__view, $__format);
         
-        Log::debug("Contextual view path is " . self::$_config['view_path']);
+        Log::debug("Loading view: {$__filename}");
         
         if (!$__filename) {
             Log::warning("No view defined for {$__section}/{$__view} with format {$__format}");
@@ -98,8 +98,7 @@ class ViewManager {
     public static function setConfig ($configuration = array()) {
         $default = array(
             'default_output_format' => 'html',
-            'default_view_path'     => APPLICATION_PATH . "/view",
-            'view_path'             => APPLICATION_PATH . "/view",
+            'view_paths'            => array(APPLICATION_PATH . "/view"),
             'layout_file'           => 'default',
             'layout_content_var'    => 'page_content',
         );
@@ -187,9 +186,15 @@ class ViewManager {
         self::$_layout_vars[$key] = $value;
     }
     
-    public static function setViewPath ($path) {
+    /**
+     * Add a view path
+     * @param string $path
+     * @throws MissingFileException if $path is not a valid directory
+     * @return void
+     */
+    public static function addPath ($path) {
         if (is_dir($path))
-            self::$_config['view_path'] = $path;
+            self::$_config['view_paths'][] = $path;
         else
             throw new MissingFileException($path, 2006);
     }
@@ -208,11 +213,10 @@ class ViewManager {
      * @return string
      */
     protected static function getViewFilePath ($section, $view, $format) {
-        if (is_file($path = realpath(self::$_config['view_path']) . "/{$section}/{$view}.{$format}.php"))
-            return $path;
-        if (is_file($path = realpath(self::$_config['default_view_path']) . "/{$section}/{$view}.{$format}.php"))
-            return $path;
-            
+        foreach (array_unique(self::$_config['view_paths']) as $vpath) {
+            if (is_file($path = realpath($vpath) . "/{$section}/{$view}.{$format}.php"))
+                return $path;
+        }
         return false;
     }
     
