@@ -11,8 +11,8 @@
  *
  * @abstract
  * @author Delespierre
- * @package core
- * @subpackage Model
+ * @package libaxiom
+ * @subpackage core
  */
 abstract class Model {
 

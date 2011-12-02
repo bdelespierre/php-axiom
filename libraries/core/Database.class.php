@@ -10,8 +10,8 @@
  * Database Class
  *
  * @author Delespierre
- * @package core
- * @subpackage Database
+ * @package libaxiom
+ * @subpackage core
  */
 class Database {
     

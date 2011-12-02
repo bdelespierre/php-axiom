@@ -11,8 +11,8 @@
  *
  * @abstract
  * @author Delespierre
- * @package helper
- * @subpackage BaseHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 abstract class BaseHelper implements Helper {
 

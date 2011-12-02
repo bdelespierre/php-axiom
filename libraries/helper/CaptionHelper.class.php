@@ -10,8 +10,8 @@
  * Table Caption Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage CaptionHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class CaptionHelper extends BaseHelper {
     

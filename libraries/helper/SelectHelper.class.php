@@ -10,8 +10,8 @@
  * Select Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage SelectHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class SelectHelper extends BaseHelper {
 

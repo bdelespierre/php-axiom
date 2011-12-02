@@ -10,8 +10,8 @@
  * Request Class
  *
  * @author Delespierre
- * @package core
- * @subpackage Request
+ * @package libaxiom
+ * @subpackage core
  */
 class Request {
     

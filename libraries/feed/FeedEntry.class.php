@@ -10,8 +10,8 @@
  * Feed Entry Class
  *
  * @author Delespierre
- * @package feed
- * @subpackage FeedEntry
+ * @package libaxiom
+ * @subpackage feed
  */
 class FeedEntry {
     

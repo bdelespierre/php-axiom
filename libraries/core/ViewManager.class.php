@@ -10,8 +10,8 @@
  * View Manager Class
  *
  * @author Delespierre
- * @package core
- * @subpackage ViewManager
+ * @package libaxiom
+ * @subpackage core
  */
 class ViewManager {
     

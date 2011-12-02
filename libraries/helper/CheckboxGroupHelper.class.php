@@ -10,8 +10,8 @@
  * Checkbox Group Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage CheckboxGroupHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class CheckboxGroupHelper extends BaseHelper {
 

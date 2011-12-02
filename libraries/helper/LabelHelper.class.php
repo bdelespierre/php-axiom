@@ -10,8 +10,8 @@
  * Label Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage LabelHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class LabelHelper extends BaseHelper {
 

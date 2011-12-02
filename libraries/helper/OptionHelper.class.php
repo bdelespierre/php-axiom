@@ -10,8 +10,8 @@
  * Option Helper CLass
  *
  * @author Delespierre
- * @package helper
- * @subpackage OptionHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class OptionHelper extends BaseHelper {
 

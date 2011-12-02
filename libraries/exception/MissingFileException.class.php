@@ -10,8 +10,8 @@
  * Missing File Exception
  *
  * @author Delespierre
- * @package exception
- * @subpackage MissingFileException
+ * @package libaxiom
+ * @subpackage exception
  */
 class MissingFileException extends RuntimeException {
     

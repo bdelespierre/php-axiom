@@ -10,8 +10,8 @@
  * Redirect Exception Class
  *
  * @author Delespierre
- * @package exception
- * @subpackage RedirectException
+ * @package libaxiom
+ * @subpackage exception
  */
 class RedirectException extends Exception {
     

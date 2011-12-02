@@ -30,8 +30,8 @@
  *   A: 3
  *
  * @author Delespierre
- * @package captcha
- * @subpackage Captcha
+ * @package libaxiom
+ * @subpackage captcha
  */
 class Captcha {
     

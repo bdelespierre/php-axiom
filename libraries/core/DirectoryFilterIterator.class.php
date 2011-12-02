@@ -14,8 +14,8 @@
  * (excluding .. and .)
  *
  * @author Delespierre
- * @package core
- * @subpackage DirectoryFilterIterator
+ * @package libaxiom
+ * @subpackage core
  */
 class DirectoryFilterIterator extends FilterIterator {
     

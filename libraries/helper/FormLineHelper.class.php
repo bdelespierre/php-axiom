@@ -10,8 +10,8 @@
  * Form Line Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage FormLineHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class FormLineHelper extends BaseHelper {
     

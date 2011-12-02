@@ -10,8 +10,8 @@
  * Form Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage FormHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class FormHelper extends BaseHelper {
 

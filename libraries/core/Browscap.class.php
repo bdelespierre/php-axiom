@@ -25,6 +25,8 @@
  * @version	   0.7
  * @license	   http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link	   http://garetjax.info/projects/browscap/
+ * @package libaxiom
+ * @subpackage core
  */
 class Browscap
 {

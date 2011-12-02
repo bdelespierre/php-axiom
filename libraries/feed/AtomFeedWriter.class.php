@@ -10,8 +10,8 @@
  * Atom Feed Writer Class
  *
  * @author Delespierre
- * @package feed
- * @subpackage AtomFeedWriter
+ * @package libaxiom
+ * @subpackage feed
  */
 class AtomFeedWriter extends FeedWriter {
     

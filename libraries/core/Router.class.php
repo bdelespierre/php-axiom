@@ -10,8 +10,8 @@
  * Router Class
  *
  * @author Delespierre
- * @package core
- * @subpackage Router
+ * @package libaxiom
+ * @subpackage core
  */
 class Router {
     

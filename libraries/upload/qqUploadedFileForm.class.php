@@ -1,7 +1,14 @@
 <?php
 
 /**
+ * Multipar/form-data File Uploader Class
+ *
  * Handle file uploads via regular form post (uses the $_FILES array)
+ *
+ * @author valums
+ * @link http://valums.com/ajax-upload/
+ * @package libaxiom
+ * @subpackage upload
  */
 class qqUploadedFileForm {
     /**

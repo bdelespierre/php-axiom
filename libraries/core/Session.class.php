@@ -16,8 +16,8 @@
  * sub-arrays as you want.
  *
  * @author Delespierre
- * @package core
- * @subpackage Session
+ * @package libaxiom
+ * @subpackage core
  */
 class Session {
     

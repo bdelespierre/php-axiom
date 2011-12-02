@@ -10,8 +10,8 @@
  * Fieldset Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage FieldsetHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class FieldsetHelper extends BaseHelper {
 

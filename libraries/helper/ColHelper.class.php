@@ -10,8 +10,8 @@
  * Column Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage ColHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class ColHelper extends BaseHelper {
     

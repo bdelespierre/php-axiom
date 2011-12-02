@@ -10,8 +10,8 @@
  * Module Manager
  *
  * @author Delespierre
- * @package core
- * @subpackage ModuleManager
+ * @package libaxiom
+ * @subpackage core
  */
 class ModuleManager {
     

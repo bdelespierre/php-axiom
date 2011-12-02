@@ -10,8 +10,8 @@
  * Table Row Group Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage TableRowGroupHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class TableRowGroupHelper extends BaseHelper {
     

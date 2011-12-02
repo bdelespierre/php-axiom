@@ -10,8 +10,8 @@
  * Lang Managemnt Class
  *
  * @author Delespierre
- * @package core
- * @subpackage Lang
+ * @package libaxiom
+ * @subpackage core
  */
 class Lang {
 
@@ -221,6 +221,21 @@ class Lang {
                 break;
         }
     }
+    
+    /**
+     * Format a date according to the translation dictionnary settings.
+     *
+     * Note: you may pass strings like 'next day', see strtotime for more details.
+     *
+     * @param string $date
+     * @return string
+     */
+    public static function formatDate ($date) {
+        if (!is_int($date))
+            $date = strtotime($date);
+        
+        return date(self::getDateFormat(), $date);
+    }
 }
 
 /**
@@ -237,6 +252,16 @@ function i18n ($key) {
         case 5: return Lang::i18n($args[0], $args[1], $args[2], $args[3], $args[4]); break;
         default: return call_user_func_array(array('Lang', 'i18n'), $args); break;
     }
+}
+
+/**
+ * Format a date
+ * @see Lang::formatDate
+ * @param string $date
+ * @return string
+ */
+function format_date ($date) {
+    return Lang::formatDate($date);
 }
 
 /**
@@ -258,10 +283,10 @@ function date2str ($date) {
     switch ($minusdate) {
         case ($minusdate < 99):
             if($minusdate == 1) {
-                $date_string = i18n('date.minutes_ago', 1);
+                $date_string = i18n('date.minutes_ago', 1) +1;
             }
             elseif($minusdate > 59) {
-                $date_string =  i18n('date.minutes_ago', $minusdate - 40);
+                $date_string = i18n('date.minutes_ago', $minusdate - 40);
             }
             elseif($minusdate > 1 && $minusdate < 59) {
                 $date_string = i18n('date.minutes_ago', $minusdate);
@@ -269,7 +294,7 @@ function date2str ($date) {
             break;
         
         case ($minusdate > 99 && $minusdate < 2359):
-            $flr = floor($minusdate * .01);
+            $flr = floor($minusdate * .01) +1;
             if($flr == 1) {
                 $date_string = i18n('date.hours_ago', 1);;
             }
@@ -279,7 +304,7 @@ function date2str ($date) {
             break;
         
         case ($minusdate > 2359 && $minusdate < 310000):
-            $flr = floor($minusdate * .0001);
+            $flr = floor($minusdate * .0001) +1;
             if($flr == 1) {
                 $date_string = i18n('date.days_ago', 1);
             }
@@ -289,7 +314,7 @@ function date2str ($date) {
             break;
         
         case ($minusdate > 310001 && $minusdate < 12320000):
-            $flr = floor($minusdate * .000001);
+            $flr = floor($minusdate * .000001) +1;
             if($flr == 1) {
                 $date_string = i18n('date.months_ago', 1);
             }
@@ -300,7 +325,7 @@ function date2str ($date) {
         
         case ($minusdate > 100000000):
         default:
-            $flr = floor($minusdate * .00000001);
+            $flr = floor($minusdate * .00000001) +1;
             if($flr == 1) {
                 $date_string = i18n('date.years_ago', 1);
             }

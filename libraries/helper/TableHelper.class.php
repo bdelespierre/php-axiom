@@ -10,8 +10,8 @@
  * Table Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage TableHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class TableHelper extends BaseHelper {
     

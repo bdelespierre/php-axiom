@@ -1,7 +1,14 @@
 <?php
 
 /**
+ * XHR File Uploader Class
+ *
  * Handle file uploads via XMLHttpRequest
+ *
+ * @author valums
+ * @link http://valums.com/ajax-upload/
+ * @package libaxiom
+ * @subpackage upload
  */
 class qqUploadedFileXhr {
     /**

@@ -10,8 +10,8 @@
  * Input Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage InputHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class InputHelper extends BaseHelper {
 

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * File Uploader Class
+ *
+ * @author valums
+ * @link http://valums.com/ajax-upload/
+ * @package libaxiom
+ * @subpackage upload
+ */
 class qqFileUploader {
     
     private static $_config;

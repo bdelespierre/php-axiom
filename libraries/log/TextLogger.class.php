@@ -10,8 +10,8 @@
  * Text Logger Class
  *
  * @author Delespierre
- * @package log
- * @subpackage TextLogger
+ * @package libaxiom
+ * @subpackage log
  */
 class TextLogger extends Logger {
     

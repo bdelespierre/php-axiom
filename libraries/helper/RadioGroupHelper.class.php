@@ -10,8 +10,8 @@
  * Radio Group Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage RadioGroupHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class RadioGroupHelper extends BaseHelper {
 

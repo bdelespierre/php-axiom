@@ -10,8 +10,8 @@
  * Generic Feed Class
  *
  * @author Delespierre
- * @package feed
- * @subpackage Feed
+ * @package libaxiom
+ * @subpackage feed
  */
 class Feed extends ArrayIterator {
     

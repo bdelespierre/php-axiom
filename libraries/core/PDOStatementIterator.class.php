@@ -10,8 +10,8 @@
  * PDO Statement Iterator Class
  *
  * @author Delespierre
- * @package core
- * @subpackage PDOStatementIterator
+ * @package libaxiom
+ * @subpackage core
  */
 class PDOStatementIterator extends IteratorIterator implements SeekableIterator, Countable {
 

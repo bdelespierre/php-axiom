@@ -15,8 +15,8 @@
  * part as first part.
  *
  * @author Delespierre
- * @package core
- * @subpackage Mail
+ * @package libaxiom
+ * @subpackage core
  */
 class Mail {
     

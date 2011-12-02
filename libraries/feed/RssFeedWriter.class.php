@@ -10,8 +10,8 @@
  * RSS Feed Writer Class
  *
  * @author Delespierre
- * @package feed
- * @subpackage RssFeedWriter
+ * @package libaxiom
+ * @subpackage feed
  */
 class RssFeedWriter extends FeedWriter {
     

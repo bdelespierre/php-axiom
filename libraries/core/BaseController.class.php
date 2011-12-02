@@ -11,8 +11,8 @@
  *
  * @abstract
  * @author Delespierre
- * @package core
- * @subpackage BaseController
+ * @package libaxiom
+ * @subpackage core
  */
 abstract class BaseController {
     

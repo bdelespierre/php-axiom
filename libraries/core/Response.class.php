@@ -10,8 +10,8 @@
  * Response Class
  *
  * @author Delespierre
- * @package core
- * @subpackage Response
+ * @package libaxiom
+ * @subpackage core
  */
 class Response {
     

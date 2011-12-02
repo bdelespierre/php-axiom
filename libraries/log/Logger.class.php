@@ -11,8 +11,8 @@
  *
  * @abstract
  * @author Delespierre
- * @package log
- * @subpackage Logger
+ * @package libaxiom
+ * @subpackage log
  */
 abstract class Logger {
     

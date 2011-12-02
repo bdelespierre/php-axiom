@@ -30,8 +30,8 @@
  * will define explicitely the queries behavior.
  *
  * @author Delespierre
- * @version $Rev$
- * @subpackage MySQLObject
+ * @package libaxiom
+ * @subpackage core
  */
 class MySQLObject extends Model {
     

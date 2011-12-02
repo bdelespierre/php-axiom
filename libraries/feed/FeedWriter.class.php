@@ -11,8 +11,8 @@
  *
  * @abstract
  * @author Delespierre
- * @package feed
- * @subpackage FeedWriter
+ * @package libaxiom
+ * @subpackage feed
  */
 abstract class FeedWriter extends DOMDocument {
     

@@ -10,8 +10,8 @@
  * Texarea Helper Class
  *
  * @author Delespierre
- * @package helper
- * @subpackage TextareaHelper
+ * @package libaxiom
+ * @subpackage helper
  */
 class TextareaHelper extends BaseHelper {
 

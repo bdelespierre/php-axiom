@@ -15,8 +15,8 @@
  * where commands are instance of Logger.
  *
  * @author Delespierre
- * @package log
- * @subpackage Log
+ * @package libaxiom
+ * @subpackage log
  */
 class Log {
     

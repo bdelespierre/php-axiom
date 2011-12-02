@@ -10,8 +10,8 @@
  * Foward Exception
  *
  * @author Delespierre
- * @package exception
- * @subpackage ForwardException
+ * @package libaxiom
+ * @subpackage exception
  */
 class ForwardException extends LogicException {
     

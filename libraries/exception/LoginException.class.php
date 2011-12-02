@@ -10,8 +10,8 @@
  * Login Exception Class
  *
  * @author Delespierre
- * @package exception
- * @subpackage LoginException
+ * @package libaxiom
+ * @subpackage exception
  */
 class LoginException extends RuntimeException {
 }

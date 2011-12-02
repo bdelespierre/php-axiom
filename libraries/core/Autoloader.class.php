@@ -10,8 +10,8 @@
  * Autoloader Class
  *
  * @author Delespierre
- * @package core
- * @subpackage Autoloader
+ * @package libaxiom
+ * @subpackage core
  */
 class Autoloader {
     

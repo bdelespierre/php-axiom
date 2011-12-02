@@ -20,8 +20,8 @@
  * See Router::connect for more details.
  *
  * @author Delespierre
- * @package core
- * @subpackage Route
+ * @package libaxiom
+ * @subpackage core
  */
 class Route {
     

@@ -10,8 +10,8 @@
  * Helper Interface
  *
  * @author Delespierre
- * @package helper
- * @subpackage Helper
+ * @package libaxiom
+ * @subpackage helper
  */
 interface Helper {
 
