@@ -16,6 +16,12 @@
 class FieldsetHelper extends BaseHelper {
 
     /**
+     * An associative map of the lines added to the fieldset
+     * @var array
+     */
+    protected $_fieldset_lines = array();
+    
+    /**
      * Default constructor
      * @param string $legend = ""
      */
@@ -35,7 +41,29 @@ class FieldsetHelper extends BaseHelper {
      * @return FieldsetHelper
      */
     public function addLine ($name, $display_name = null, $type = "text", $value = "", $class = "") {
-        $this->appendChild(FormLineHelper::export($name, $display_name, $type, $value, $class));
+        $this->appendChild($this->_fieldset_lines[$name] = FormLineHelper::export($name, $display_name, $type, $value, $class));
+        return $this;
+    }
+    
+	/**
+     * Get a given line attached to the fieldset helper
+     * @param string $name
+     * @return FormLineHelper
+     */
+    public function getLine ($name) {
+        return isset($this->_fieldset_lines[$name]) ? $this->_fieldset_lines[$name] : null;
+    }
+    
+    /**
+     * Mark the $names line as error (adding the CSS error class)
+     * @param array $names
+     * @return FieldsetHelper
+     */
+    public function setErrors (array $names) {
+        foreach ($names as $name) {
+            if ($line = $this->getLine($name))
+                $line->setClass($line->getClass() ? $line->getClass() . ' error' : 'error');
+        }
         return $this;
     }
     

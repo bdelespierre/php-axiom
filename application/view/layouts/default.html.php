@@ -7,30 +7,23 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta http-equiv="Content-Language" content="<?=$lang?>" />
         <link rel="stylesheet" href="<?=src('css/style.css')?>" type="text/css" media="screen" />
-        <script type="text/javascript" src="<?=src('js/jquery-1.7.min.js')?>"></script>
-        <script type="text/javascript" src="<?=src('js/jquery.sprintf.js')?>"></script>
-        <script type="text/javascript" src="<?=src('js/sugar.js')?>"></script>
-        <script type="text/javascript" src="<?=src('js/jquery.axiom.js')?>"></script>
+        <script type="text/javascript" src="<?=src('js/common.js')?>"></script>
+        <script type="text/javascript" src="<?=src('js/jquery/jquery-1.7.min.js')?>"></script>
+        <script type="text/javascript" src="<?=src('js/jquery/plugins/jquery.sprintf.js')?>"></script>
+        <script type="text/javascript" src="<?=src('js/jquery/plugins/jquery.blockUI.js')?>"></script>
+        <script type="text/javascript" src="<?=src('js/jquery/plugins/jquery.axiom.js')?>"></script>
 	</head>
 	<body>
 		<?php if (!empty($alerts)): ?>
-			<?php foreach ($alerts as $alert): ?>
-			<p class="message-alert"><?=$alert?></p>
-			<?php endforeach ?>
+		<?php foreach ($alerts as $alert): ?>
+		<p class="message-alert"><?=$alert?></p>
+		<?php endforeach ?>
 		<?php endif ?>
 		<?php if (!empty($warnings)): ?>
-            <?php foreach ($warnings as $warning): ?>
-			<p class="message-warning"><?=$warning?></p>
-			<?php endforeach ?>
+        <?php foreach ($warnings as $warning): ?>
+		<p class="message-warning"><?=$warning?></p>
+		<?php endforeach ?>
 		<?php endif ?>
 		<?=$content?>
-		<script type="text/javascript">
-		$(function () {
-			$.axiom.init({
-    			baseUrl: '<?=$base_url?>',
-    			lang   : '<?=$lang?>'
-			});
-		});
-		</script>
 	</body>
 </html>

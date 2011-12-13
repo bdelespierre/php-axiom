@@ -16,6 +16,18 @@
 class FormHelper extends BaseHelper {
 
     /**
+     * An associative map of the lines added to the form
+     * @var array
+     */
+    protected $_form_lines = array();
+    
+    /**
+     * A list of fieldsets added to the form
+     * @var array
+     */
+    protected $_form_fieldsets = array();
+    
+    /**
      * Default constructor
      * @param string $url = ''
      * @param string $method = 'post'
@@ -37,7 +49,38 @@ class FormHelper extends BaseHelper {
      * @return FormHelper
      */
     public function addLine ($name, $display_name = null, $type = "text", $value = "", $class = "") {
-        $this->appendChild(FormLineHelper::export($name, $display_name, $type, $value, $class));
+        $this->appendChild($this->_form_lines[$name] = FormLineHelper::export($name, $display_name, $type, $value, $class));
+        return $this;
+    }
+    
+    /**
+     * Get a given line attached to the form helper
+     * @param string $name
+     * @return FormLineHelper
+     */
+    public function getLine ($name) {
+        return isset($this->_form_lines[$name]) ? $this->_form_lines[$name] : null;
+    }
+    
+    /**
+     * Mark the given lines as error (adding the CSS error class)
+     * @param array $names
+     * @return FormHelper
+     */
+    public function setErrors (array $names) {
+        foreach ($names as $index => $name) {
+            if ($line = $this->getLine($name)) {
+                $line->setClass($line->getClass() ? $line->getClass() . ' error' : 'error');
+                unset($names[$index]);
+            }
+        }
+        
+        if (empty($names))
+            return $this;
+        
+        foreach ($this->_fieldsets as $fieldset)
+            $fieldset->setErrors($names);
+        
         return $this;
     }
     
@@ -48,7 +91,7 @@ class FormHelper extends BaseHelper {
      * @return FieldsetHelper
      */
     public function addFieldset ($legend = "") {
-        return $this->appendChild(FieldsetHelper::export($legend));
+        return $this->appendChild($this->_fieldsets[] = FieldsetHelper::export($legend));
     }
     
     /**
