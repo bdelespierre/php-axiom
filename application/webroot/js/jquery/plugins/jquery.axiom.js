@@ -10,7 +10,7 @@
  * @require jQuery
  * @require common.js
  */
-axiom = {
+var axiom = {
 		lang: $('html').attr('lang') || 'en',
 		base: $('base').attr('href') || '/',
 		i18n: function (key) {

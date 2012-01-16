@@ -25,11 +25,11 @@ Axiom provide all website basics such as:
 * URL Rewriting
 * Custom Routing
 * Browser recognition
-* Email Support (TO BE TESTED)
+* Email Support
 * RSS Support (TO BE TESTED)
 * Sitemap Autogen (TO BE IMPLEMENTED)
 * Backend Administration (IN A SEPARATE PACKAGE)
-* Modules (AS SEPARATE PACKAGES)
+* Modules (IN SEPARATE PACKAGES)
 * Various Output Format (xhtml, json, xml, rss...)
 * PHP > 5.2 Compatible
 * And much more... 

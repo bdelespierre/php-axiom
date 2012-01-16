@@ -49,7 +49,7 @@ String.repeat = function (str, multiplier) {
 };
 
 String.prototype.format = function () {
-	if (arguments.length == 0)
+	if (arguments.length === 0)
 		return this;
 		
 	var output = new String(this);
@@ -77,7 +77,7 @@ Array.max = function (arr) {
 		if (typeof(arr[i]) == 'function') {
 			continue;
 		}
-		if (max == undefined) {
+		if (max === undefined) {
 			max = arr[i];
 			continue;
 		}
@@ -92,7 +92,7 @@ Array.min = function (arr) {
 		if (typeof(arr[i]) == 'function') {
 			continue;
 		}
-		if (min == undefined) {
+		if (min === undefined) {
 			min = arr[i];
 			continue;
 		}
