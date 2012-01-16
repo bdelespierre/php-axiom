@@ -51,6 +51,7 @@ class Lang {
         );
         
         self::$_config = array_merge($default, $config);
+        self::$_config['lang_file'] = self::$_config['locale'] . '.ini';
         
         if (isset(self::$_config['locale']) && self::$_config['locale'] === 'auto') {
             $lngs = self::getAcceptedLanguages();
