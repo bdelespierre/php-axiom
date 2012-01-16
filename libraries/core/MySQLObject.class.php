@@ -203,6 +203,15 @@ class MySQLObject extends Model {
             $query .= " WHERE " . implode(' AND ', $pieces);
         }
         
+        if (!empty($options['group_by'])) {
+            $pieces = array();
+            
+            foreach($options['group_by'] as $field)
+                $pieces[] = "`{$field}`";
+            
+            $query .= " GROUP BY ".implode(',' ,$pieces);
+        }
+        
         if (!empty($options['order_by'])) {
             $pieces = array();
             
@@ -213,15 +222,6 @@ class MySQLObject extends Model {
             
             if (isset($options['order_by_type']) && in_array(strtoupper($options['order_by_type']), array('ASC', 'DESC')))
                 $query .= " " . strtoupper($options['order_by_type']);
-        }
-        
-        if (!empty($options['group_by'])) {
-            $pieces = array();
-            
-            foreach($options['group_by'] as $field)
-                $pieces[] = "`{$field}`";
-            
-            $query .= " GROUP BY ".implode(',' ,$pieces);
         }
         
         if (!empty($options['count'])) {
