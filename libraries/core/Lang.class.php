@@ -7,7 +7,7 @@
  */
 
 /**
- * Lang Managemnt Class
+ * Lang Management Class
  *
  * @author Delespierre
  * @package libaxiom
