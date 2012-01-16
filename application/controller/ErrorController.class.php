@@ -10,10 +10,15 @@
  * Error Controller
  *
  * @author Delespierre
- * @version $Rev$
+ * @package controller
  * @subpackage ErrorController
  */
 class ErrorController extends BaseController {
+    
+    public static function _init (Request &$request, Response &$response) {
+        parent::_init($request, $response);
+        self::$_response->resetResponseView();
+    }
     
     public static function index () { }
     

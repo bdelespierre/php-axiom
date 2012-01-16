@@ -6,6 +6,13 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
+/**
+ * Index Controller Class
+ *
+ * @author Delespierre
+ * @package controller
+ * @subpackage IndexController
+ */
 class IndexController extends BaseController {
     
     public static function index () {

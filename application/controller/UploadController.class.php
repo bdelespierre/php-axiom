@@ -6,6 +6,13 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
+/**
+ * Upload Controller
+ *
+ * @author Delespierre
+ * @package controller
+ * @subpackage UploadController
+ */
 class UploadController extends BaseController {
     
     public static function index () {

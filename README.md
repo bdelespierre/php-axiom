@@ -6,11 +6,12 @@ Author: Benjamin Delespierre <benjamin.delespierre@gmail.com>
 Description
 -----------
 
-Axiom is a very tiny MVC PHP Framework focused on simplicity and scalability,
-designed to be fast to learn, fast to program with and fast to extends.
+Axiom is an OOP MVC Framework written in PHP. Focused on simplicity and scalability,
+it is designed to be fast to learn, fast to program with and fast to extend.
 Contrary to many other PHP Frameworks, it is intended to create small and 
 medium web application easily, without the complexity of Zend Framework or 
-Symphony, but keeps the code clear and reusable in its MVC architecture.
+Symphony, but keeps the code clear and reusable through its MVC architecture.
+
 
 Features
 --------
@@ -23,11 +24,12 @@ Axiom provide all website basics such as:
 * Internationnalisation
 * URL Rewriting
 * Custom Routing
+* Browser recognition
 * Email Support (TO BE TESTED)
 * RSS Support (TO BE TESTED)
 * Sitemap Autogen (TO BE IMPLEMENTED)
 * Backend Administration (IN A SEPARATE PACKAGE)
-* Modules
+* Modules (AS SEPARATE PACKAGES)
 * Various Output Format (xhtml, json, xml, rss...)
 * PHP > 5.2 Compatible
 * And much more... 
@@ -38,9 +40,9 @@ Licence
 This component is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+version 3 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,
+Axiom is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 Lesser General Public License for more details.
