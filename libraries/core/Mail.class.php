@@ -319,8 +319,10 @@ class Mail {
      */
     public function addMessagePart ($message, $content_type = null, $charset = "utf-8") {
         $part  = $content_type ? "Content-Type: {$content_type}; charset={$charset}": "";
-        $part .= "{$this->_header_separator}{$this->_header_separator}";
-        $part .= $message . $this->_header_separator;
+        $part .= $this->_header_separator;
+        $part .= $this->_header_separator;
+        $part .= $message;
+        $part .= $this->_header_separator;
         $this->_message_parts[$key = uniqid("part-")] = $part;
         
         return $key;
@@ -363,9 +365,12 @@ class Mail {
         if (!$content = file_get_contents($path, false))
             throw new RuntimeException("Cannot read $path", 2027);
             
-        $part  = "Content-Type: $content_type; name=$filename" . $this->_header_separator;
+        $part  = "Content-Type: $content_type; name=$filename";
+
+		$part .= $this->_header_separator;
         $part .= "Content-transfer-encoding: base64";
-        $part .= $this->_header_separator . $this->_header_separator;
+		$part .= $this->_header_separator;
+        $part .= $this->_header_separator;
         $part .= chunk_split(base64_encode($content));
         $part .= $this->_header_separator;
         $this->_message_parts[$key = uniqid("part-")] = $part;
@@ -447,7 +452,11 @@ class Mail {
             if ($c > 1) {
                 $boundary = md5(uniqid(microtime(), true));
                 $this->setHeader(self::HEADER_CONTENT_TYPE, "multipart/mixed;boundary=$boundary");
-                return implode($s = "--{$boundary}{$this->_header_separator}", $this->_message_parts) . $s;
+				$str  = "--" . $boundary;
+				$str .= $this->_header_separator;
+				$str .= implode("--" . $boundary . $this->_header_separator, $this->_message_parts);
+				$str .= "--" . $boundary . "--";
+                return $str;
             }
             
             return $c == 1 ? array_shift($this->_message_parts) : "";
