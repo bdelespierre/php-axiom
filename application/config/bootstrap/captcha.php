@@ -6,6 +6,6 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-require_once LIBRARY_PATH . '/captcha/Captcha.class.php';
+require_once LIBRARY_PATH . '/captcha/Axiom_Captcha.class.php';
 
-Captcha::setConfig();
+Axiom_Captcha::setConfig();

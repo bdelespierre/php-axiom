@@ -6,18 +6,18 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-require_once LIBRARY_PATH . '/feed/Feed.class.php';
+require_once LIBRARY_PATH . '/feed/Axiom_Feed.class.php';
 
-Feed::setConfig(array(
+Axiom_Feed::setConfig(array(
     'type' => 'Rss',
 ));
 
-Feed::setMetaInf(array(
+Axiom_Feed::setMetaInf(array(
     'title' => 'Axiom Feed',
     'date' => date('r'),
     'author' => array(
     	'name' => 'Benjamin DELESPIERRE',
     	'mail' => 'benjamin.delespierre@gmail.com'),
-    'lang' => Lang::getLocale(),
+    'lang' => Axiom_Lang::getLocale(),
     'description' => 'Axiom Generic Feed',
 ));

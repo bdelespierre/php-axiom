@@ -1,8 +1,8 @@
 <?php
 
-class AjaxController extends BaseController {
+class AjaxController extends Axiom_BaseController {
     
-    public static function _init (Request &$request, Response &$response) {
+    public static function _init (Axiom_Request &$request, Axiom_Response &$response) {
         parent::_init($request, $response);
         self::$_response->setOutputFormat('json');
     }
@@ -21,20 +21,20 @@ class AjaxController extends BaseController {
         ));
         
         if (!$lang = self::$_request->lang)
-            $lang = Lang::getLocale();
+            $lang = Axiom_Lang::getLocale();
         
         if ($modules = self::$_request->modules) {
             foreach ($modules as $module) {
                 if (is_file($path = APPLICATION_PATH . "/module/{$module}/locale/langs/{$lang}.ini")) {
-                    Lang::loadLanguage($path);
+                    Axiom_Lang::loadLanguage($path);
                 }
                 else {
-                    Log::warning("Unable to find {$path}");
+                    Axiom_Log::warning("Unable to find {$path}");
                 }
             }
         }
         
-        $translations = Lang::getTranslations();
+        $translations = Axiom_Lang::getTranslations();
         return compact('translations');
     }
 }

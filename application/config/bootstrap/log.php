@@ -6,11 +6,11 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-require_once LIBRARY_PATH . '/log/Log.class.php';
-require_once LIBRARY_PATH . '/log/Logger.class.php';
-require_once LIBRARY_PATH . '/log/TextLogger.class.php';
+require_once LIBRARY_PATH . '/log/Axiom_Log.class.php';
+require_once LIBRARY_PATH . '/log/Axiom_Logger.class.php';
+require_once LIBRARY_PATH . '/log/Axiom_TextLogger.class.php';
 
-Log::setConfig();
-Log::addLogger(new TextLogger(APPLICATION_PATH . '/ressource/log/app.log'));
+Axiom_Log::setConfig();
+Axiom_Log::addLogger(new Axiom_TextLogger(APPLICATION_PATH . '/ressource/log/app.log'));
 
-Log::debug('Log handler started');
+Axiom_Log::debug('Log handler started');

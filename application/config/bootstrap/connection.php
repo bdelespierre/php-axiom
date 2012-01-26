@@ -6,14 +6,14 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-require_once LIBRARY_PATH . "/core/Database.class.php";
+require_once LIBRARY_PATH . "/core/Axiom_Database.class.php";
 
-Database::setConfig(array(
+Axiom_Database::setConfig(array(
     'host'     => 'localhost',
     'database' => 'axiom',
     'username' => 'axiom',
-    'password' => '',
+    'password' => 'mysql*axiom',
     'type'     => 'mysql',
 ));
 
-Database::open();
+Axiom_Database::open();

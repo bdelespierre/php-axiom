@@ -6,6 +6,6 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-require_once LIBRARY_PATH . '/core/ModuleManager.class.php';
+require_once LIBRARY_PATH . '/core/Axiom_ModuleManager.class.php';
 
-ModuleManager::setConfig();
+Axiom_ModuleManager::setConfig();

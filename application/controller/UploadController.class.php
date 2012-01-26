@@ -13,7 +13,7 @@
  * @package controller
  * @subpackage UploadController
  */
-class UploadController extends BaseController {
+class UploadController extends Axiom_BaseController {
     
     public static function index () {
         self::$_response->setResponseView('upload');

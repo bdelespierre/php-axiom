@@ -6,16 +6,16 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-require_once LIBRARY_PATH . '/core/ViewManager.class.php';
+require_once LIBRARY_PATH . '/core/Axiom_ViewManager.class.php';
 
-ViewManager::setConfig(array(
+Axiom_ViewManager::setConfig(array(
     'header' => 'html',
     'layout_file' => 'default',
     'layout_content_var' => 'content',
 ));
 
-ViewManager::addLayoutVars(array(
-    'lang' => Lang::getLocale(),
+Axiom_ViewManager::addLayoutVars(array(
+    'lang' => Axiom_Lang::getLocale(),
     'description' => 'Sample Description',
     'keywords' => array('foo', 'bar'),
     'title' => 'Default Title',

@@ -28,7 +28,7 @@
 
 <h3 class="layout"><?=i18n('axiom.getting_started.layout')?></h3>
 <p><?=i18n('axiom.getting_started.layout.summary')?></p>
-<pre><?=realpath(ViewManager::getLayoutFilePath())?></pre>
+<pre><?=realpath(Axiom_ViewManager::getLayoutFilePath())?></pre>
 
 <h3 class="routing"><?=i18n('axiom.getting_started.routing')?></h3>
 <p><?=i18n('axiom.getting_started.routing.summary')?></p>
