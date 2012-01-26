@@ -9,7 +9,7 @@
 require_once LIBRARY_PATH . '/core/Lang.class.php';
 
 Lang::setConfig(array(
-    'locale' => 'fr',
+    'locale' => 'en',
     'locales' => array('en', 'fr')
 ));
 

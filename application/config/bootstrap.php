@@ -6,7 +6,7 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-define('AXIOM_VERSION', '1.1.3');
+define('AXIOM_VERSION', '1.1.4');
 define('LIBRARY_PATH',     dirname(dirname(dirname(__FILE__))) . '/libraries');
 define('APPLICATION_PATH', dirname(dirname(dirname(__FILE__))) . '/application');
 
