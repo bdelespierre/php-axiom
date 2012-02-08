@@ -15,7 +15,7 @@
  * @package libaxiom
  * @subpackage configuration
  */
-final class axTreeItem implements ArrayAccess, Iterator {
+class axTreeItem implements ArrayAccess, Iterator {
 
     /**
      * Parameter value
