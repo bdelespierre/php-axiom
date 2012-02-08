@@ -40,7 +40,7 @@ class axIniConfiguration implements axConfiguration {
 
         if (!$ini = parse_ini_file($file, true))
             throw new RuntimeException("Cannot parse $file");
-
+        
         foreach (array_keys($ini) as $key) {
             if (($offset = strpos($key, ':')) !== false && isset($ini[trim(substr($key, $offset+1))]))
                 $ini[$key] += $ini[trim(substr($key, $offset+1))];
@@ -62,7 +62,7 @@ class axIniConfiguration implements axConfiguration {
         if (!isset($this->_ini[$section]))
             throw new RuntimeException("Unable to find section $section");
         	
-        $this->_tree = new axConfigurationItem;
+        $this->_tree = new axTreeItem;
         foreach ($this->_ini[$section] as $key => $value) {
             $p = explode('.', $key);
             $c = $this->_tree;
