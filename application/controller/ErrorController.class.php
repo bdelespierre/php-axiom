@@ -13,9 +13,9 @@
  * @package controller
  * @subpackage ErrorController
  */
-class ErrorController extends Axiom_BaseController {
+class ErrorController extends axBaseController {
     
-    public static function _init (Axiom_Request &$request, Axiom_Response &$response) {
+    public static function _init (axRequest &$request, axResponse &$response) {
         parent::_init($request, $response);
         self::$_response->resetResponseView();
     }

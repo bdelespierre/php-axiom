@@ -19,7 +19,7 @@
 	<img src="<?=src('img/axiom.png')?>" alt="axiom.png" />
 	<p><?=i18n('axiom.subtitle')?></p>
 </div>
-<p>Version: <?=$axiom_version?></p>
+<p>Version: <?=$axversion?></p>
 
 <h2><?=i18n('axiom.getting_started')?></h2>
 <p><?=i18n('axiom.getting_started.summary')?></p>
@@ -28,7 +28,7 @@
 
 <h3 class="layout"><?=i18n('axiom.getting_started.layout')?></h3>
 <p><?=i18n('axiom.getting_started.layout.summary')?></p>
-<pre><?=realpath(Axiom_ViewManager::getLayoutFilePath())?></pre>
+<pre><?=realpath(axViewManager::getLayoutFilePath())?></pre>
 
 <h3 class="routing"><?=i18n('axiom.getting_started.routing')?></h3>
 <p><?=i18n('axiom.getting_started.routing.summary')?></p>

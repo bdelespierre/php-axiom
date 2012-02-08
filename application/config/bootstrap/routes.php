@@ -6,21 +6,21 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-require_once LIBRARY_PATH . '/core/Axiom_Router.class.php';
+require_once LIBRARY_PATH . '/core/axRouter.class.php';
 
-Axiom_Router::setConfig();
+axRouter::setConfig();
 
 // News Routes
-Axiom_Router::connect('/{:lang::?}/news/{:id:\d+}', 'NewsController::view', array('module' => 'news'));
-Axiom_Router::connect('/{:lang::?}/news/{:action::?}', 'NewsController', array('module' => 'news'));
-Axiom_Router::connect('/{:lang::?}/admin/news/{:action::?}', 'AdminNewsController', array('module' => 'news'));
+axRouter::connect('/{:lang::?}/news/{:id:\d+}', 'NewsController::view', array('module' => 'news'));
+axRouter::connect('/{:lang::?}/news/{:action::?}', 'NewsController', array('module' => 'news'));
+axRouter::connect('/{:lang::?}/admin/news/{:action::?}', 'AdminNewsController', array('module' => 'news'));
 
 // Admin Routes
-Axiom_Router::connect('/{:lang::?}/{:action:(login|logout)}', 'AdminController', array('module' => 'admin'));
-Axiom_Router::connect('/{:lang::?}/admin/{:controller}/{:action::?}', array(), array('module' => 'admin'));
-Axiom_Router::connect('/{:lang::?}/admin/{:action::?}', 'AdminController', array('module' => 'admin'));
+axRouter::connect('/{:lang::?}/{:action:(login|logout)}', 'AdminController', array('module' => 'admin'));
+axRouter::connect('/{:lang::?}/admin/{:controller}/{:action::?}', array(), array('module' => 'admin'));
+axRouter::connect('/{:lang::?}/admin/{:action::?}', 'AdminController', array('module' => 'admin'));
 
 // Default Routes
-Axiom_Router::connect('/{:lang::?}/{:controller}/{:action::?}');
-Axiom_Router::connect('/{:lang::?}', 'IndexController::index');
-Axiom_Router::connect('/', 'IndexController::index');
+axRouter::connect('/{:lang::?}/{:controller}/{:action::?}');
+axRouter::connect('/{:lang::?}', 'IndexController::index');
+axRouter::connect('/', 'IndexController::index');

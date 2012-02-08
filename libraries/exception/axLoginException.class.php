@@ -6,6 +6,12 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-require_once LIBRARY_PATH . '/captcha/axCaptcha.class.php';
-
-axCaptcha::setConfig();
+/**
+ * Login Exception Class
+ *
+ * @author Delespierre
+ * @package libaxiom
+ * @subpackage exception
+ */
+class axLoginException extends RuntimeException {
+}

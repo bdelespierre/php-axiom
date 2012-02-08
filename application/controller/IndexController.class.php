@@ -13,10 +13,10 @@
  * @package controller
  * @subpackage IndexController
  */
-class IndexController extends Axiom_BaseController {
+class IndexController extends axBaseController {
     
     public static function index () {
-        $axiom_version = AXIOM_VERSION;
-        return compact('axiom_version');
+        $axversion = axVERSION;
+        return compact('axversion');
     }
 }

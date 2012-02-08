@@ -8,4 +8,4 @@
 
 require_once dirname(dirname(dirname(__FILE__))) . "/application/config/bootstrap.php";
 
-Axiom_Router::run();
+axRouter::run();

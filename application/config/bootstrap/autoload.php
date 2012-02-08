@@ -6,9 +6,9 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-require_once LIBRARY_PATH . "/core/Axiom_Autoloader.class.php";
+require_once LIBRARY_PATH . "/core/axAutoloader.class.php";
 
-Axiom_Autoloader::setConfig();
+axAutoloader::setConfig();
 
-Axiom_Autoloader::start();
+axAutoloader::start();
 
