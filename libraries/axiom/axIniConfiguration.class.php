@@ -9,11 +9,13 @@
 /**
  * INI Configuration file parser
  *
+ * TODO class description
+ *
  * @author Delespierre
  * @package libaxiom
  * @subpackage configuration
  */
-class axIniConfiguration implements axConfiguration {
+class axIniConfiguration implements axConfiguration, ArrayAccess, IteratorAggregate {
 
     /**
      * INI structure cache
@@ -88,5 +90,25 @@ class axIniConfiguration implements axConfiguration {
     public function switchSection ($section) {
         $this->_generateTree($section);
         return $this;
+    }
+    
+    public function offsetExists ($offset) {
+    	return $this->_tree->offsetExists($offset);
+    }
+    
+    public function offsetGet ($offset) {
+    	return $this->_tree->offsetGet($offset);
+    }
+    
+    public function offsetSet ($offset, $value) {
+    	$this->_tree->offsetSet($offset, $value);
+    }
+    
+    public function offsetUnset ($offset) {
+    	$this->_tree->offsetUnset($offset);
+    }
+    
+    public function getIterator() {
+    	return $this->_tree;
     }
 }

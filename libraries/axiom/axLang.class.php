@@ -46,7 +46,7 @@ class axLang {
             'locale'      => 'fr',
             'locales'     => array('fr'),
             'date_format' => 'd/m/y h:i:s',
-            'lang_dir'    => APPLICATION_PATH . '/locale/langs',
+            'lang_dir'    => AXIOM_APP_PATH . '/locale/langs',
             // FIXME remove lang file entry
             'lang_file'   => 'fr.ini',
         );

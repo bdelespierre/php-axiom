@@ -50,7 +50,7 @@ class axRouter {
         // FIXME Not used right now !
         
         $default = array(
-            'controller_path' => APPLICATION_PATH . '/controller',
+            'controller_path' => AXIOM_APP_PATH . '/controller',
         );
         self::$_config = array_merge($config, $default);
     }

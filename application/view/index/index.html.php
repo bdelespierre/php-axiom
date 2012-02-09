@@ -32,11 +32,11 @@
 
 <h3 class="routing"><?=i18n('axiom.getting_started.routing')?></h3>
 <p><?=i18n('axiom.getting_started.routing.summary')?></p>
-<pre><?=realpath(APPLICATION_PATH . '/config/bootstrap/routes.php')?></pre>
+<pre><?=realpath(AXIOM_APP_PATH . '/config/bootstrap/routes.php')?></pre>
 
 <h3 class="lang"><?=i18n('axiom.getting_started.lang_management')?></h3>
 <p><?=i18n('axiom.getting_started.lang_management.summary')?>
-<pre><?=realpath(APPLICATION_PATH . '/locale/langs/')?></pre>
+<pre><?=realpath(AXIOM_APP_PATH . '/locale/langs/')?></pre>
 
 <h2><?=i18n('axiom.documentation.title')?></h2>
 <p><?=i18n('axiom.documentation.summary')?></p>
@@ -53,4 +53,4 @@
 <a href="http://code.google.com/p/php-axiom/issues/list" target="_blank">http://code.google.com/p/php-axiom/issues/list</a>
 
 <h2><?=i18n('axiom.license.title')?></h2>
-<pre id="licence"><?=file_get_contents(dirname(APPLICATION_PATH) . '/LICENSE.TXT')?></pre>
+<pre id="licence"><?=file_get_contents(dirname(AXIOM_APP_PATH) . '/LICENSE.TXT')?></pre>

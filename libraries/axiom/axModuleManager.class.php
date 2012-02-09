@@ -46,7 +46,7 @@ class axModuleManager {
      */
     public static function setConfig ($config = array()) {
         $default = array(
-            'module_path' => APPLICATION_PATH . '/module',
+            'module_path' => AXIOM_APP_PATH . '/module',
             'check_dependencies_versions' => true,
         );
         self::$_config = array_merge($default, $config);

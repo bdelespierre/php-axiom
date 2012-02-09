@@ -98,7 +98,7 @@ class axViewManager {
     public static function setConfig ($configuration = array()) {
         $default = array(
             'default_output_format' => 'html',
-            'view_paths'            => array(APPLICATION_PATH . "/view"),
+            'view_paths'            => array(AXIOM_APP_PATH . "/view"),
             'layout_file'           => 'default',
             'layout_content_var'    => 'page_content',
         );

@@ -67,7 +67,7 @@ class axCaptcha {
      */
     public static function setConfig (array $config = array()) {
         $default = array(
-            'dictionnaries_path' => APPLICATION_PATH . '/ressource/captcha',
+            'dictionnaries_path' => AXIOM_APP_PATH . '/ressource/captcha',
             'dictionnary'        => 'static.dictionary.ini',
             'dictionnary_type'   => 'static',
         );

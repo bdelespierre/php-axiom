@@ -6,9 +6,14 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-define('axVERSION', '1.1.4');
-define('LIBRARY_PATH',     dirname(dirname(dirname(__FILE__))) . '/libraries');
-define('APPLICATION_PATH', dirname(dirname(dirname(__FILE__))) . '/application');
+define('AXIOM_VERSION', '1.1.4');
+define('AXIOM_LIB_PATH', dirname(dirname(dirname(__FILE__))) . '/libraries');
+define('AXIOM_APP_PATH', dirname(dirname(dirname(__FILE__))) . '/application');
+
+// OLD
+define('LIBRARY_PATH',     AXIOM_LIB_PATH);
+define('APPLICATION_PATH', AXIOM_APP_PATH);
+
 
 require dirname(__FILE__) . '/bootstrap/settings.php';
 

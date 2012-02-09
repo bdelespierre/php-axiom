@@ -39,7 +39,7 @@ class axRequest {
      */
     public function __construct () {
         $this->_request_parameters = $_REQUEST;
-        $this->_browscap = new Browscap(APPLICATION_PATH . '/ressource/cache');
+        $this->_browscap = new Browscap(AXIOM_APP_PATH . '/ressource/cache');
     }
     
     /**

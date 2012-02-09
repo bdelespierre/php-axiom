@@ -25,7 +25,7 @@ interface axConfiguration {
     /**
      * Parameter getter
      * @param string $key
-     * @return mixed
+     * @return axConfiguration
      */
     public function __get ($key);
 }
