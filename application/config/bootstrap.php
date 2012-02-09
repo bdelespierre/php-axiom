@@ -15,4 +15,7 @@ require_once AXIOM_LIB_PATH . '/axiom/axClassNotFoundException.class.php';
 require_once AXIOM_LIB_PATH . '/axiom/axExtensionFilterIterator.class.php';
 require_once AXIOM_LIB_PATH . '/axiom/axLibrary.class.php';
 
-Axiom::library()->add('axiom')->add('browser');
+Axiom::library()->add('axiom');
+
+
+

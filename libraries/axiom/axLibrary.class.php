@@ -156,7 +156,7 @@ class axLibrary {
 			
 			foreach ($files as $file) {
 				$classname = substr((string)$file, 0, strpos((string)$file, '.'));
-				$this->_classes[$classname] = (string)$file;
+				$this->_classes[$classname] = $file->getRealPath();
 			}
 		}
 	}
