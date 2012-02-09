@@ -119,7 +119,6 @@ class axLibrary {
 			return true;
 			
 		if ($this->_regenerate_flag) {
-			var_dump("REGENERATE !");
 			$this->_regenerate_flag = false;
 			$this->_includeAll();
 			$this->_cache();
@@ -170,7 +169,6 @@ class axLibrary {
 	protected function _load ($classname) {
 		if (empty($this->_classes)) {
 			if ($this->_cache_dir && is_readable($c = $this->_cache_dir . '/' . self::CACHE_FILE)) {
-				var_dump("CACHE READ !");
 				require $c;
 				$this->_classes = $classes;
 			}

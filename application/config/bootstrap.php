@@ -16,10 +16,3 @@ require_once AXIOM_LIB_PATH . '/axiom/axExtensionFilterIterator.class.php';
 require_once AXIOM_LIB_PATH . '/axiom/axLibrary.class.php';
 
 Axiom::library()->add('axiom')->add('browser');
-
-var_dump(class_exists('axHelper', true));
-var_dump(class_exists('axColHelper', true));
-
-
-
-
