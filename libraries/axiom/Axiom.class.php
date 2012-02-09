@@ -21,15 +21,16 @@ final class Axiom {
 		if (!class_exists($class, true))
 			throw new RuntimeException("Class {$class} not found");
 		
-		return self::$_config = new $class($file,$section);
+		return self::$_config = new $class($file,$section,AXIOM_APP_PATH . '/ressource/cache');
 	}
 	
 	public static function library () {
 		if (isset(self::$_library))
 			return self::$_library;
-			
-		list($cache_dir) = func_get_args() + array(AXIOM_APP_PATH . '/ressources/cache');
-		return self::$_library = new axLibrary($cache_dir);
+		
+		self::$_library = new axLibrary(AXIOM_APP_PATH . '/ressource/cache');
+		self::$_library->register();
+		return self::$_library;
 	}
 	
 	public function database () {

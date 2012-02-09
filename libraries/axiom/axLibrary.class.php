@@ -57,9 +57,9 @@ class axLibrary {
 	 * 
 	 * Takes the cache directory path as only parameter.
 	 * 
-	 * @param string $cache_dir
+	 * @param string $cache_dir [optional]
 	 */
-	public function __construct ($cache_dir) {
+	public function __construct ($cache_dir = false) {
 		$this->_directories = array();
 		$this->_classes = array();
 		$this->_cache_dir = realpath($cache_dir);
@@ -94,10 +94,10 @@ class axLibrary {
 		if (!is_dir($dir = $name) && !is_dir($dir = AXIOM_LIB_PATH .'/'. $name) && !is_dir($dir = AXIOM_APP_PATH .'/library/'. $name))
 			throw new RuntimeException("Cannot find library {$name}");
 		
-		if (!is_readable($path))
-			throw new RuntimeException("{$path} is not readable");
+		if (!is_readable($dir))
+			throw new RuntimeException("{$dir} is not readable");
 		
-		$this->_directories[$path] = $options;
+		$this->_directories[$dir] = $options;
 		return $this;
 	}
 	
@@ -119,6 +119,7 @@ class axLibrary {
 			return true;
 			
 		if ($this->_regenerate_flag) {
+			var_dump("REGENERATE !");
 			$this->_regenerate_flag = false;
 			$this->_includeAll();
 			$this->_cache();
@@ -150,13 +151,13 @@ class axLibrary {
 				$directories->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)));
 			else
 				$directories->append(new DirectoryIterator($dir));
-				
+			
 			$ext = isset($opt['extensions']) ? $opt['extensions'] : '.class.php';
 			$files = new axExtensionFilterIterator($directories, $ext);
 			
 			foreach ($files as $file) {
 				$classname = substr((string)$file, 0, strpos((string)$file, '.'));
-				$this->_classes[$classname] = $file;
+				$this->_classes[$classname] = (string)$file;
 			}
 		}
 	}
@@ -168,7 +169,8 @@ class axLibrary {
 	 */
 	protected function _load ($classname) {
 		if (empty($this->_classes)) {
-			if (is_readable($c = $this->_cache_dir . '/' . self::CACHE_FILE)) {
+			if ($this->_cache_dir && is_readable($c = $this->_cache_dir . '/' . self::CACHE_FILE)) {
+				var_dump("CACHE READ !");
 				require $c;
 				$this->_classes = $classes;
 			}
@@ -179,10 +181,10 @@ class axLibrary {
 	
 	/**
 	 * Stores the local class cache in file for later use
-	 * @return integer
+	 * @return boolean
 	 */
 	protected function _cache () {
 		$buffer = '<?php $classes=' . var_export($this->_classes, true) . '; ?>';
-		return file_put_contents($this->_cache_dir . '/' . self::CACHE_FILE, $buffer);
+		return (boolean)file_put_contents($this->_cache_dir . '/' . self::CACHE_FILE, $buffer);
 	}
 }

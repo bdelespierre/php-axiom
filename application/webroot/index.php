@@ -6,6 +6,6 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-require_once dirname(dirname(dirname(__FILE__))) . "/application/config/bootstrap.php";
+require dirname(dirname(dirname(__FILE__))) . "/application/config/bootstrap.php";
 
-axRouter::run();
+//axRouter::run();

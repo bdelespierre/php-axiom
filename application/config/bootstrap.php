@@ -10,33 +10,16 @@ define('AXIOM_VERSION', '1.1.4');
 define('AXIOM_LIB_PATH', dirname(dirname(dirname(__FILE__))) . '/libraries');
 define('AXIOM_APP_PATH', dirname(dirname(dirname(__FILE__))) . '/application');
 
-// OLD
-define('LIBRARY_PATH',     AXIOM_LIB_PATH);
-define('APPLICATION_PATH', AXIOM_APP_PATH);
+require_once AXIOM_LIB_PATH . '/axiom/Axiom.class.php';
+require_once AXIOM_LIB_PATH . '/axiom/axClassNotFoundException.class.php';
+require_once AXIOM_LIB_PATH . '/axiom/axExtensionFilterIterator.class.php';
+require_once AXIOM_LIB_PATH . '/axiom/axLibrary.class.php';
+
+Axiom::library()->add('axiom')->add('browser');
+
+var_dump(class_exists('axHelper', true));
+var_dump(class_exists('axColHelper', true));
 
 
-require dirname(__FILE__) . '/bootstrap/settings.php';
 
-require dirname(__FILE__) . '/bootstrap/util.php';
 
-require dirname(__FILE__) . '/bootstrap/autoload.php';
-
-require dirname(__FILE__) . '/bootstrap/log.php';
-
-require dirname(__FILE__) . '/bootstrap/session.php';
-
-require dirname(__FILE__) . '/bootstrap/locale.php';
-
-require dirname(__FILE__) . '/bootstrap/connection.php';
-
-require dirname(__FILE__) . '/bootstrap/routes.php';
-
-require dirname(__FILE__) . '/bootstrap/modules.php';
-
-require dirname(__FILE__) . '/bootstrap/views.php';
-
-require dirname(__FILE__) . '/bootstrap/feed.php';
-
-require dirname(__FILE__) . '/bootstrap/upload.php';
-
-require dirname(__FILE__) . '/bootstrap/captcha.php';

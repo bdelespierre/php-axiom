@@ -15,13 +15,31 @@
  * @package libaxiom
  * @subpackage configuration
  */
-class axIniConfiguration implements axConfiguration, ArrayAccess, IteratorAggregate {
+class axIniConfiguration implements axConfiguration {
 
-    /**
-     * INI structure cache
-     * @var array
-     */
-    protected $_ini;
+	/**
+	 * Cache file
+	 * @var string
+	 */
+	const CACHE_FILE = "config.cache.php";
+	
+	/**
+	 * Configuration file
+	 * @var string
+	 */
+	protected $_file;
+	
+	/**
+	 * Configuration section
+	 * @var string
+	 */
+	protected $_section;
+	
+	/**
+	 * Cache directory
+	 * @var string
+	 */
+	protected $_cache_dir;
 
     /**
      * INI Tree structure
@@ -36,22 +54,10 @@ class axIniConfiguration implements axConfiguration, ArrayAccess, IteratorAggreg
      * @throws axMissingFileException
      * @throws RuntimeException
      */
-    public function __construct ($file, $section) {
-        if (!is_file($file))
-            throw new axMissingFileException($file);
-
-        if (!$ini = parse_ini_file($file, true))
-            throw new RuntimeException("Cannot parse $file");
-        
-        foreach (array_keys($ini) as $key) {
-            if (($offset = strpos($key, ':')) !== false && isset($ini[trim(substr($key, $offset+1))]))
-                $ini[$key] += $ini[trim(substr($key, $offset+1))];
-            if (strpos(trim($key), $section) === 0)
-                $section = $key;
-        }
-
-        $this->_ini = $ini;
-        $this->_generateTree($section);
+    public function __construct ($file, $section, $cache_dir = false) {
+    	$this->_file = $file;
+    	$this->_section = $section;
+    	$this->_cache_dir = realpath($cache_dir);
     }
 
     /**
@@ -61,11 +67,24 @@ class axIniConfiguration implements axConfiguration, ArrayAccess, IteratorAggreg
      * @return void
      */
     protected function _generateTree ($section) {
-        if (!isset($this->_ini[$section]))
+    	if (!is_file($this->_file) || !is_readable($this->_file))
+            throw new axMissingFileException($this->_file);
+
+        if (!$ini = parse_ini_file($this->_file, true))
+            throw new RuntimeException("Cannot parse $file");
+        
+        foreach (array_keys($ini) as $key) {
+            if (($offset = strpos($key, ':')) !== false && isset($ini[trim(substr($key, $offset+1))]))
+                $ini[$key] += $ini[trim(substr($key, $offset+1))];
+            if (strpos(trim($key), $section) === 0)
+                $section = $key;
+        }
+    	
+        if (!isset($ini[$section]))
             throw new RuntimeException("Unable to find section $section");
         	
         $this->_tree = new axTreeItem;
-        foreach ($this->_ini[$section] as $key => $value) {
+        foreach ($ini[$section] as $key => $value) {
             $p = explode('.', $key);
             $c = $this->_tree;
             foreach ($p as $k)
@@ -76,39 +95,40 @@ class axIniConfiguration implements axConfiguration, ArrayAccess, IteratorAggreg
 
     /**
      * (non-PHPdoc)
-     * @seeaxConfiguration::__get()
+     * @see axConfiguration::__get()
      */
     public function __get ($key) {
-        return $this->_tree->$key;
+        return $this->getIterator()->$key;
     }
-
+    
     /**
-     * Switch between INI sections
-     * @param string $section
-     * @return IniConfiguration
+     * (non-PHPdoc)
+     * @see IteratorAggregate::getIterator()
      */
-    public function switchSection ($section) {
-        $this->_generateTree($section);
-        return $this;
-    }
-    
-    public function offsetExists ($offset) {
-    	return $this->_tree->offsetExists($offset);
-    }
-    
-    public function offsetGet ($offset) {
-    	return $this->_tree->offsetGet($offset);
-    }
-    
-    public function offsetSet ($offset, $value) {
-    	$this->_tree->offsetSet($offset, $value);
-    }
-    
-    public function offsetUnset ($offset) {
-    	$this->_tree->offsetUnset($offset);
-    }
-    
     public function getIterator() {
+    	if (!isset($this->_tree)) {
+	    	if ($this->_cache_dir && is_readable($c = $this->_cache_dir . '/' . self::CACHE_FILE)) {
+	    		require $c;
+	    		$this->_tree = $tree;
+	    	}
+	    	else {
+	        	$this->_generateTree($section);
+	        	$this->_cache();
+	    	}
+    	}
+    	
     	return $this->_tree;
     }
+    
+    /**
+     * Put current configuration tree in cache for later use
+     * @return boolean
+     */
+	protected function _cache () {
+		if (!$this->_cache_dir)
+			return false;
+		
+		$buffer = '<?php $tree=' . var_export($this->_tree, true) . '; ?>';
+		return (boolean)file_put_contents($this->_cache_dir . '/' . self::CACHE_FILE, $buffer);
+	}
 }

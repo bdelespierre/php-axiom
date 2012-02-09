@@ -152,4 +152,16 @@ class axTreeItem implements ArrayAccess, Iterator {
     public function __toString () {
         return (string)$this->getValue();
     }
+    
+    /**
+     * set state
+     * @param array $props
+     * @return axTreeItem
+     */
+    public static function __set_state ($props) {
+    	$tree = new self;
+    	$tree->_v = $props['_v'];
+    	$tree->_c = $props['_c'];
+    	return tree;
+    }
 }

@@ -13,14 +13,14 @@
  * @package libaxiom
  * @subpackage configuration
  */
-interface axConfiguration {
+interface axConfiguration extends IteratorAggregate {
     
     /**
      * Default constructor
      * @param string $file
      * @param string $section
      */
-    public function __construct ($file, $section);
+    public function __construct ($file, $section, $cache_dir = false);
     
     /**
      * Parameter getter

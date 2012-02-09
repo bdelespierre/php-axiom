@@ -37,7 +37,6 @@ class axExtensionFilterIterator extends FilterIterator {
 	 */
 	public function __construct (Iterator $iterator, $extension) {
 		parent::__construct($iterator);
-		
 		$this->_ext = (strpos($extension, ',') !== false) ? explode(',', $extension) : (array)$extension;
 	}
 	
@@ -47,7 +46,7 @@ class axExtensionFilterIterator extends FilterIterator {
 	 */
 	public function accept () {
 		foreach ($this->_ext as $ext) {
-			if (strpos($this->current(), $ext) === true)
+			if (strpos((string)$this->current(), $ext) !== false)
 				return true;
 		}
 		return false;
