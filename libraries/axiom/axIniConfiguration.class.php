@@ -112,7 +112,7 @@ class axIniConfiguration implements axConfiguration {
 	    		$this->_tree = $tree;
 	    	}
 	    	else {
-	        	$this->_generateTree($section);
+	        	$this->_generateTree($this->_section);
 	        	$this->_cache();
 	    	}
     	}

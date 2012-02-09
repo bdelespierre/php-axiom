@@ -6,7 +6,6 @@
  * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
-define('AXIOM_VERSION', '1.1.4');
 define('AXIOM_LIB_PATH', dirname(dirname(dirname(__FILE__))) . '/libraries');
 define('AXIOM_APP_PATH', dirname(dirname(dirname(__FILE__))) . '/application');
 
@@ -17,5 +16,4 @@ require_once AXIOM_LIB_PATH . '/axiom/axLibrary.class.php';
 
 Axiom::library()->add('axiom');
 
-
-
+Axiom::configuration(dirname(__FILE__) . '/config.ini', 'dev');

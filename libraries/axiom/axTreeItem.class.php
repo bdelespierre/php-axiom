@@ -162,6 +162,6 @@ class axTreeItem implements ArrayAccess, Iterator {
     	$tree = new self;
     	$tree->_v = $props['_v'];
     	$tree->_c = $props['_c'];
-    	return tree;
+    	return $tree;
     }
 }

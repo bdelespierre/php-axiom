@@ -12,16 +12,16 @@ final class Axiom {
 		if (isset(self::$_config))
 			return self::$_config;
 			
-		if (!func_num_args)
+		if (!func_num_args())
 			trigger_error("Configuration initialized with default parameters", E_USER_WARNING);
 			
-		$defaults = array(dirname(dinrname(__FILE__)) . '/application/config/conf.ini', 'default', 'axIniConfiguration');
-		list($file, $section, $class) = func_get_args() + $default;
+		$defaults = array(AXIOM_APP_PATH . '/config/config.ini', 'default', 'axIniConfiguration');
+		list($file, $section, $class) = func_get_args() + $defaults;
 		
 		if (!class_exists($class, true))
 			throw new RuntimeException("Class {$class} not found");
 		
-		return self::$_config = new $class($file,$section,AXIOM_APP_PATH . '/ressource/cache');
+		return self::$_config = new $class($file, $section, AXIOM_APP_PATH . '/ressource/cache');
 	}
 	
 	public static function library () {
@@ -31,6 +31,10 @@ final class Axiom {
 		self::$_library = new axLibrary(AXIOM_APP_PATH . '/ressource/cache');
 		self::$_library->register();
 		return self::$_library;
+	}
+	
+	public static function locale () {
+		
 	}
 	
 	public function database () {
