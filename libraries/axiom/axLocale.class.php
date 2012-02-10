@@ -2,11 +2,11 @@
 
 class axLocale implements IteratorAggregate {
 	
-	const CACHE_FILE = 'locale.%s.cache.php';
+	const CACHE_FILE = 'locale.cache.php';
 	
 	protected static $_accepted_languages_cache;
 	
-	protected $_lang_file;
+	protected $_file;
 	protected $_lang;
 	protected $_cache_dir;
 	
@@ -14,9 +14,12 @@ class axLocale implements IteratorAggregate {
 	
 	public function __construct ($lang_file, $lang = "auto", $default_lang = "en", $cache_dir = false) {
 		$this->_lang = strtolower($lang);
-		$this->_lang_file = $lang_file;
 		$this->_cache_dir = realpath($cache_dir);
 		$this->_tree = array();
+		
+		if (!$this->_file = realpath($lang_file)) {
+			throw new axMissingFileException($lang_file);
+		}
 	}
 	
 	public function __get ($key) {
@@ -24,10 +27,10 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	public function getIterator () {
-		if (!isset($this->_tree)) {
-			if ($this->_cache_dir && is_readable($c = $this->_cache_dir . '/' . sprintf(self::CACHE_FILE, $this->lang))) {
+		if (empty($this->_tree)) {
+			if ($this->_cache_dir && is_readable($c = $this->_cache_dir . '/' . self::CACHE_FILE)) {
 				require $c;
-				$this->_tree = $tree;	
+				$this->_tree = $tree;
 			}
 			else {
 				$this->_generateTree();
@@ -39,7 +42,7 @@ class axLocale implements IteratorAggregate {
 			$this->_lang = $this->_default_lang;
 		
 		if (!isset($this->_tree[$this->_lang]))
-			throw new RuntimeException("Land {$lang} not available");
+			throw new RuntimeException("Lang {$this->_lang} not available");
 		
 		return $this->_tree[$this->_lang];
 	}
@@ -51,10 +54,10 @@ class axLocale implements IteratorAggregate {
 		$this->_lang = $lang;
 	}
 	
-	protected function _generateTree ($section) {
+	protected function _generateTree () {
 		if (!is_file($this->_file) || !is_readable($this->_file))
             throw new axMissingFileException($this->_file);
-
+		
         if (!$ini = parse_ini_file($this->_file, true))
             throw new RuntimeException("Cannot parse $file");
         
@@ -79,7 +82,7 @@ class axLocale implements IteratorAggregate {
 			return false;
 		
 		$buffer = '<?php $tree=' . var_export($this->_tree, true) . '; ?>';
-		return (boolean)file_put_contents($this->_cache_dir . '/' . sprintf(self::CACHE_FILE, $this->_lang), $buffer);
+		return (boolean)file_put_contents($this->_cache_dir . '/' . self::CACHE_FILE, $buffer);
 	}
 	
 	/**
@@ -127,7 +130,7 @@ class axLocale implements IteratorAggregate {
     }
     
     protected function _determineLanguage () {
-    	foreach ($this->_getAcceptedLanguages() as $accept) {
+    	foreach ($this->_getAcceptedLanguages() as $accept => $priority) {
     		if (isset($this->_tree[$accept]))
     			return $accept;
     	}

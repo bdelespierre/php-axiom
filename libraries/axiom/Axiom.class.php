@@ -47,7 +47,7 @@ final class Axiom {
 		if (strpos($lang_file, '//') === 0)
 			$lang_file = str_replace("//", AXIOM_APP_PATH . '/', $lang_file);
 		
-		self::$_locale = new axLocale($lang_file, $lang, $default_lang, AXIOM_APP_PATH . '/ressource/cache');
+		return self::$_locale = new axLocale($lang_file, $lang, $default_lang, AXIOM_APP_PATH . '/ressource/cache');
 	}
 	
 	public function database () {
@@ -64,7 +64,7 @@ final class Axiom {
 		
 		list($driver_options) = func_get_args() + array(array());
 		
-		self::$_database = new PDO($dsn, $user, $pass, $driver_options);
+		return self::$_database = new PDO($dsn, $user, $pass, $driver_options);
 	}
 	
 	
