@@ -8,6 +8,8 @@ final class Axiom {
 	
 	private static $_database;
 	
+	private static $_locale;
+	
 	public static function configuration () {
 		if (isset(self::$_config))
 			return self::$_config;
@@ -34,7 +36,18 @@ final class Axiom {
 	}
 	
 	public static function locale () {
+		if (isset(self::$_locale))
+			return self::$_locale;
+			
+		$conf = self::configuration();
+		$lang_file = $conf->localization->lang->file;
+		$lang = $conf->localization->lang;
+		$default_lang = $conf->localization->lang->default;
 		
+		if (strpos($lang_file, '//') === 0)
+			$lang_file = str_replace("//", AXIOM_APP_PATH . '/', $lang_file);
+		
+		self::$_locale = new axLocale($lang_file, $lang, $default_lang, AXIOM_APP_PATH . '/ressource/cache');
 	}
 	
 	public function database () {

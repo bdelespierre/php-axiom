@@ -61,6 +61,33 @@ class axIniConfiguration implements axConfiguration {
     }
 
     /**
+     * (non-PHPdoc)
+     * @see axConfiguration::__get()
+     */
+    public function __get ($key) {
+        return $this->getIterator()->$key;
+    }
+    
+    /**
+     * (non-PHPdoc)
+     * @see IteratorAggregate::getIterator()
+     */
+    public function getIterator() {
+    	if (!isset($this->_tree)) {
+	    	if ($this->_cache_dir && is_readable($c = $this->_cache_dir . '/' . self::CACHE_FILE)) {
+	    		require $c;
+	    		$this->_tree = $tree;
+	    	}
+	    	else {
+	        	$this->_generateTree($this->_section);
+	        	$this->_cache();
+	    	}
+    	}
+    	
+    	return $this->_tree;
+    }
+	
+	/**
      * Generates the tree structure using the INI structure
      * @param string $section
      * @throws RuntimeException
@@ -91,33 +118,6 @@ class axIniConfiguration implements axConfiguration {
                 $c = $c->__get($k);
             $c->setValue($value);
         }
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see axConfiguration::__get()
-     */
-    public function __get ($key) {
-        return $this->getIterator()->$key;
-    }
-    
-    /**
-     * (non-PHPdoc)
-     * @see IteratorAggregate::getIterator()
-     */
-    public function getIterator() {
-    	if (!isset($this->_tree)) {
-	    	if ($this->_cache_dir && is_readable($c = $this->_cache_dir . '/' . self::CACHE_FILE)) {
-	    		require $c;
-	    		$this->_tree = $tree;
-	    	}
-	    	else {
-	        	$this->_generateTree($this->_section);
-	        	$this->_cache();
-	    	}
-    	}
-    	
-    	return $this->_tree;
     }
     
     /**
