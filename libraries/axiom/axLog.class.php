@@ -24,45 +24,40 @@ class axLog {
      * Configuration
      * @var array
      */
-    protected static $_config;
+    protected $_options;
     
     /**
      * First logger in the chain
      * @var axLogger
      */
-    protected static $_first;
+    protected $_first;
     
     /**
      * Last logger in the chain
      * @var axLogger
      */
-    protected static $_last;
+    protected $_last;
     
     /**
      * Log messages history (per request)
      * @var array
      */
-    protected static $_message_history = array();
+    protected $_message_history = array();
     
-    /**
-     * Configure
-     * @param array $config
-     * @return void
-     */
-    public static function setConfig (array $config = array()) {
-        $defaults = array(
-            'ignore_repeated_messages' => true,
-            'log_errors' => true,
-            'log_exception' => true,
-        );
-        
-        self::$_config = $config + $defaults;
-        
-        if (self::$_config['log_errors'])
-            self::registerErrorHandler();
+    public function __construct (array $options = array()) {
+    	$default = array(
+    		'ignore_repeated_messages' => true,
+    		'log_errors' => true,
+    		'log_exception' => true,
+    	);
+    	
+    	$this->_options = $options;
+    	
+    	if ($this->_options['log_errors'])
+            $this->registerErrorHandler();
             
-        if (self::$_config['log_exception'])
-            self::registerExceptionHandler();
+        if ($this->_options['log_exception'])
+            $this->registerExceptionHandler();
     }
     
     /**
@@ -71,16 +66,14 @@ class axLog {
      * @param integer $priority
      * @return void
      */
-    public static function message ($msg, $priority) {
-        if (!isset(self::$_first))
+    public function message ($msg, $priority) {
+        if (!isset($this->_first))
             return;
         
-        if (self::$_config['ignore_repeated_messages']) {
-            if (array_search($msg, self::$_message_history) !== false)
-                return;
-        }
+        if ($this->_options['ignore_repeated_messages'] && array_search($msg, $this->_message_history) !== false)
+			return;
         
-        self::$_first->message(self::$_message_history[] = $msg, $priority);
+        $this->_first->message($this->_message_history[] = $msg, $priority);
     }
     
     /**
@@ -88,8 +81,8 @@ class axLog {
      * @param string $msg
      * @return void
      */
-    public static function error ($msg) {
-        self::message($msg, axLogger::ERR);
+    public function error ($msg) {
+        $this->message($msg, axLogger::ERR);
     }
     
     /**
@@ -97,8 +90,8 @@ class axLog {
      * @param string $msg
      * @return void
      */
-    public static function notice ($msg) {
-        self::message($msg, axLogger::NOTICE);
+    public function notice ($msg) {
+        $this->message($msg, axLogger::NOTICE);
     }
     
     /**
@@ -106,8 +99,8 @@ class axLog {
      * @param string $msg
      * @return void
      */
-    public static function warning ($msg) {
-        self::message($msg, axLogger::WARNING);
+    public function warning ($msg) {
+        $this->message($msg, axLogger::WARNING);
     }
     
     /**
@@ -120,11 +113,11 @@ class axLog {
      * @param array $bt
      * @return void
      */
-    public static function debug ($msg, array $bt = array()) {
+    public function debug ($msg, array $bt = array()) {
         if ($bt)
             $msg .= " in {$bt[0]['file']} on line {$bt[0]['line']}";
         
-        self::message($msg, axLogger::DEBUG);
+        $this->message($msg, axLogger::DEBUG);
     }
     
     /**
@@ -132,11 +125,11 @@ class axLog {
      * @param axLogger $logger
      * @return void
      */
-    public static function addLogger (axLogger $logger) {
-        if (!isset(self::$_first))
-            self::$_first = self::$_last = $logger;
+    public function addLogger (axLogger $logger) {
+        if (!isset($this->_first))
+            $this->_first = $this->_last = $logger;
         else
-            self::$_last->setNext(self::$_last = $logger);
+            $this->_last->setNext($this->_last = $logger);
     }
     
     /**
@@ -144,15 +137,15 @@ class axLog {
      * @param integer $error_types
      * @return string
      */
-    public static function registerErrorHandler ($error_types = -1) {
-        return set_error_handler(array(__CLASS__, 'handleError'));
+    public function registerErrorHandler ($error_types = -1) {
+        return set_error_handler(array($this, 'handleError'));
     }
     
     /**
      * Unregister Log as PHP error handler
      * @return boolean
      */
-    public static function restoreErrorHandler () {
+    public function restoreErrorHandler () {
         return restore_error_handler();
     }
     
@@ -165,22 +158,22 @@ class axLog {
      * @throws ErrorException
      * @return void
      */
-    public static function handleError ($errno, $errstr, $errfile, $errline) {
+    public function handleError ($errno, $errstr, $errfile, $errline) {
         $error = "(PHP Error) $errstr in $errfile on line $errline";
         switch ($errno) {
             case E_STRICT:
             case E_WARNING:
             case E_USER_WARNING:
-                self::warning($error);
+                $this->warning($error);
                 break;
                 
             case E_NOTICE:
             case E_USER_NOTICE:
-                self::notice($error);
+                $this->notice($error);
                 break;
             
             case E_USER_ERROR:
-                self::error($error);
+                $this->error($error);
                 break;
                 
             default:
@@ -194,15 +187,15 @@ class axLog {
      * Register Log as PHP exception handler
      * @return boolean
      */
-    public static function registerExceptionHandler () {
-        return set_exception_handler(array(__CLASS__, 'handleException'));
+    public function registerExceptionHandler () {
+        return set_exception_handler(array($this, 'handleException'));
     }
     
     /**
      * Unregister Log as PHP exception handler
      * @return boolean
      */
-    public static function restoreExceptionHandler () {
+    public function restoreExceptionHandler () {
         return restore_exception_handler();
     }
     
@@ -219,22 +212,22 @@ class axLog {
      * @param Exception $exception
      * @retur void
      */
-    public static function handleException (Exception $exception) {
+    public function handleException (Exception $exception) {
         if (PHP_VERSION_ID >= 50300) {
             if ($previous = $exception->getPrevious()) {
-                self::handleException($previous);
+                $this->handleException($previous);
             }
         }
         
         $error = "(PHP Exception) " . $exception->getMessage() . ' in ' . $exception->getFile() . ' on line ' . $exception->getLine();
-        self::error($error);
+        $this->error($error);
     }
     
     /**
      * Get messages history
      * @return array
      */
-    public static function getHistory () {
-        return self::$_message_history;
+    public function getHistory () {
+        return $this->_message_history;
     }
 }

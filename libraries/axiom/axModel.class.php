@@ -128,7 +128,9 @@ abstract class axModel {
             throw new RuntimeException("Cannot initialize " . __METHOD__, 2011);
          
         if ($this->_statements['create']->execute(array_keys_prefix($data, ':'))) {
-            $id = axDatabase::lastInsertId();
+        	// FIXME this call is very ugly !
+        	// maybe a factory could help...
+            $id = Axiom::database()->lastInsertId();
             return $this->find($id);
         }
         return false;

@@ -16,13 +16,6 @@
 class axRouter {
     
     /**
-     * Internal configuration
-     * @internal
-     * @var array
-     */
-    protected static $_config;
-    
-    /**
      * Routes
      * @var array
      */
@@ -41,28 +34,13 @@ class axRouter {
     protected static $_response;
     
     /**
-     * Set configuration
-     * @param array $config = array
-     * @return void
-     */
-    public static function setConfig ($config = array()) {
-        
-        // FIXME Not used right now !
-        
-        $default = array(
-            'controller_path' => AXIOM_APP_PATH . '/controller',
-        );
-        self::$_config = array_merge($config, $default);
-    }
-    
-    /**
      * Connect a route
      *
      * Routes are matched according a given template,
      * templates follow the following format:
-     * "/[string|{:key<:pattern>]...
+     * "/[string|{:key<:pattern><:?>}]/...
      * Eg:
-     * /admin/{:controller}/{:id:\d+}/{:args}
+     * /{:lang:\w{2}:?}/admin/{:controller}/{:id:\d+}/{:args}
      *
      * Three prototypes are available:
      * axRouter::connect(new Route($template, $params, $options))

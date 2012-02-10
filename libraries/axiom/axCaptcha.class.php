@@ -38,54 +38,49 @@ class axCaptcha {
     /**
      * Internal configuration
      * @internal
-     * @static
      * @var array
      */
-    protected static $_config;
+    protected $_options;
     
     /**
      * Dictionnary cache
      * @internal
-     * @static
      * @var array
      */
-    protected static $_dictionnary_struct;
+    protected $_dictionnary_struct;
     
     /**
      * axSession handle
      * @internal
-     * @static
      * @var axSession
      */
-    protected static $_session;
+    protected $_session;
     
     /**
-     * Set Config
-     * @static
+     * Default constructor
      * @param array $config
      * @return void
      */
-    public static function setConfig (array $config = array()) {
+    public function __construct (array $options = array()) {
         $default = array(
-            'dictionnaries_path' => AXIOM_APP_PATH . '/ressource/captcha',
+            'dictionnaries_path' => null,
             'dictionnary'        => 'static.dictionary.ini',
             'dictionnary_type'   => 'static',
         );
         
-        self::$_config = $config + $default;
+        $this->_config = $config + $default;
     }
     
     /**
      * Parses the dictionnary pointed by $path
      * and saves the parse results in class cache
      * @internal
-     * @static
      * @param string $path
      * @throws RuntimeException
      * @return void
      */
-    protected static function _parseDictionnary ($path) {
-        if (!self::$_dictionnary_struct = parse_ini_file($path, true))
+    protected function _parseDictionnary ($path) {
+        if (!$this->_dictionnary_struct = parse_ini_file($path, true))
             throw new RuntimeException("Cannot parse {$path}");
     }
     
@@ -98,37 +93,36 @@ class axCaptcha {
      * Will throw a RuntimeException if the given
      * lang is not found in dictionnary.
      *
-     * @static
      * @param string $lang
      * @throws axMissingFileException
      * @throws RuntimeException
      * @return string
      */
-    public static function generate ($lang) {
-        if (empty(self::$_dictionnary_struct)) {
-            if (!is_file($path = realpath(self::$_config['dictionnaries_path']) . '/' . self::$_config['dictionnary']))
+    public function generate ($lang) {
+        if (empty($this->_dictionnary_struct)) {
+            if (!is_file($path = realpath($this->_config['dictionnaries_path']) . '/' . $this->_config['dictionnary']))
                 throw new axMissingFileException($path);
                 
-            self::_parseDictionnary($path);
+            $this->_parseDictionnary($path);
         }
         
-        if (empty(self::$_session)) {
-            self::$_session = new axSession;
-            self::$_session->start();
+        if (empty($this->_session)) {
+            $this->_session = new axSession;
+            $this->_session->start();
         }
         
-        if (empty(self::$_dictionnary_struct[$lang]))
+        if (empty($this->_dictionnary_struct[$lang]))
             throw new RuntimeException("Dictionnary does not provide any data for {$lang} language");
             
-        $question = array_rand(self::$_dictionnary_struct[$lang]);
+        $question = array_rand($this->_dictionnary_struct[$lang]);
         
-        if (self::$_config['dictionnary_type'] == 'static') {
-            $answer = array_map('strtolower', array_map('trim', explode(',', self::$_dictionnary_struct[$lang][$question])));
+        if ($this->_config['dictionnary_type'] == 'static') {
+            $answer = array_map('strtolower', array_map('trim', explode(',', $this->_dictionnary_struct[$lang][$question])));
         }
-        elseif (self::$_config['dictionnary_type'] == 'dynamic') {
-            if (!$alpha = callback(self::$_dictionnary_struct[$lang][$question]))
+        elseif ($this->_config['dictionnary_type'] == 'dynamic') {
+            if (!$alpha = callback($this->_dictionnary_struct[$lang][$question]))
                 throw new RuntimeException("Cannot understand alpha function definition");
-                
+            
             $argc = substr_count($question, '%d');
             $argv = array();
             for ($i=0; $i<$argc; $i++)
@@ -139,10 +133,10 @@ class axCaptcha {
             $question = call_user_func_array('sprintf', $argv);
         }
         else {
-            throw new RuntimeException("Unrecognized dictionnary type " . self::$_config['dictionnary_type']);
+            throw new RuntimeException("Unrecognized dictionnary type " . $this->_config['dictionnary_type']);
         }
             
-        self::$_session->captcha_ans = $answer;
+        $this->_session->captcha_ans = $answer;
         return $question;
     }
     
@@ -158,12 +152,23 @@ class axCaptcha {
      * @param string $answer
      * @return boolean
      */
-    public static function verify ($answer) {
-        if (empty(self::$_session)) {
-            self::$_session = new axSession;
-            self::$_session->start();
+    public function verify ($answer) {
+        if (empty($this->_session)) {
+            $this->_session = new axSession;
+            $this->_session->start();
         }
         
-        return in_array(strtolower(trim($answer)), self::$_session->captcha_ans);
+        return in_array(strtolower(trim($answer)), $this->_session->captcha_ans);
     }
+}
+
+if (!function_exists('callback')) {
+	function callback ($fct) {
+	    if (!preg_match('~(function)?\s*\((?P<args>[^\)]*)\)\s*\{(?P<code>.*)\}~', $fct, $matches))
+	        return false;
+	
+	    $args = $matches['args'];
+	    $code = $matches['code'];
+	    return create_function($args, $code);
+	}
 }

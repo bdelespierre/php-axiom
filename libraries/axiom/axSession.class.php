@@ -22,51 +22,20 @@
 class axSession {
     
     /**
-     * Internal configuration
-     * @internal
-     * @var array
-     */
-    protected static $_config;
-    
-    /**
      * axSession values
      * @var array
      */
     protected $_session_parameters;
-    
-    /**
-     * Configure.
-     *
-     * Note: if index conf is left to null,
-     * the $_SESSION array will be used.
-     *
-     * @param array $config
-     * @return void
-     */
-    public static function setConfig (array $config = array()) {
-        $default = array(
-            // FIXME remove session index
-            'index' => null,
-            'name'  => 'php-axiom',
-        );
-        
-        self::$_config = $config + $default;
-        
-        if (self::$_config['name'])
-            self::name(self::$_config['name']);
-    }
-    
+	
     /**
      * Construct a new session handler instance
      */
-    public function __construct () {
-        if (!session_id())
+    public function __construct ($name) {
+    	$this->name($name);
+        if (!$this->id())
             self::start();
         
-        if (self::$_config['index'])
-            $this->_session_parameters = & $_SESSION[self::$_config['index']];
-        else
-            $this->_session_parameters = & $_SESSION;
+        $this->_session_parameters = & $_SESSION;
     }
     
     /**

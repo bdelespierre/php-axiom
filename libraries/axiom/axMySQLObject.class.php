@@ -88,7 +88,7 @@ class axMySQLObject extends axModel {
                 throw new InvalidArgumentException("Invalid statement $statement");
         }
         
-        return $this->_statements[$statement] = axDatabase::prepare($query);
+        return $this->_statements[$statement] = Axiom::database()->prepare($query);
     }
     
     /**
@@ -114,7 +114,7 @@ class axMySQLObject extends axModel {
             
         $table = self::_sanitizeTablename($table);
             
-        if ($stmt = axDatabase::query("DESC $table")) {
+        if ($stmt = Axiom::database()->query("DESC $table")) {
             $this->_structure = array();
             foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $column) {
                 if (isset($column['Key']) && strpos($column['Key'], 'PRI') !== false)
@@ -237,13 +237,13 @@ class axMySQLObject extends axModel {
         
         axLog::debug('Query: '. $query);
         
-        $stmt = axDatabase::prepare($query);
+        $stmt = Axiom::database()->prepare($query);
         if ($stmt->execute($search_params)) {
             $stmt->setFetchMode(PDO::FETCH_INTO, $mysql_obj);
             
             if (PHP_VERSION_ID < 50200) {
                 $cquery = preg_replace('~SELECT.*FROM~', 'SELECT COUNT(*) FROM', $query);
-                $cstmt = axDatabase::prepare($query);
+                $cstmt = Axiom::database()->prepare($query);
                 !empty($search_params) ? $cstmt->execute($search_params) : $cstmt->execute();
                 $count = (int)$cstmt->fetchColumn();
                 $it->setCount($count);

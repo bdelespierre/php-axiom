@@ -6,9 +6,15 @@ final class Axiom {
 	
 	private static $_library;
 	
+	private static $_locale;
+
 	private static $_database;
 	
-	private static $_locale;
+	private static $_session;
+	
+	private static $_log;
+	
+	private static $_captcha;
 	
 	public static function configuration () {
 		if (isset(self::$_config))
@@ -38,8 +44,11 @@ final class Axiom {
 	public static function locale () {
 		if (isset(self::$_locale))
 			return self::$_locale;
-			
+						
 		$conf = self::configuration();
+		if (!$conf->localization)
+			return false;
+		
 		$lang_file = $conf->localization->lang->file;
 		$lang = $conf->localization->lang;
 		$default_lang = $conf->localization->lang->default;
@@ -50,7 +59,7 @@ final class Axiom {
 		return self::$_locale = new axLocale($lang_file, $lang, $default_lang, AXIOM_APP_PATH . '/ressource/cache');
 	}
 	
-	public function database () {
+	public static function database () {
 		if (isset(self::$_database))
 			return self::$_database;
 			
@@ -67,5 +76,48 @@ final class Axiom {
 		return self::$_database = new PDO($dsn, $user, $pass, $driver_options);
 	}
 	
+	public static function session () {
+		if (isset(self::$_session))
+			return self::$_session;
+			
+		$conf = self::configuration();
+		if (!$conf->session)
+			return false;
+			
+		return self::$_session = new axSession($conf->session->name);
+	}
 	
+	public static function log () {
+		if (isset(self::$_log))
+			return self::$_log;
+			
+		$conf = self::configuration();
+		if (!$conf->log)
+			return false;
+			
+		$opts = array(
+			'ignore_repeated_messages' => $conf->log->ignore_repeated_messages,
+			'log_errors'               => $conf->log->errors,
+			'log_exceptions'           => $conf->log->exceptions,
+		);
+		
+		return self::$_log = new axLog($opts);
+	}
+	
+	public static function captcha () {
+		if (isset(self::$_captcha))
+			return self::$_captcha;
+			
+		$conf = self::configuration();
+		if (!$conf->captcha)
+			return false;
+			
+		$opts = array(
+			'dictionnaries_path' => $conf->captcha->dictionnary->path,
+			'dictionnary' 	     => $conf->captcha->dictionnary,
+			'dictionnary_type'   => $conf->captcha->dictionnary->type,
+		);
+		
+		return self::$_captcha = new axCaptcha($opt);
+	}
 }
