@@ -17,3 +17,7 @@ require_once AXIOM_LIB_PATH . '/axiom/axLibrary.class.php';
 Axiom::library()->add('axiom');
 
 Axiom::configuration(dirname(__FILE__) . '/config.ini', 'dev');
+
+Axiom::locale();
+
+var_dump(localeconv());
