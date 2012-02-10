@@ -19,58 +19,51 @@ class axFeed extends ArrayIterator {
      * Feed meta informations
      * @var array
      */
-    protected static $_meta_inf = array();
+    protected $_meta_inf = array();
     
     /**
      * Feed configuration
      * @var array
      */
-    protected static $_config = array();
+    protected $_type;
     
-    /**
-     * Configure
-     * @param array $config
-     * @return void
-     */
-    public static function setConfig (array $config = array()) {
-        $defaults = array(
-            'default_type' => 'Rss',
-        );
-        
-        self::$_config = $config + $defaults;
-    }
+
     
     /**
      * Set all feeds meta informations
+     * 
+     * E.G.
+     * array(
+     *       'title' => 'Axiom Generic Feed',
+     *       'date' => date('r'),
+     *       'author' => array(
+     *       	'name' => 'Benjamin DELESPIERRE',
+     *       	'mail' => 'benjamin.delespierre@gmail.com'),
+     *       'lang' => axLang::getLocale(),
+     *       'description' => 'Axiom Generic Feed',
+     *       'copyright' => null,
+     *       'link' => url('feed'),
+     *       'id' => uniqid('ax'),
+     * );
+     * 
      * @param array $meta_inf
      * @return void
      */
     public static function setMetaInf (array $meta_inf = array()) {
-        $defaults = array(
-            'title' => 'Axiom Generic Feed',
-            'date' => date('r'),
-            'author' => array(
-            	'name' => 'Benjamin DELESPIERRE',
-            	'mail' => 'benjamin.delespierre@gmail.com'),
-            'lang' => axLang::getLocale(),
-            'description' => 'Axiom Generic Feed',
-            'copyright' => null,
-            'link' => url('feed'),
-            'id' => uniqid('ax'),
-        );
-        
-        self::$_meta_inf = $meta_inf + $defaults;
+        $this->_meta_inf = $meta_inf + $defaults;
     }
     
     /**
      * Default constructor
      * @param array $items
      */
-    public function __construct (array $items = array()) {
+    public function __construct (array $items = array(), $type) {
         parent::__construct(array(
-            'meta' => self::$_meta_inf,
+            'meta' => $this->_meta_inf,
             'items' => $items,
         ));
+        
+        $this->_type = $type;
     }
     
     /**
@@ -318,7 +311,7 @@ class axFeed extends ArrayIterator {
      */
     public function build ($type = null) {
         if (!$type)
-            $type = ucfirst(strtolower(self::$_config['default_type']));
+            $type = ucfirst(strtolower($this->_type));
         
         if (!axAutoloader::load($class = "ax{$type}FeedWriter"))
             throw new RuntimeException("$type feed writer not found", 4016);
