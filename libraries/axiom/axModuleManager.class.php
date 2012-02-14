@@ -15,128 +15,114 @@
  */
 class axModuleManager {
     
-    /**
-     * Module list cache
-     * @var array
-     */
-    protected static $_module_list = array();
+    const CACHE_FILE = "module.cache.php";
+    
+    protected $_path;
+    
+    protected $_axiomVersion;
+    
+    protected $_options;
+    
+    protected $_modules;
     
     /**
-     * Loaded module cache
-     * @var array
+     * Default constructor
+     * 
+     * Options:
+     * * check_dependencies [boolean] wherever to check dependencies or not
+     * * cache_dir [string | false] false will disable caching
+     * 
+     * @param string $path The path to the modules directory
+     * @param string $axiom_version Used during dependencies check
+     * @param array $options [optional] see above
      */
-    protected static $_loaded_modules = array();
-    
-    /**
-     * Modules meta-infs cache
-     * @var array
-     */
-    protected static $_modules_infs = array();
-    
-    /**
-     * Internal configuration
-     * @var array
-     */
-    protected static $_config;
-    
-    /**
-     * Set configuration
-     * @param arrat $config = array()
-     * @return void
-     */
-    public static function setConfig ($config = array()) {
+    public function __construct ($path, $axiom_version, array $options = array()) {
         $default = array(
-            'module_path' => AXIOM_APP_PATH . '/module',
-            'check_dependencies_versions' => true,
+            'check_dependencies' => true,
+            'cache_dir' => false,
         );
-        self::$_config = array_merge($default, $config);
         
-        if (empty(self::$_module_list)) {
-            foreach (self::getAvailableModules() as $fileinfo) {
-                if ($fileinfo->isDir())
-                    self::$_module_list[] = $fileinfo->getFilename();
-            }
+        if (!$this->_path = realpath($path)) {
+            throw new axMissingFileException($path);
         }
+        
+        $this->_axiomVersion = $axiom_version;
+        $this->_options      = $options + $default;
+        $this->_modules      = array();
     }
     
     /**
      * Get available modules
-     * @return axDirectoryFilterIterator
-     */
-    public static function getAvailableModules () {
-        $dir = new DirectoryIterator(self::$_config['module_path']);
-        return new axDirectoryFilterIterator($dir);
-    }
-    
-    /**
-     * Get module meta-inf.
-     * @param string $module
      * @return array
      */
-    public static function getInformations ($module) {
-        if (isset(self::$_modules_infs[$module]))
-            return self::$_modules_infs[$module];
-        
-        if (($infs = parse_ini_file(self::$_config['module_path'] . "/$module/module.ini", false)) !== false) {
-            return self::$_modules_infs[$module] = $infs;
-        }
-        return false;
-    }
-    
-    /**
-     * Load the given module
-     * @param strign $module
-     * @return boolean
-     */
-    public static function load ($module) {
-        if (!$module_inf = self::getInformations($module))
-            throw new RuntimeException("Module {$module} informations are not avaialble, check that module.ini isn't missing", 2050);
-            
-        axLog::debug("Loading module {$module}");
-        axLog::debug("Module infs " . json_encode($module_inf));
-        
-        if (!empty($module_inf['dependencies'])) {
-            foreach ($module_inf['dependencies'] as $dep_module) {
-                list($dep_module_name, $dep_module_version) = explode('-', $dep_module);
-                
-                if (isset(self::$_loaded_modules[$dep_module_name]))
-                    continue;
-                
-                if (self::$_config['check_dependencies_versions']) {
-                    if ($dep_module_name == 'axiom') {
-                        if (!self::_compareVersions(axVERSION, $dep_module_version))
-                            throw new RuntimeException("Module {$module} is not compatible with current Axiom version", 2052);
-                    
-                        continue;
-                    }
-                    
-                    if (!$dep_module_inf = self::getInformations($dep_module_name))
-                        throw new RuntimeException("Cannot retrieve dependency module {$dep_module_name} informations", 2051);
-                    
-                    if (!self::_compareVersions($dep_module_inf['version'], $dep_module_version)) {
-                        throw new RuntimeException("Dependency module {$dep_module_name} version ".
-                        						   "mismatch the required version for {$module}");
-                    }
+    public function getModules () {
+        if (empty($this->_modules)) {
+            if ($this->_options['cache_dir'] && is_readable($c = $this->_options['cache_dir'] . '/' . self::CACHE_FILE)) {
+                require $c;
+                $this->_modules = $modules;
+            }
+            else {
+                $directories = new DirectoryIterator($this->_path);
+                $iterator    = new axDirectoryFilterIterator($directories, array('.', '..', '.svn', '.git'));
+                foreach ($iterator as $item) {
+                    $this->getInformations((string)$item);
                 }
-                
-                self::load($dep_module_name);
+                $this->_cache();
             }
         }
-        
-        if (@include_once self::$_config['module_path'] . "/$module/config/bootstrap.php") {
-            self::$_loaded_modules[$module] = $module;
-            return true;
-        }
-        return false;
+        return $this->_modules;
     }
     
-    /**
+	/**
      * Check if the module exists
      * @param string $module
      * @return boolena
      */
-    public static function exists ($module) {
-        return array_search($module, self::$_module_list) !== false;
+    public function exists ($module) {
+        return array_key_exists($module, $this->getAvailableModules()) && $this->_modules[$module];
+    }
+    
+    /**
+     * Get module meta-inf.
+     * 
+     * Wil return false in case of error.
+     *  
+     * @param string $module
+     * @return array
+     */
+    public function getInformations ($module) {
+        if (!empty($this->_modules[$module]))
+            return $this->_modules[$module];
+        
+        if (!is_file($p = $this->_path . "/$module/module.ini"))
+            return false;
+        
+        if (($meta = parse_ini_file($p, false)) === false)
+            return false;
+            
+        $meta['path'] = $this->_path . "/$module";
+        return $this->_modules[$module] = $meta;
+    }
+    
+    /**
+     * Load the given module
+     * @param string $module
+     * @return boolean
+     */
+    public function load ($module) {
+        if (!$this->exists($module))
+            return false;
+            
+        if (!$meta = $this->getInformations($module))
+            throw new RuntimeException("Module {$module} informations are not avaialble, check that module.ini isn't missing", 2050);
+        
+        if ($this->_options['check_dependencies'] && !$this->_checkDependencies($module))
+            throw new RuntimeException("Module {$module} dependencies check failed");
+
+        if (!$this->_loadDependencies($module))
+            throw new RuntimeException("Cannot load dependency module for {$module}");
+        
+        return @require_once $meta['path'] . "/config/bootstrap.php";
     }
     
     /**
@@ -144,8 +130,79 @@ class axModuleManager {
      * @param string $module
      * @return boolean
      */
-    public static function checkUpdates ($module) {
+    public function checkUpdates ($module) {
         // TODO axModuleManager::checkUpdates
+    }
+    
+    /**
+     * Get the given module dependencies
+     * @param string $module
+     * @throws RuntimeException
+     * @return array
+     */
+    protected function _getDependencies ($module) {
+        if (!isset($this->_modules[$module]) || !$this->_modules[$module])
+            throw new RuntimeException("Unknown module {$module}");
+            
+        return isset($this->_modules[$module]['dependencies']) ? 
+            $this->_modules[$module]['dependencies'] : array();
+    }
+    
+    /**
+     * Check dependencies according to version numbers
+     * @param string $module
+     * @throws RuntimeException
+     * @return boolean
+     */
+    protected function _checkDependencies ($module) {
+        foreach ($this->_getDependencies($module) as $dep) {
+            list($dep_module_name, $dep_module_version) = explode('-', $dep_module);
+            
+            if ($dep_module_name == 'axiom') {
+                if (!self::_compareVersions($this->_axiomVersion, $dep_module_version))
+                    return false;
+                continue;
+            }
+            if (!$this->exists($dep_module_name))
+                return false;
+            
+            if (!$dep_meta = $this->getInformations($dep_module_name))
+                throw new RuntimeException("Cannot load dependencie module information");
+                
+            if (!self::_compareVersions($dep_meta['version'], $dep_module_version))
+                return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Load dependencies for the given module
+     * @param string $module
+     * @return boolean
+     */
+    protected function _loadDependencies ($module) {
+        foreach ($this->_getDependencies($module) as $module => $dep) {
+            try {
+                if (!$this->load($module))
+                    return false;
+            }
+            catch (Exception $e) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Store modules informations for later use
+     * @return boolean
+     */
+    protected function _cache () {
+        if (!$this->options['cache_dir'])
+			return false;
+		
+		$buffer = '<?php $modules=' . var_export($this->_modules, true) . '; ?>';
+		return (boolean)file_put_contents($this->_cache_dir . '/' . self::CACHE_FILE, $buffer);
     }
     
     /**

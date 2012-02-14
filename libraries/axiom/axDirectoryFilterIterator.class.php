@@ -19,14 +19,13 @@
  */
 class axDirectoryFilterIterator extends FilterIterator {
     
+    protected $_exclude;
+    
     /**
      * Default constructor
-     *
-     * TODO add exclusion pattern here
-     *
      * @param DirectoryIterator $iterator
      */
-    public function __construct(DirectoryIterator $iterator) {
+    public function __construct(DirectoryIterator $iterator, array $exclude = array('.', '..')) {
         parent::__construct($iterator);
     }
     
@@ -35,9 +34,22 @@ class axDirectoryFilterIterator extends FilterIterator {
      * @see FilterIterator::accept()
      */
     public function accept () {
-        return $this->current()->isDir() &&
-              !$this->current()->isDot() &&
-              !($this->current()->getFilename() == '.svn') &&
-              !($this->current()->getFilename() == 'admin');
+        if (empty($this->_exclude))
+            return true;
+        else
+            return $this->current()->isFile() && !in_array((string)$this->current(), $this->_exclude);
+    }
+    
+    /**
+     * Add on (or many) filenames to exclude from the Iterator
+     * @param string $filename [...]
+     * @return axDirectoryFilterIterator
+     */
+    public function exclude ($filename) {
+        if (!func_num_args())
+            return $this;
+        
+        $this->_exclude = array_merge($this->_exclude, func_get_args());
+        return $this;
     }
 }

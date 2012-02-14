@@ -9,7 +9,7 @@
 /**
  * Locale class
  * 
- * Banana banana banana
+ * TODO Local class description
  * 
  * @author Delespierre
  * @since 1.1.4

@@ -1,17 +1,15 @@
 <?php
 /**
  * Axiom: a lightweight PHP framework
- *
  * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @licence   http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
 /**
  * Base Helper Abstract Class
- *
  * @abstract
- * @author Delespierre
- * @package libaxiom
+ * @author     Delespierre
+ * @package    libaxiom
  * @subpackage helper
  */
 abstract class axBaseHelper implements axHelper {
@@ -43,11 +41,11 @@ abstract class axBaseHelper implements axHelper {
     /**
      * Default constructor
      * @param string $node_name
-     * @param array $attributes = array()
-     * @param mixed $node_value = null
+     * @param array  $attributes = array()
+     * @param mixed  $node_value = null
      */
     public function __construct ($node_name, $attributes = array(), $node_value = null) {
-        $this->_node_name = $node_name;
+        $this->_node_name  = $node_name;
         $this->_node_value = $node_value;
         $this->_attributes = $attributes;
     }
@@ -84,7 +82,7 @@ abstract class axBaseHelper implements axHelper {
      * Enable the use of axBaseHelper::setX() and axBaseHelper::getX()
      * where X is an attribute of the current node
      * @param string $method
-     * @param array $args
+     * @param array  $args
      * @return axBaseHelper
      */
     public function __call ($method, $args) {
@@ -92,7 +90,8 @@ abstract class axBaseHelper implements axHelper {
             $this->_attributes[lcfirst(substr($method, 3))] = $args[0];
         }
         elseif (strpos($method, 'get') === 0) {
-            return isset($this->_attributes[lcfirst(substr($method, 3))]) ? $this->_attributes[lcfirst(substr($method, 3))] : null;
+            return isset($this->_attributes[lcfirst(substr($method, 3))]) ?
+                $this->_attributes[lcfirst(substr($method, 3))] : null;
         }
         return $this;
     }
@@ -104,7 +103,7 @@ abstract class axBaseHelper implements axHelper {
     public function appendChild ($node) {
         return $this->_children[] = $node;
     }
-    
+
     /**
      * (non-PHPdoc)
      * @see Helper::prependChild()
@@ -129,7 +128,7 @@ abstract class axBaseHelper implements axHelper {
             return $node . " />";
         else
             $node .= ">";
-        	
+
         if ($this->_node_value !== null)
             $node .= $this->_node_value;
 

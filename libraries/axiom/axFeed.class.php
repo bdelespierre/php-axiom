@@ -50,7 +50,7 @@ class axFeed extends ArrayIterator {
      * @return void
      */
     public static function setMetaInf (array $meta_inf = array()) {
-        $this->_meta_inf = $meta_inf + $defaults;
+        $this->_meta_inf = $meta_inf;
     }
     
     /**
