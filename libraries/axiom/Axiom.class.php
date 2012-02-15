@@ -1,6 +1,8 @@
 <?php
 
 final class Axiom {
+    
+    const VERSION = '1.2.0';
 	
 	private static $_config;
 	
@@ -15,6 +17,8 @@ final class Axiom {
 	private static $_log;
 	
 	private static $_captcha;
+	
+	private static $_module;
 	
 	public static function configuration () {
 		if (isset(self::$_config))
@@ -119,5 +123,18 @@ final class Axiom {
 		);
 		
 		return self::$_captcha = new axCaptcha($opt);
+	}
+	
+	public static function module () {
+	    if (isset(self::$_module))
+	        return self::$_module;
+	        
+        $opts = array(
+            'check_dependencies' => true,
+            'cache_dir' => AXIOM_APP_PATH . '/ressource/cache',
+        );
+        $path = AXIOM_APP_PATH . '/module';
+        
+        return self::$_module = new axModuleManager($path, self::VERSION, $opts);
 	}
 }

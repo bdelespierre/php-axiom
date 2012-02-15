@@ -79,7 +79,7 @@ class axModuleManager {
      * @return boolena
      */
     public function exists ($module) {
-        return array_key_exists($module, $this->getAvailableModules()) && $this->_modules[$module];
+        return array_key_exists($module, $this->getModules()) && $this->_modules[$module];
     }
     
     /**
@@ -122,7 +122,7 @@ class axModuleManager {
         if (!$this->_loadDependencies($module))
             throw new RuntimeException("Cannot load dependency module for {$module}");
         
-        return @require_once $meta['path'] . "/config/bootstrap.php";
+        return (boolean)require_once $meta['path'] . "/config/bootstrap.php";
     }
     
     /**
@@ -156,7 +156,7 @@ class axModuleManager {
      */
     protected function _checkDependencies ($module) {
         foreach ($this->_getDependencies($module) as $dep) {
-            list($dep_module_name, $dep_module_version) = explode('-', $dep_module);
+            list($dep_module_name, $dep_module_version) = explode('-', $dep);
             
             if ($dep_module_name == 'axiom') {
                 if (!self::_compareVersions($this->_axiomVersion, $dep_module_version))
@@ -182,9 +182,15 @@ class axModuleManager {
      */
     protected function _loadDependencies ($module) {
         foreach ($this->_getDependencies($module) as $module => $dep) {
+            list($dep_module_name,$dep_module_version) = explode('-', $dep);
+            
+            if ($dep_module_name == 'axiom')
+                continue;
+            
             try {
-                if (!$this->load($module))
+                if (!$this->load($dep_module_name)) {
                     return false;
+                }
             }
             catch (Exception $e) {
                 return false;
@@ -198,11 +204,11 @@ class axModuleManager {
      * @return boolean
      */
     protected function _cache () {
-        if (!$this->options['cache_dir'])
+        if (!$this->_options['cache_dir'])
 			return false;
 		
 		$buffer = '<?php $modules=' . var_export($this->_modules, true) . '; ?>';
-		return (boolean)file_put_contents($this->_cache_dir . '/' . self::CACHE_FILE, $buffer);
+		return (boolean)file_put_contents($this->_options['cache_dir'] . '/' . self::CACHE_FILE, $buffer);
     }
     
     /**
