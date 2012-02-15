@@ -53,7 +53,7 @@ abstract class axBaseController {
      * @param axResponse $response
      * @return void
      */
-    final protected static function setaxResponse (axResponse &$response) {
+    final protected static function setResponse (axResponse &$response) {
         self::$_response = $response;
     }
     

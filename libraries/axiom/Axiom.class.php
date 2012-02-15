@@ -25,7 +25,9 @@ final class Axiom {
      * @var string
      */
     const VERSION = '1.2.0';
-	
+
+    // TODO add cache public property here
+    
     /**
      * Configuration object
      * @internal
@@ -117,7 +119,7 @@ final class Axiom {
 		list($file, $section, $class) = func_get_args() + $defaults;
 		
 		if (!class_exists($class, true))
-			throw new RuntimeException("Class {$class} not found");
+			throw new axClassNotFoundException($class);
 		
 		return self::$_config = new $class($file, $section, AXIOM_APP_PATH . '/ressource/cache');
 	}
@@ -142,7 +144,12 @@ final class Axiom {
 		if (isset(self::$_library))
 			return self::$_library;
 		
-		self::$_library = new axLibrary(AXIOM_APP_PATH . '/ressource/cache');
+		if (func_num_args())
+		    $cache_file = func_get_arg(0);
+	    else
+	        $cache_file = AXIOM_APP_PATH . '/ressource/cache';
+			
+		self::$_library = new axLibrary($cache_file);
 		self::$_library->register();
 		return self::$_library;
 	}

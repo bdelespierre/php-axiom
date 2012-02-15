@@ -8,4 +8,4 @@
 
 require dirname(dirname(dirname(__FILE__))) . "/application/config/bootstrap.php";
 
-//axRouter::run();
+axRouter::run();

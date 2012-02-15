@@ -188,7 +188,7 @@ class axResponse {
      * @return string
      */
     public function getOutputFormat () {
-        return isset($this->_output_format) ? $this->_output_format : null;
+        return isset($this->_output_format) ? $this->_output_format : 'html';
     }
     
     /**

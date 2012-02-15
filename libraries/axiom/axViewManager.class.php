@@ -8,12 +8,171 @@
 
 /**
  * View Manager Class
+ * 
+ * TODO add long description
  *
  * @author Delespierre
  * @package libaxiom
  * @subpackage core
  */
 class axViewManager {
+    
+    protected $_viewPaths;
+    protected $_outputCallback;
+    protected $_layoutVars;
+    
+    public function __construct ($view_paths = null) {
+        $this->_viewPaths      = (array)$view_paths;
+        $this->_outputCallback = false;
+        $this->_layoutVars     = array();
+    }
+    
+    public function add ($view) {
+        if (!$this->_viewPaths[] = realpath($view));
+            throw new axMissingFileException($view);
+            
+        return $this;
+    }
+    
+    public function load () {
+        $args = func_get_args();
+        if (!count($args))
+            return false;
+        
+        if (count($args) == 1 && $args[0] instanceof axResponse) {
+            /**
+             * @var axResponse
+             */
+            $response = $args[0];
+            
+            $view    = $response->getView();
+            $section = $response->getSection();
+            $format  = $response->getFormat();
+            
+            if (!is_file($path = $this->_findView($section, $view, $format)))
+                return false;
+        }
+        elseif (count($args) == 1 && is_file($args[0])) {
+            $path = $args[0];
+        }
+        else {
+            list($section,$view,$format) = $args + array('','','html');
+            
+            if (!is_file($path = $this->_findView($section, $view, $format)))
+                return false;
+        }
+        
+        // TODO continue here
+    }
+    
+    public function setOutputCallback ($alpha) {
+        if (!is_callable($this->_outputCallback = $alpha))
+            throw new InvalidArgumentException("Provided callback is not callable");
+            
+        return $this;
+    }
+    
+    public function setOutputFormat ($format) {
+        switch (strtolower($format)) {
+            case 'html': header('Content-Type: text/html; charset=UTF-8'); break;
+            case 'json': header('Content-Type: application/json; charset=UTF-8'); break;
+            case 'csv' : header('Content-Type: application/csv; charset=UTF-8'); break;
+            case 'xml' : header('Content-Type: text/xml; charset=UTF-8'); break;
+            case 'text': header('Content-Type: text/plain; charset=UTF-8'); break;
+            default: throw new RuntimeException("Unrecognized format {$format}");
+        }
+        
+        return $this;
+    }
+    
+    public function setLayout ($layout, $format = null) {
+        if ($layout === false) {
+            $this->_layout = false;
+            return $this;
+        }
+        
+        if (!is_file($file = $layout)
+         && !is_file($file = $this->_findLayout($layout, $format)))
+            throw new RuntimeException("Unable to find layout {$layout}");
+            
+        $this->_layout = $file;
+        return $this;
+    }
+    
+    public function getVar ($name) {
+        return isset($this->_layoutVars[$name]) ? $this->_layoutVars[$name] : null;
+    }
+    
+    public function setVar ($name, $value) {
+        $this->_layoutVars[$name] = $value;
+        return $this;
+    }
+    
+    public function __get ($key) {
+        return $this->getVar($key);
+    }
+    
+    public function __set ($key, $value) {
+        $this->setVar($key, $value);
+    }
+    
+    public function __isset ($key) {
+        return isset($this->_layoutVars[$key]);
+    }
+    
+    public function __unset ($key) {
+        unset($this->_layoutVars[$key]);
+    }
+    
+    protected function _findLayout ($layout, $format) {
+        if (!$format || !$layout)
+            return false;
+            
+        $format = strtolower($format);
+        
+        foreach ($this->_viewPaths as $view_path) {
+            if (is_file($path = $view_path . "/layouts/{$layout}.{$format}.php"))
+                return $path;
+        }
+        return false;
+    }
+    
+    protected function _findView ($section, $view, $format) {
+        if (!$section || !$view || !$format)
+            return false;
+        
+        $format = strtolower($format);
+            
+        foreach ($this->_viewPaths as $view_path) {
+            if (is_file($path = $view_path . "/{$section}/{$view}.{$format}.php"))
+                return $path;
+        }
+        return false;
+}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // OLD -------------------------------------------------------------------------------------------------------------
     
     /**
      * Internal configuration
@@ -46,13 +205,11 @@ class axViewManager {
         foreach (self::$_response->getHeaders() as $header)
             header($header);
         
-        self::setContentType($__format = ($f = self::$_response->getOutputFormat()) ? $f : self::$_config['default_output_format']);
+        self::setContentType($__format = self::$_response->getOutputFormat());
         
         $__section  = strtolower(str_replace('Controller', '', $controller));
         $__view     = strtolower(($v = self::$_response->getResponseView()) ? $v : $action);
         $__filename = self::getViewFilePath($__section, $__view, $__format);
-        
-        axLog::debug("Loading view: {$__filename}");
         
         if (!$__filename) {
             axLog::warning("No view defined for {$__section}/{$__view} with format {$__format}");
@@ -69,7 +226,7 @@ class axViewManager {
 
             include $__filename;
             
-            ${self::$_config['layout_content_var']} = ob_get_contents();
+            ${'page_content'} = ob_get_contents();
             ob_end_clean();
         }
         catch (Exception $e) {
@@ -83,11 +240,10 @@ class axViewManager {
         if (self::$_response->layout()) {
             if ($__layout = self::getLayoutFilePath($__format))
                 include $__layout;
-            else
-                axLog::warning("No such layout {$__layout}");
         }
-        else
-            echo ${self::$_config['layout_content_var']};
+        else {
+            echo ${'page_content'};
+        }
     }
     
 	/**

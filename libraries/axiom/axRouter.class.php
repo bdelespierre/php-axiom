@@ -8,6 +8,10 @@
 
 /**
  * Router Class
+ * 
+ * TODO long description
+ * 
+ * Note: this class rely on the Axiom class for logging and modules facilities.
  *
  * @author Delespierre
  * @package libaxiom
@@ -83,7 +87,7 @@ class axRouter {
      * @return void
      */
     public static function run ($route = null, $action = null) {
-        axLog::notice('--- axRouter Started ---');
+        Axiom::log()->notice('--- axRouter Started ---');
         
         if (!isset(self::$_request))
             self::$_request = new axRequest;
@@ -118,19 +122,19 @@ class axRouter {
             
             if (!empty($options['module'])) {
                 try {
-                    axLog::debug("Switching to module context: {$options['module']}");
-                    axModuleManager::load($options['module']);
+                    Axiom::log()->debug("Switching to module context: {$options['module']}");
+                    Axiom::module()->load($options['module']);
                 }
                 catch (Exception $e) {
-                    axLog::handleException($e);
+                    Axiom::log()->handleException($e);
                     return self::run('error', 'http500');
                 }
             }
         }
         elseif (is_string($route)) {
-            if (axModuleManager::exists($route)) {
-                axLog::debug("Switching to module context: {$route}");
-                axModuleManager::load($route);
+            if (Axiom::module()->exists($route)) {
+                Axiom::log()->debug("Switching to module context: {$route}");
+                Axiom::module()->load($route);
             }
             
             $controller = ucfirst($route);
@@ -143,7 +147,7 @@ class axRouter {
         if (strpos(strtolower($controller), 'controller') === false)
             $controller .= 'Controller';
         
-        if (!axAutoloader::load($controller))
+        if (!class_exists($controller, true))
             list($controller, $action) = array('ErrorController', 'http404');
         
         self::load($controller, $action);
@@ -164,27 +168,27 @@ class axRouter {
             call_user_func_array(array($controller, '_init'), array(&self::$_request, &self::$_response));
             if (!is_callable(array($controller, $action)))
                 throw new BadMethodCallException("No such action for $controller", 2003);
-            axLog::debug("Invoke: {$controller}::{$action}");
+            Axiom::log()->debug("Invoke: {$controller}::{$action}");
             self::$_response->addAll(call_user_func(array($controller, $action)));
         }
         catch (BadMethodCallException $e) {
-            axLog::debug("BadMethodCallException caught by router: " . $e->getMessage());
+            Axiom::log()->debug("BadMethodCallException caught by router: " . $e->getMessage());
             return self::run("error", "http404");
         }
         catch (axLoginException $e) {
-            axLog::debug("axLoginException caught by router: " . $e->getMessage());
+            Axiom::log()->debug("axLoginException caught by router: " . $e->getMessage());
             return self::run("error", "http403");
         }
         catch (axForwardException $e) {
-            axLog::debug("axForwardException caught by router");
+            Axiom::log()->debug("axForwardException caught by router");
             return self::load($e->getController(), $e->getAction());
         }
         catch (axRedirectException $e) {
-            axLog::debug("axRedirectException caught by router");
+            Axiom::log()->debug("axRedirectException caught by router");
             return self::redirect($e);
         }
         catch (Exception $e) {
-            axLog::handleException($e);
+            Axiom::log()->handleException($e);
             if ($code = $e->getCode())
                 self::$_response->error_code = $code;
             return self::run("error", "http500");
@@ -195,7 +199,7 @@ class axRouter {
             axViewManager::load($controller, $action);
         }
         catch (Exception $e) {
-            axLog::handleException($e);
+            Axiom::log()->handleException($e);
             if ($code = $e->getCode())
                 self::$_response->error_code = $code;
             return self::run("error", "http500");
@@ -247,7 +251,7 @@ class axRouter {
     protected static function _getRoute ($url) {
         foreach (self::$_routes as $route) {
             if ($params = $route->match($url)) {
-                axLog::debug("Choosen route: " . $route->getTemplate() . " [params] " . json_encode($route->getParams()));
+                Axiom::log()->debug("Choosen route: " . $route->getTemplate() . " [params] " . json_encode($route->getParams()));
                 return $route;
             }
         }

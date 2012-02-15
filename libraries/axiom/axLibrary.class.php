@@ -9,12 +9,12 @@
 /**
  * Library Class
  * 
- * TODO class documentation
+ * TODO Long description here
  * 
- * This class is inspired by Gerald's Blog : http://www.croes.org/gerald/blog
- * 
+ * This class is inspired by Gerald's Blog
+ * @link http://www.croes.org/gerald/blog
  * @author Delespierre
- * @since 1.1.4
+ * @since 1.2.0
  * @package libaxiom
  * @subpackage core
  */
@@ -46,8 +46,8 @@ class axLibrary {
 	
 	/**
 	 * Flag to tell if the library paths have been crawled
-	 * true: crawl is possible
-	 * false: crawl has been done before and will not be done again
+	 * * true : crawl is possible
+	 * * false: crawl has been done before and will not be done again
 	 * @var boolean
 	 */
 	protected $_regenerate_flag = true;
@@ -68,18 +68,19 @@ class axLibrary {
 	/**
 	 * Add a library to discover
 	 * 
-	 * $name parameter is a foldername.
-	 * if it's not an actual folder, a seek will be perofrmed in
-	 * /library and /application/library to find the directory.
+	 * You may pass a $options parameters to set file extensions for the library or to ask for a recursive inclusion.
+	 * A reccursive inclusion consist of a complete directory tree traversing to find the class files.
 	 * 
-	 * You may also pass a $options parameters to set file 
-	 * extensiosn for this library or to ask for a recursive
-	 * inclusion.
+	 * The class file must be named according to the classname:
+	 * * for instance, the file for `MyClass` has to be named `MyClass.php` (pay attention to the case sensitiveness)
+	 * * the extension is arbitrary (Axiom classes uses `.class.php` but you may use the extension you want as long as
+	 *   you specify it in the `$options` parameter.
+	 *   
+	 * Note: The axLibrary class CANNOT handle more than one class per file.
 	 * 
-	 * A RuntimeExcetion is emitted if the library path cannot 
-	 * be found.
+	 * A RuntimeExcetion is emitted if the library path cannot be found.
 	 * 
-	 * @param string $name
+	 * @param string $name The name of a folder located in `/libraries` or `/application/libraries` or a path
 	 * @param array $options [optional]
 	 * @throws RuntimeException
 	 * @return axLibrary
@@ -91,7 +92,9 @@ class axLibrary {
 		);
 		
 		$options += $default;
-		if (!is_dir($dir = $name) && !is_dir($dir = AXIOM_LIB_PATH .'/'. $name) && !is_dir($dir = AXIOM_APP_PATH .'/library/'. $name))
+		if (!is_dir($dir = $name) 
+		 && !is_dir($dir = AXIOM_LIB_PATH .'/'. $name) 
+		 && !is_dir($dir = AXIOM_APP_PATH .'/library/'. $name))
 			throw new RuntimeException("Cannot find library {$name}");
 		
 		if (!is_readable($dir))
@@ -104,11 +107,9 @@ class axLibrary {
 	/**
 	 * __autoload implementation
 	 * 
-	 * Will seek for the $classname in the local cache
-	 * and include the proper file if found.
+	 * Will seek for the $classname in the local cache and include the proper file if found.
 	 * 
-	 * An axClassNotFoundException is thrown if such class
-	 * can not be found, even after a library crawl.
+	 * An axClassNotFoundException is thrown if such class can not be found, even after a library crawl.
 	 * 
 	 * @param string $classname
 	 * @throws axClassNotFoundException
@@ -125,7 +126,7 @@ class axLibrary {
 			return $this->autoload($classname);
 		}
 		
-		throw new axClassNotFoundException($classname);
+		return false;
 	}
 	
 	/**
@@ -137,9 +138,8 @@ class axLibrary {
 	}
 	
 	/**
-	 * Crawls all the registered path to locate the library files
-	 * according to the extension(s) provided as options
-	 * (see axLibrary::add).
+	 * Crawls all the registered path to locate the library files according to the extension(s) provided as options
+	 * @see axLibrary::add
 	 * @return void
 	 */
 	protected function _includeAll () {
@@ -155,7 +155,8 @@ class axLibrary {
 			$files = new axExtensionFilterIterator($directories, $ext);
 			
 			foreach ($files as $file) {
-				$classname = substr((string)$file, 0, strpos((string)$file, '.'));
+			    $basename  = $file->getBasename();
+				$classname = substr($basename, 0, strpos($basename, '.'));
 				$this->_classes[$classname] = $file->getRealPath();
 			}
 		}

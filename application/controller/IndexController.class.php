@@ -16,7 +16,7 @@
 class IndexController extends axBaseController {
     
     public static function index () {
-        $axversion = axVERSION;
+        $axversion = Axiom::VERSION;
         return compact('axversion');
     }
 }
