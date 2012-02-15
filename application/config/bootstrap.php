@@ -9,6 +9,7 @@
 define('AXIOM_LIB_PATH', dirname(dirname(dirname(__FILE__))) . '/libraries');
 define('AXIOM_APP_PATH', dirname(dirname(dirname(__FILE__))) . '/application');
 
+require_once AXIOM_LIB_PATH . '/util/functions.php';
 require_once AXIOM_LIB_PATH . '/axiom/Axiom.class.php';
 require_once AXIOM_LIB_PATH . '/axiom/axClassNotFoundException.class.php';
 require_once AXIOM_LIB_PATH . '/axiom/axExtensionFilterIterator.class.php';
