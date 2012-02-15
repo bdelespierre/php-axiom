@@ -50,7 +50,7 @@ final class Axiom {
 			return self::$_locale;
 						
 		$conf = self::configuration();
-		if (!$conf->localization)
+		if (!$conf->localization->getValue())
 			return false;
 		
 		$lang_file = $conf->localization->lang->file;
@@ -68,7 +68,7 @@ final class Axiom {
 			return self::$_database;
 			
 		$conf = self::configuration();
-		if (!$conf->database)
+		if (!$conf->database->getValue())
 			return false;
 			
 		$dsn = "{$conf->database->type}:dbname={$conf->database->database};host={$conf->database->host}";
@@ -85,7 +85,7 @@ final class Axiom {
 			return self::$_session;
 			
 		$conf = self::configuration();
-		if (!$conf->session)
+		if (!$conf->session->getValue())
 			return false;
 			
 		return self::$_session = new axSession($conf->session->name);
@@ -96,7 +96,7 @@ final class Axiom {
 			return self::$_log;
 			
 		$conf = self::configuration();
-		if (!$conf->log)
+		if (!$conf->log->getValue())
 			return false;
 			
 		$opts = array(
@@ -113,7 +113,7 @@ final class Axiom {
 			return self::$_captcha;
 			
 		$conf = self::configuration();
-		if (!$conf->captcha)
+		if (!$conf->captcha->getValue())
 			return false;
 			
 		$opts = array(
@@ -128,6 +128,9 @@ final class Axiom {
 	public static function module () {
 	    if (isset(self::$_module))
 	        return self::$_module;
+	        
+        if (!self::configuration()->module->getValue())
+            return false;
 	        
         $opts = array(
             'check_dependencies' => true,
