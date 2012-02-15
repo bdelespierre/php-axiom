@@ -15,14 +15,38 @@
  */
 class axModuleManager {
     
+    /**
+     * Cache file
+     * @var string
+     */
     const CACHE_FILE = "module.cache.php";
     
+    /**
+     * Modules path
+     * @internal
+     * @var string
+     */
     protected $_path;
     
+    /**
+     * Axiom version
+     * @internal
+     * @var unknown_type
+     */
     protected $_axiomVersion;
     
+    /**
+     * Options
+     * @internal
+     * @var array
+     */
     protected $_options;
     
+    /**
+     * Module descriptors
+     * @internal
+     * @var array
+     */
     protected $_modules;
     
     /**
