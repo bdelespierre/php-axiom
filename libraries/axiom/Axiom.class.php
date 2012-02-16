@@ -26,7 +26,12 @@ final class Axiom {
      */
     const VERSION = '1.2.0';
 
-    // TODO add cache public property here
+    /**
+     * Flag used to toggle cache
+     * @staticvar
+     * @var boolean
+     */
+    public static $cache = true;
     
     /**
      * Configuration object
@@ -88,9 +93,16 @@ final class Axiom {
 	 * Module Manager object
 	 * @internal
 	 * @staticvar
-	 * @var unknown_type
+	 * @var axModuleManager
 	 */
 	private static $_module;
+	
+	/**
+	 * View Manager object
+	 * @staticvar
+	 * @var axViewManager
+	 */
+	private static $_view;
 	
 	/**
 	 * Get the configuration object
@@ -121,7 +133,9 @@ final class Axiom {
 		if (!class_exists($class, true))
 			throw new axClassNotFoundException($class);
 		
-		return self::$_config = new $class($file, $section, AXIOM_APP_PATH . '/ressource/cache');
+        $cache_dir = self::$cache ? AXIOM_APP_PATH . '/ressource/cache' : false;
+        
+		return self::$_config = new $class($file, $section, $cache_dir);
 	}
 	
 	/**
@@ -144,12 +158,9 @@ final class Axiom {
 		if (isset(self::$_library))
 			return self::$_library;
 		
-		if (func_num_args())
-		    $cache_file = func_get_arg(0);
-	    else
-	        $cache_file = AXIOM_APP_PATH . '/ressource/cache';
+		$cache_dir = self::$cache ? AXIOM_APP_PATH . '/ressource/cache' : false;
 			
-		self::$_library = new axLibrary($cache_file);
+		self::$_library = new axLibrary($cache_dir);
 		self::$_library->register();
 		return self::$_library;
 	}
@@ -171,14 +182,16 @@ final class Axiom {
 		if (!$conf->localization->getValue())
 			return false;
 		
-		$lang_file    = $conf->localization->lang->file;
-		$lang         = $conf->localization->lang;
-		$default_lang = $conf->localization->lang->default;
+		$lang_file    = (string)$conf->localization->lang->file;
+		$lang         = (string)$conf->localization->lang;
+		$default_lang = (string)$conf->localization->lang->default;
+		
+		$cache_dir = self::$cache ? AXIOM_APP_PATH . '/ressource/cache' : false;
 		
 		if (strpos($lang_file, '//') === 0)
 			$lang_file = str_replace("//", AXIOM_APP_PATH . '/', $lang_file);
 		
-		return self::$_locale = new axLocale($lang_file, $lang, $default_lang, AXIOM_APP_PATH . '/ressource/cache');
+		return self::$_locale = new axLocale($lang_file, $lang, $default_lang, $cache_dir);
 	}
 	
 	/**
@@ -230,15 +243,15 @@ final class Axiom {
 		if (!$conf->session->getValue())
 			return false;
 			
-		return self::$_session = new axSession($conf->session->name);
+		return self::$_session = new axSession((string)$conf->session->name);
 	}
 	
 	/**
 	 * Get the log object
 	 * 
 	 * If the log object is not defined, it will be initialized using the configuration parameters (see 
-	 * Axiom::configuration method).
-	 * To add a logger in the log chain, simply call the addLogger method on the log object.
+	 * `Axiom::configuration`).
+	 * To add a logger in the log chain, simply call the `addLogger` method on the log object.
 	 * E.G.
 	 * * Axiom::log()->addLogger(new AxTextLogger(AXIOM_APP_PATH . '/ressource/log/app.log'));
 	 * 
@@ -254,9 +267,9 @@ final class Axiom {
 			return false;
 			
 		$opts = array(
-			'ignore_repeated_messages' => $conf->log->ignore_repeated_messages,
-			'log_errors'               => $conf->log->errors,
-			'log_exceptions'           => $conf->log->exceptions,
+			'ignore_repeated_messages' => (string)$conf->log->ignore_repeated_messages,
+			'log_errors'               => (string)$conf->log->errors,
+			'log_exceptions'           => (string)$conf->log->exceptions,
 		);
 		
 		return self::$_log = new axLog($opts);
@@ -280,9 +293,9 @@ final class Axiom {
 			return false;
 			
 		$opts = array(
-			'dictionnaries_path' => $conf->captcha->dictionnary->path,
-			'dictionnary' 	     => $conf->captcha->dictionnary,
-			'dictionnary_type'   => $conf->captcha->dictionnary->type,
+			'dictionnaries_path' => (string)$conf->captcha->dictionnary->path,
+			'dictionnary' 	     => (string)$conf->captcha->dictionnary,
+			'dictionnary_type'   => (string)$conf->captcha->dictionnary->type,
 		);
 		
 		return self::$_captcha = new axCaptcha($opt);
@@ -314,10 +327,43 @@ final class Axiom {
 	        
         $opts = array(
             'check_dependencies' => true,
-            'cache_dir' => AXIOM_APP_PATH . '/ressource/cache',
+            'cache_dir'          => self::$cache ? AXIOM_APP_PATH . '/ressource/cache' : false,
         );
         $path = AXIOM_APP_PATH . '/module';
         
         return self::$_module = new axModuleManager($path, self::VERSION, $opts);
+	}
+	
+	/**
+	 * Get the view manager
+	 * 
+	 * If the view manager object is not defined, it will be initialized using the configuration parameters (see 
+	 * Axiom::configuration method).
+	 * 
+	 * To load a view, use the load method on the view manager object.
+	 * E.G.
+	 * * Axiom::view()->load(...);
+	 * 
+	 * To add layout vars, use the view manager's getters / setters.
+	 * E.G.
+	 * * Axiom::view()->var = 'value';
+	 * * // or
+	 * * Axiom::view()->setVar('var', 'value');
+	 * * // or
+	 * * Axiom::view()->setVars(array('var' => 'value', ...));
+	 * 
+	 * @return axViewManager
+	 */
+	public static function view () {
+	    if (isset(self::$_view))
+	        return self::$_view;
+	        
+        $conf      = self::configuration()->view;
+        $layout    = (string)$conf->layout->getValue();
+        $vars      = $conf->layout->vars->getValue();
+        $format    = (string)$conf->format->default;
+        $view_path = AXIOM_APP_PATH . '/view';
+        
+        return self::$_view = new axViewManager($layout, $view_path, $format, $vars);
 	}
 }
