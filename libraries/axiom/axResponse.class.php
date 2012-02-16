@@ -8,6 +8,8 @@
 
 /**
  * Response Class
+ * 
+ * TODO long description
  *
  * @author Delespierre
  * @package libaxiom
@@ -16,13 +18,66 @@
 class axResponse {
     
     /**
-     * Response vars
-     * @var array
+     * View name
+     * @internal
+     * @var string
      */
-    protected $_response_vars;
+    protected $_view;
     
     /**
-     * Response vars filter
+     * View section
+     * @internal
+     * @var string
+     */
+    protected $_viewSection;
+    
+    /**
+     * View format
+     * @internal
+     * @var string
+     */
+    protected $_viewFormat;
+    
+    /**
+     * Layout name
+     * @internal
+     * @var string
+     */
+    protected $_viewLayout;
+    
+    /**
+     * Enabled layout flag
+     * @internal
+     * @var boolean
+     */
+    protected $_layoutEnabled;
+    
+    /**
+     * View variables
+     * @internal
+     * @var array
+     */
+    protected $_vars;
+    
+    /**
+     * Headers list
+     * @internal
+     * @var array
+     */
+    protected $_headers;
+    
+    /**
+     * Output callback
+     * 
+     * This callback will be executed on the response buffer.
+     * 
+     * @var callback 
+     */
+    protected $_outputCallback;
+    
+    /**
+     * View vars filter
+     * @see http://www.php.net/manual/en/function.filter-var-array.php
      * @var array
      */
     protected $_filter;
@@ -34,227 +89,271 @@ class axResponse {
     protected $_messages;
     
     /**
-     * Response view to be used
-     * @var string
-     */
-    protected $_response_view;
-    
-    /**
-     * Response output format
-     * @var string
-     */
-    protected $_output_format;
-    
-    /**
-     * Enable page layout
-     * @var boolean
-     */
-    protected $_layout_enabled;
-    
-    /**
-     * Headers to be sent
+     * View stylesheets
      * @var array
      */
-    protected $_headers;
+    protected $_styleSheets;
+    
+    /**
+     * View scripts
+     * @var array
+     */
+    protected $_scripts;
     
     /**
      * Default constructor
      */
     public function __construct () {
-        $this->_response_vars = array();
-        $this->_messages = array();
-        $this->_layout_enabled = true;
-        $this->_headers = array();
+        $this->_layoutEnabled = true;
+        $this->_vars          = array();
+        $this->_headers       = array();
+        $this->_messages      = array();
+        $this->_styleSheets   = array();
+        $this->_scripts       = array();
     }
     
     /**
-     * Getter for response vars
+     * Get the view name
+     * 
+     * Will return `null` if no view name was specified.
+     * 
+     * @return string
+     */
+    public function getView () {
+        return $this->_view;
+    }
+    
+    /**
+     * Set view name
+     * @param string $view
+     * @return axResponse
+     */
+    public function setView ($view) {
+        $this->_view = $view;
+        return $this;
+    }
+    
+    /**
+     * Get the view section
+     * 
+     * Will return `null` if no view section was specified.
+     * 
+     * @return string
+     */
+    public function getViewSection () {
+        return $this->_viewSection;
+    }
+    
+    /**
+     * set View section
+     * @param string $section
+     * @return axResponse
+     */
+    public function setViewSection ($section) {
+        $this->_viewSection = $section;
+        return $this;
+    }
+    
+    /**
+     * Get view format
+     * 
+     * Will return `null` if no format was specified.
+     * 
+     * @return string
+     */
+    public function getFormat () {
+        return $this->_viewFormat;
+    }
+    
+    /**
+     * Set view format
+     * @param srting $format
+     * @return axResponse
+     */
+    public function setFormat ($format) {
+        $this->_viewFormat = $format;
+        return $this;
+    }
+    
+    /**
+     * Get view layout
+     * 
+     * Will return `null` if not layout was specified
+     * 
+     * @return string
+     */
+    public function getLayout () {
+        return $this->_viewLayout;
+    }
+    
+    /**
+     * Set view layout
+     * @param string $layout
+     * @return axResponse
+     */
+    public function setLayout ($layout) {
+        $this->_viewLayout = $layout;
+        return $this;
+    }
+    
+    /**
+     * Enable of disable layout according to the $enabled parameter
+     * @param boolean $enabled [optional] [default `true`]
+     * @return axResponse
+     */
+    public function enableLayout ($enabled = true) {
+        $this->_layoutEnabled = (boolean)$enabled;
+        return $this;
+    }
+    
+    /**
+     * Tells if the layout is enabled (`null`) or not (`null`)
+     * @return boolean
+     */
+    public function layoutState () {
+        return $this->_layoutEnabled;
+    }
+    
+    /**
+     * Get the given var
+     * 
+     * If a filter was set using axResponse::setFilter, the filter will be applied before the data is returned.
+     * Will return null if the corresponding var is not set.
+     * Will return false if the filter fails.
+     * IMPORTANT: You will loose all vars that doesn't pass the filter, they'll be set to `false`.
+     * 
+     * @param string $name
+     * @return mixed
+     */
+    public function getVar ($name) {
+        $this->_applyFilter();
+        return isset($this->_vars[$name]) ? $this->_vars[$name] : null;
+    }
+    
+    /**
+     * Set the given var
+     * @param string $name
+     * @param mixed $value
+     * @return axResponse
+     */
+    public function setVar ($name, $value) {
+        $this->_vars[(string)$name] = $value;
+        return $this;
+    }
+    
+    /**
+     * __get implementation
+     * 
+     * Alias of axResponse::getVar
+     * 
+     * @see axResponse::getVar
      * @param string $key
      * @return mixed
      */
     public function __get ($key) {
-        return isset($this->_response_vars[$key]) ? $this->_response_vars[$key] : null;
+        return $this->getVar($key);
     }
     
     /**
-     * Setter for response vars
+     * __set implementation
+     * 
+     * Alias of axResponse::setVar
+     * 
+     * @see axResponse::setVar
      * @param string $key
      * @param mixed $value
      * @return void
      */
     public function __set ($key, $value) {
-        $this->_response_vars[$key] = $value;
+        $this->setVar($key,$value);
     }
     
     /**
-     * Get response vars
+     * Get all the registered var
+     * 
+     * If a filter was set using axResponse::setFilter, the filter will be applied before the data are returned.
+     * Will return false if the filter fails.
+     * IMPORTANT: You will loose all vars that doesn't pass the filter, they'll be set to `false`.
+     * 
+     * @see http://www.php.net/manual/en/function.filter-var-array.php
      * @return array
      */
-    public function getResponseVars () {
-        return $this->_response_vars;
+    public function getVars () {
+        $this->_applyFilter();
+        return $this->_vars;
     }
     
     /**
-     * Add responses vars at once
+     * Add or merge a collection to the current registered variables 
+     * 
+     * Will return false if the `$method` parameter is unknown.
+     * 
      * @param array $collection
-     * @return void
+     * @param string $method [optional] [default `axResponse::MERGE_VARS`] Possible values are `axResponse::MERGE_VARS` 
+     * or `axResponse::ADD_VARS`
      */
-    public function addAll ($collection = array(), $method = "merge") {
-        if (empty($collection))
-            return;
-            
-        switch (strtolower($method)) {
-            default:
-            case "merge":
-                $this->_response_vars = array_merge($this->_response_vars, (array)$collection);
+    public function addVars (array $collection, $method = self::MERGE_VARS) {
+        switch ($method) {
+            case self::MERGE_VARS:
+                $this->_vars = array_merge($this->_vars, $collection);
                 break;
-                
-            case "add":
-                $this->_response_vars += (array)$collection;
+            case self::ADD_VARS:
+                $this->_vars += $vars;
+                break;
+            default:
+                return false;
         }
+        return $this;
     }
     
     /**
-     * Sets the response vars filter
-     * @param array $definition
-     * @return boolean
+     * Remove all the registered variables
+     * @return axResponse 
      */
-    public function setFilter ($definition) {
-        if ($response_vars = filter_var_array($this->_response_vars, $definition)) {
-            $this->_filter = $definition;
-            $this->_response_vars = $response_vars;
-            return true;
+    public function clearVars () {
+        $this->_vars = array();
+        return $this;
+    }
+    
+    /**
+     * Add an header to the header list
+     * 
+     * If the header is already present in the list, it will be replaced.
+     * NOTE: HTTP Response header fields have been presets as axResponse constants.
+     * 
+     * @param string $field Should be on on axResponse::HEADER_*
+     * @param string $value
+     * @return axResponse
+     */
+    public function setHeader ($field, $value) {
+        $this->_headers[] = "{$field}: {$value}";
+        return $this;
+    }
+    
+    /**
+     * Set multiple headers at once
+     * 
+     * The `$headers` parameters must be an associative array which keys are header fields and values header values.
+     * E.G.
+     * $response->setHeaders(array(
+     * 	   axResponse::HEADER_CONTENT_TYPE         => 'application/octet-stream',
+     * 	   axResponse::HEADER_CONTENT_DISCPOSITION => 'attachment; filename=download.abc'
+     * ));
+     * If some header were previously set, they will be replaced.
+     * 
+     * @see axResponse::addHeader
+     * @param array $headers
+     * @return axResponse
+     */
+    public function setHaders (array $headers) {
+        foreach ($headers as $field => $value) {
+            $this->setHeader($field, $value);
         }
-        return false;
+        return $this;
     }
     
     /**
-     * Get the ouput filter
-     * Wil return null if no filter was set
-     * @return array
-     */
-    public function getFilter () {
-        return $this->_filter;
-    }
-    
-    /**
-     * Add a message
-     * @param string $message
-     * @param integer $level = MESSAGE_WARNING
-     * @return void
-     */
-    public function addMessage ($message, $level = MESSAGE_WARNING) {
-        if (!isset($this->_messages[$level]))
-            $this->_messages[$level] = array();
-        
-        $this->_messages[$level][] = $message;
-    }
-    
-    /**
-     * Get messages
-     * @return array
-     */
-    public function getMessages () {
-        return $this->_messages;
-    }
-    
-    /**
-     * Get response view
-     * @return string
-     */
-    public function getResponseView () {
-        return isset($this->_response_view) ? $this->_response_view : null;
-    }
-    
-    /**
-     * Set response view
-     * @param string $view_name
-     * @return void
-     */
-    public function setResponseView ($view_name) {
-        $this->_response_view = $view_name;
-    }
-    
-    /**
-     * Reset the response view to default
-     * @return void
-     */
-    public function resetResponseView () {
-        $this->_response_view = null;
-    }
-    
-    /**
-     * Get output format
-     * @return string
-     */
-    public function getOutputFormat () {
-        return isset($this->_output_format) ? $this->_output_format : 'html';
-    }
-    
-    /**
-     * Set output format
-     * @param string $format
-     * @return void
-     */
-    public function setOutputFormat ($format) {
-        $this->_output_format = $format;
-    }
-    
-    /**
-     * Set output transformer
-     * FIXME Not implemented
-     * @param callback $callback
-     * @throws InvalidArgumentException
-     * @return void
-     */
-    public function setOutputTransformer ($callback) {
-        if (is_callable($callback))
-            $this->_output_transformer = $callback;
-        else
-            throw new InvalidArgumentException("Passed callback is not callable", 2007);
-    }
-    
-    /**
-     * Disable or enable the page layout
-     * @param $enabled =true
-     * @return void
-     */
-    public function enableLayout ($enabled = true) {
-        $this->_layout_enabled = (boolean)$enabled;
-    }
-    
-    /**
-     * Tell if the layout is enabled
-     * @return boolean
-     */
-    public function layout () {
-        return $this->_layout_enabled;
-    }
-    
-    /**
-     * Add an HTTP header field
-     * @param string $header
-     * @return void
-     */
-    public function setHeader ($header) {
-        $this->_headers[md5($header)] = $header;
-    }
-    
-    /**
-     * Removes an HTTP header field
-     * @param string $header
-     * @return void
-     */
-    public function unsetHeader ($header) {
-        if (isset($this->_headers[md5($header)])) {
-            unset($this->_headers[md5($header)]);
-            return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Get all the headers
+     * Get the headers list
      * @return array
      */
     public function getHeaders () {
@@ -262,10 +361,285 @@ class axResponse {
     }
     
     /**
-     * Removes all headers
-     * @return void
+     * Clear all registered headers
+     * @return axResponse
      */
-    public function flushHeaders () {
+    public function clearHeaders () {
         $this->_headers = array();
+        return $this;
     }
+    
+    /**
+     * Set a callback to be executed on the output buffer before it is sent to the browser
+     * 
+     * E.G.
+     * // Let's replace all <h1> tags by <h3>
+     * $response->setOutputCallback(create_function(
+     *     '$buffer',
+     *     'return str_replace(array('<h1>','</h1>'),array('<h3>','</h3>'),$buffer);'
+     * ));
+     * Callback must be a valid callback (see http://php.net/manual/en/language.pseudo-types.php),
+     * false will be returned otherwise.
+     * 
+     * @param callback $callback
+     * @return axResponse
+     */
+    public function setOutputCallback ($callback) {
+        if (!is_callable($this->_outputCallback = $callback)) {
+            $this->_outputCallback = null;
+            return false;
+        }
+        return $this;
+    }
+    
+    /**
+     * Get the output callback
+     * 
+     * Will return `null` if no output callback was set.
+     * 
+     * @return callback
+     */
+    public function getOutputCallback () {
+        return $this->_outputCallback;
+    }
+    
+    /**
+     * Get the registered filter
+     * 
+     * @see http://php.net/manual/en/function.filter-var-array.php
+     * @return array
+     */
+    public function getFilter () {
+        return $this->_filter;
+    }
+    
+    /**
+     * Set a response variable filter
+     * 
+     * When you set a variable filter, all data you may extract with `axResponse::getVar`, `axResponse::__get` or 
+     * `axResponse::getVars` are filtered using `filter_var_array` before they  are returned, allowing you to set 
+     * sanitize or validation filter, for instance to prevent XSS attacks.
+     * IMPORTANT: The `$filter` parameter must be compliant with the `$definition` parameter of `filter_var_array`. 
+     * If the filtering ends up with an error, all variables registered in axResponse and will throw a RuntimeException 
+     * when accessing datas with `axResponse::getVar`, `axResponse::__get` or `axResponse::getVars`.
+     * 
+     * @see http://php.net/manual/en/function.filter-var-array.php
+     * @param array $filter
+     * @return axResponse
+     */
+    public function setFilter (array $filter) {
+        $this->_filter = $filter;
+        return $this;
+    }
+        
+    /**
+     * Adds a view message
+     * 
+     * For convenience, the `$message` parameter will be casted to string.
+     * Custom levels are authorized.
+     * 
+     * @param string $message
+     * @param strign $level [optional] [default `axResponse::MESSAGE_WARNING`] One of 
+     * `axResponse::MESSAGE_WARNING`,`axResponse::MESSAGE_NOTICE` or `axResponse::MESSAGE_ALERT` or any string 
+     * describing a level
+     * @return axResponse
+     */
+    public function addMessage ($message, $level = self::MESSAGE_WARNING) {
+        if (!isset($this->_messages[$level]))
+            $this->_messages[$level] = array();
+        
+        $this->_messages[$level][(string)$message] = (string)$message;
+        return $this;
+    }
+    
+    /**
+     * Remove a view message
+     * 
+     * For convenience, the `$message` parameter will be casted to string.
+     * 
+     * @param string $message
+     * @return axResponse
+     */
+    public function removeMessage ($message) {
+        foreach ($this->_messages as $level => $messages) {
+            if (isset($messages[(string)$message]))
+                unset($this->_messages[$level][(string)$message]);
+        }
+        return $this;
+    }
+    
+    /**
+     * Get all view messages, optionnaly filtered by their level
+     * 
+     * If no level is provided, all messages from all levels will be returned in a 2 dimentionnal associative array.
+     * 
+     * @param string $level [optionnal] [default `null`]
+     * @return array
+     */
+    public function getMessages ($level = null) {
+        if ($level)
+            return isset($this->_messages[$level]) ? $this->_messages[$level] : array();
+        else
+            return $this->_messages;
+    }
+    
+    /**
+     * Erase all registered messages
+     * @return axResponse
+     */
+    public function clearMessages () {
+        $this->_messages = array();
+        return $this;
+    }
+    
+    /**
+     * Add a view style sheet
+     * @param string $stylesheet The `href` attribute of the `<link />` tag
+     * @param unknown_type $type [optional] [default `"text/css"`] The `type` attribute of the `<link />` tag
+     * @param unknown_type $media [optional] [default `"screen"`] The `media` attribute of the `<link />` tag
+     * @return axResponse
+     */
+    public function addStyleSheet ($stylesheet, $type= "text/css", $media = "screen") {
+        // TODO add helper instance here
+        $this->_styleSheets[$stylesheet] = array(
+        	'href'  => $stylesheet, 
+        	'type'  => $type,
+            'media' => $media
+        );
+        return $this;
+    }
+    
+    /**
+     * Remove a style sheet (identified by its `href`)
+     * @see axResponse::addStyleSheet
+     * @param string $stylehseet
+     * @return axResponse
+     */
+    public function removeStyleSheet ($stylehseet) {
+        unset($this->_styleSheets[$stylesheet]);
+        return $this;
+    }
+    
+    /**
+     * Erase all registered stylesheets
+     * @return axResponse
+     */
+    public function clearStyleSheets () {
+        $this->_styleSheets = array();
+        return $this;
+    }
+    
+    /**
+     * Add a view script 
+     * @param string $script The `scr` attribute of the `<script>` tag
+     * @param string $type [optional] [default `"text/javascript"`] The `type` attribute of the `<script>` tag
+     * @return axResponse
+     */
+    public function addScript ($script, $type = "text/javascript") {
+        // TODO add helper instance here
+        $this->_scripts[$script] = array(
+            'src'  => $script,
+            'type' => $type
+        );
+        return $this;
+    }
+    
+    /**
+     * Remove a script (identified by its `src`)
+     * @see axResponse::addScript
+     * @param string $script 
+     * @return axResponse
+     */
+    public function removeScript ($script) {
+        unset($this->_scripts[$script]);
+        return $this;
+    }
+    
+    /**
+     * Erase all registered scripts
+     * @return axResponse
+     */
+    public function clearScripts () {
+        $this->_scripts = array();
+        return $this;
+    }
+    
+    /**
+     * If any, apply the filter on the registered variables
+     * 
+     * IMPORTANT: if the filter fails, all variables will be erased as well as the registered filter to prevent the 
+     * script to be stuck. A `RuntimeException` will also be thrown.
+     * 
+     * @internal
+     * @throws RuntimeException
+     * @return boolan
+     */
+    protected function _applyFilter () {
+        if (!isset($this->_filter))
+            return false;
+        
+        $this->_vars = filter_var_array($this->_vars, $this->_filter);
+        if (!$this->_vars) {
+            $this->clearVars();
+            $this->_filter = null;
+            throw new RuntimeException("Incorrect filter definition");
+        }
+        return true;
+    }
+    
+    /**
+     * Var merging flags
+     * @see axResponse::addVars
+     * @var string
+     */
+    const MERGE_VARS      = "merge";
+    const ADD_VARS        = "add";
+    
+    /**
+     * Message level flags
+     * @var unknown_type
+     */
+    const MESSAGE_NOTICE  = "notice";
+    const MESSAGE_WARNING = "warning";
+    const MESSAGE_ALERT   = "alert";
+    
+    /**
+     * Header fields
+     * @see axResponse::addHeader
+     * @see http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Responses
+     * @var string
+     */
+    const HEADER_ACCEPT_RANGE        = "Accept-Ranges";
+    const HEADER_AGE                 = "Age";
+    const HEADER_ALLOW               = "Allow";
+    const HEADER_CACHE_CONTROL       = "Cache-Control";
+    const HEADER_CONNECTION          = "Connection";
+    const HEADER_CONTENT_ENCODING    = "Content-Encoding";
+    const HEADER_CONTENT_LANGUAGE    = "Content-Language";
+    const HEADER_CONTENT_LENGTH      = "Content-Length";
+    const HEADER_CONTENT_LOCATION    = "Content-Location";
+    const HEADER_CONTENT_MD5         = "Content-MD5";
+    const HEADER_CONTENT_DISPOSITION = "Content-Disposition";
+    const HEADER_CONTENT_RANGE       = "Content-Range";
+    const HEADER_CONTENT_TYPE        = "Content-Type";
+    const HEADER_DATE                = "Date";
+    const HEADER_ETAG                = "ETag";
+    const HEADER_EXPIRES             = "Expires";
+    const HEADER_LAST_MODIFIED       = "Last-Modified";
+    const HEADER_LINK                = "Link";
+    const HEADER_LOCATION            = "Location";
+    const HEADER_P3P                 = "P3P";
+    const HEADER_PRAGMA              = "Pragma";
+    const HEADER_PROXY_AUTHENTICATE  = "Proxy-Authenticate";
+    const HEADER_REFRESH             = "Refresh";
+    const HEADER_RETRY_AFTER         = "Retry-After";
+    const HEADER_SERVER              = "Server";
+    const HEADER_SET_COOKIE          = "Set-Cookie";
+    const HEADER_STS                 = "Strict-Transport-Security";
+    const HEADER_TRAILER             = "Trailer";
+    const HEADER_TRANSFER_ENCODING   = "Transfer-Encoding";
+    const HEADER_VARY                = "Vary";
+    const HEADER_VIA                 = "Via";
+    const HEADER_WARNING             = "Warning";
+    const HEADER_WWW_AUTHENTICATE    = "WWW-Authenticate";
 }

@@ -17,58 +17,112 @@
  */
 class axViewManager {
     
+    const MERGE_VARS = "merge";
+    const ADD_VARS   = "add";
+    
     protected $_viewPaths;
     protected $_outputCallback;
+    protected $_layout;
+    protected $_defaultFormat;
     protected $_layoutVars;
     
-    public function __construct ($view_paths = null) {
+    public function __construct ($layout, $view_paths = null, $default_format = 'html', array $layout_vars = array()) {
         $this->_viewPaths      = (array)$view_paths;
         $this->_outputCallback = false;
-        $this->_layoutVars     = array();
+        $this->_layoutVars     = $layout_vars;
+        $this->_layout         = $layout ? $layout : false;
+        $this->_defaultFormat  = $default_format;
     }
     
     public function add ($view) {
         if (!$this->_viewPaths[] = realpath($view));
             throw new axMissingFileException($view);
-            
+        
         return $this;
     }
     
     public function load () {
         $args = func_get_args();
-        if (!count($args))
-            return false;
         
-        if (count($args) == 1 && $args[0] instanceof axResponse) {
-            /**
-             * @var axResponse
-             */
-            $response = $args[0];
-            
-            $view    = $response->getView();
-            $section = $response->getSection();
-            $format  = $response->getFormat();
-            
-            if (!is_file($path = $this->_findView($section, $view, $format)))
-                return false;
+        if (!count($args)) {
+            throw new InvalidArgumentException("No argument provided");
         }
-        elseif (count($args) == 1 && is_file($args[0])) {
-            $path = $args[0];
+        elseif (count($args) == 1 && $args[0] instanceof axResponse) {
+            
+            /**
+             * First form:
+             * axViewManager::load(axResponse $response);
+             */
+            
+            $response = $args[0];
+            $view     = $response->getView();
+            $section  = $response->getViewSection();
+            $format   = $response->getFormat() ? $response->getFormat() : $this->_defaultFormat;
+            $vars     = $response->getVars();
+            
+            if (!$response->layoutState()) {
+                $layout = false;
+            }
+            elseif ($response->getLayout() !== null && $response->getLayout() != $this->_layout) {
+                $layout = $response->getLayout();
+            }
+            else {
+                $layout = $this->_layout;
+            }
+            
+            if (!is_file($view_path = $this->_findView($section, $view, $format)))
+                throw new RuntimeException("Unable to find view {$section}/{$view} with {$format} format");
+        }
+        elseif ((count($args) == 2 && is_array($args[1])) || count($args) == 1) {
+            
+            /**
+             * Second Form:
+             * axViewManager::load($path, array $vars = array());
+             */
+            
+            list($view_path,$vars,$layout,$format) = $args + array('', array(), $this->_layout, $this->_defaultFormat);
+            
+            if (!is_file($view_path))
+                throw new RuntimeException("Unable to find view {$view_path}");
         }
         else {
-            list($section,$view,$format) = $args + array('','','html');
             
-            if (!is_file($path = $this->_findView($section, $view, $format)))
-                return false;
+            /**
+             * Third From:
+             * axViewManager::load($section, $view, $format = "html", array $vars = array(), $layout = null);
+             */
+            
+            list($section,$view,$format,$vars,$layout) = $args + array(
+            	'', '', $this->_defaultFormat, array(),$this->_layout
+            );
+            
+            if (!is_file($view_path = $this->_findView($section, $view, $format)))
+                throw new RuntimeException("Unable to find view {$section}/{$view} with {$format} format");
         }
         
-        // TODO continue here
+        if ($layout && !is_file($layout) && !$layout = $this->_findLayout($layout, $format))
+            throw new RuntimeException("Unable to find layout {$layout} with format {$format}");
+            
+        if (!$this->setOutputFormat($format))
+            throw new RuntimeException("Unable to set format to {$format}");
+            
+        // TODO send headers as well here !
+            
+        if (!${'view_content'} = $this->_loadView($view_path, $vars))
+            throw new RuntimeException("Unable to load view {$view_path}");
+            
+        if ($layout) {
+            return $this->_loadLayout($layout, $vars + array('view_content' => ${'view_content'}));
+        }
+        else {
+            return ${'view_content'};
+        }
     }
     
-    public function setOutputCallback ($alpha) {
-        if (!is_callable($this->_outputCallback = $alpha))
-            throw new InvalidArgumentException("Provided callback is not callable");
-            
+    public function setOutputCallback ($callback) {
+        if (!is_callable($this->_outputCallback = $callback))
+            return false;
+        
         return $this;
     }
     
@@ -79,23 +133,14 @@ class axViewManager {
             case 'csv' : header('Content-Type: application/csv; charset=UTF-8'); break;
             case 'xml' : header('Content-Type: text/xml; charset=UTF-8'); break;
             case 'text': header('Content-Type: text/plain; charset=UTF-8'); break;
-            default: throw new RuntimeException("Unrecognized format {$format}");
+            default: return false;
         }
         
         return $this;
     }
     
     public function setLayout ($layout, $format = null) {
-        if ($layout === false) {
-            $this->_layout = false;
-            return $this;
-        }
-        
-        if (!is_file($file = $layout)
-         && !is_file($file = $this->_findLayout($layout, $format)))
-            throw new RuntimeException("Unable to find layout {$layout}");
-            
-        $this->_layout = $file;
+        $this->_layout = $layout;
         return $this;
     }
     
@@ -105,6 +150,20 @@ class axViewManager {
     
     public function setVar ($name, $value) {
         $this->_layoutVars[$name] = $value;
+        return $this;
+    }
+    
+    public function addAll (array $vars, $method = self::MERGE_VARS) {
+        switch ($method) {
+            case self::MERGE_VARS:
+                $this->_layoutVars = array_merge($this->_layoutVars, $vars);
+                break;
+            case self::ADD_VARS:
+                $this->_layoutVars += $vars;
+                break;
+            default:
+                return false;
+        }
         return $this;
     }
     
@@ -148,312 +207,32 @@ class axViewManager {
                 return $path;
         }
         return false;
-}
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    // OLD -------------------------------------------------------------------------------------------------------------
-    
-    /**
-     * Internal configuration
-     * @internal
-     * @var array
-     */
-    protected static $_config = array();
-    
-    /**
-     * Layout vars
-     * @internal
-     * @var array
-     */
-    protected static $_layout_vars = array();
-    
-    /**
-     * axResponse object
-     * @internal
-     * @var axResponse
-     */
-    protected static $_response;
-    
-    /**
-     * Load and display the controller / action associated view
-     * @param string $controller
-     * @param string $action
-     * @return void
-     */
-    public static function load ($controller, $action) {
-        foreach (self::$_response->getHeaders() as $header)
-            header($header);
-        
-        self::setContentType($__format = self::$_response->getOutputFormat());
-        
-        $__section  = strtolower(str_replace('Controller', '', $controller));
-        $__view     = strtolower(($v = self::$_response->getResponseView()) ? $v : $action);
-        $__filename = self::getViewFilePath($__section, $__view, $__format);
-        
-        if (!$__filename) {
-            axLog::warning("No view defined for {$__section}/{$__view} with format {$__format}");
-            return;
-        }
-        
-        try {
-            ob_start();
-            
-            extract(self::$_layout_vars);
-            extract(self::$_response->getResponseVars());
-            foreach (self::$_response->getMessages() as $level => $messages)
-                ${$level} = $messages;
-
-            include $__filename;
-            
-            ${'page_content'} = ob_get_contents();
-            ob_end_clean();
-        }
-        catch (Exception $e) {
-            ob_end_clean();
-            if (PHP_VERSION_ID >= 50300)
-                throw new RuntimeException("Exception during view loading", 2004, $e);
-            else
-                throw new RuntimeException("Exception during view loading", 2004);
-        }
-        
-        if (self::$_response->layout()) {
-            if ($__layout = self::getLayoutFilePath($__format))
-                include $__layout;
-        }
-        else {
-            echo ${'page_content'};
-        }
     }
     
-	/**
-     * Set the configuration
-     * @param array $configuration = array()
-     * @return void
-     */
-    public static function setConfig ($configuration = array()) {
-        $default = array(
-            'default_output_format' => 'html',
-            'view_paths'            => array(AXIOM_APP_PATH . "/view"),
-            'layout_file'           => 'default',
-            'layout_content_var'    => 'page_content',
-        );
-        self::$_config = array_merge($default, $configuration);
-    }
-    
-    /**
-     * Set the header for the given format
-     * @param string $output_format = null
-     * @throws RuntimeException
-     * @return void
-     */
-    public static function setContentType ($output_format = null) {
-        if (!$output_format)
-            $output_format = self::$_config['default_output_format'];
-
-        switch (strtolower($output_format)) {
-            case 'html': header('Content-Type: text/html; charset=UTF-8'); break;
-            case 'json': header('Content-Type: application/json; charset=UTF-8'); break;
-            case 'csv' : header('Content-Type: application/csv; charset=UTF-8'); break;
-            case 'xml' : header('Content-Type: text/xml; charset=UTF-8'); break;
-            case 'text': header('Content-Type: text/plain; charset=UTF-8'); break;
-            default: throw new RuntimeException("Format $output_format not recognized", 2005);
-        }
-    }
-    
-    /**
-     * Set layout file
-     * @param string $file
-     * @return void
-     */
-    public static function setLayoutFile ($file) {
-        self::$_config['layout_file'] = $file;
-    }
-    
-    /**
-     * Get the layout file path.
-     *
-     * Will return the absolute path
-     * of the proper layout or false
-     * if such layout doesn't exists.
-     *
-     * @internal
-     * @param string $format
-     * @return string
-     */
-    protected static function getLayoutFilePath ($format = "html") {
-        return self::getViewFilePath('layouts', self::$_config['layout_file'], $format);
-    }
-    
-    /**
-     * Add layout vars at once
-     * @param array $collection
-     * @return void
-     */
-    public static function addLayoutVars ($collection) {
-        if (!empty($collection))
-            self::$_layout_vars = array_merge(self::$_layout_vars, (array)$collection);
-    }
-    
-    /**
-     * Get layout vars
-     * @return array
-     */
-    public static function getLayoutVars () {
-        return self::$_layout_vars;
-    }
-    
-    /**
-     * Get the given layout var
-     * @param string $key
-     * @return mixed
-     */
-    public static function getLayoutVar ($key) {
-        return isset(self::$_layout_vars[$key]) ? self::$_layout_vars[$key] : null;
-    }
-    
-    /**
-     * Set the given layout var
-     * @param string $key
-     * @param mixed $value
-     * @return void
-     */
-    public static function setLayoutVar ($key, $value) {
-        self::$_layout_vars[$key] = $value;
-    }
-    
-    /**
-     * Add a view path
-     * @param string $path
-     * @throws axMissingFileException if $path is not a valid directory
-     * @return void
-     */
-    public static function addPath ($path) {
-        if (is_dir($path))
-            self::$_config['view_paths'][] = $path;
-        else
-            throw new axMissingFileException($path, 2006);
-    }
-    
-    /**
-     * Gets the view file.
-     *
-     * Will retrun the absolute path
-     * of the view file or false if such
-     * file doesn't exists.
-     *
-     * @internal
-     * @param string $section
-     * @param string $view
-     * @param string $format
-     * @return string
-     */
-    protected static function getViewFilePath ($section, $view, $format) {
-        foreach (array_unique(self::$_config['view_paths']) as $vpath) {
-            if (is_file($path = realpath($vpath) . "/{$section}/{$view}.{$format}.php"))
-                return $path;
-        }
-        return false;
-    }
-    
-    /**
-     * Set the internal response object
-     * @param Response $response
-     * @return void
-     */
-    public static function setResponse (axResponse &$response) {
-        self::$_response = $response;
-    }
-    
-	/**
-     * Load a view specified by $section and $view
-     * in a buffer and return it.
-     *
-     * Will return false if an error was
-     * encountered in the loaded view.
-     *
-     * Note: this method is intended for specific
-     * purposes only. DO NOT chain partials
-     * nor call partial everytime for practical
-     * reasons because this method can be considered
-     * as heavily demanding.
-     *
-     * @param string $section
-     * @param string $view
-     * @param string $format = "html"
-     * @return string
-     */
-    public static function partial ($section, $view, $format = "html") {
-        if (!$__filename = self::getViewFilePath($section, $view, $format)) {
-            axLog::warning("Partial loading failed: no view for {$section}/{$view} with format {$format}");
+    protected function _loadView ($__path, $__vars) {
+        if (!ob_start())
             return false;
-        }
         
-        try {
-            extract(self::$_layout_vars);
-            extract(self::$_response->getResponseVars());
-            ob_start();
-            include $__filename;
-            $buffer = ob_get_contents();
-            ob_end_clean();
-        }
-        catch (Exception $e) {
-            ob_end_clean();
-            axLog::handleException($e);
+        extract($this->_layoutVars, EXTR_PREFIX_ALL, 'layout');
+        extract($__vars);
+        
+        if (!include $__path)
             return false;
-        }
-        return $buffer;
-    }
-}
-
-/**
- * Non PHP-doc
- * @see axViewManager::partial
- */
-function partial ($section, $view, $format = "html") {
-    return axViewManager::partial($section, $view, $format);
-}
-
-/**
- * Format URL
- * @param string $url
- * @param string $lang = false
- * @return string
- */
-function url ($url, $lang = false) {
-    if (!$lang)
-        $lang = axLang::getLocale();
         
-    $url = trim($url, '/');
-    return rtrim(getenv("REWRITE_BASE"), '/') . "/$lang/$url";
-}
-
-/**
- * Format src
- * @param string $ressource
- * @return string
- */
-function src ($ressource) {
-    $ressource = trim($ressource, '/');
-    return rtrim(getenv("REWRITE_BASE"), '/') . "/$ressource";
+        return ob_get_clean();
+    }
+    
+    protected function _loadLayout ($__path, $__vars) {
+        if (!ob_start())
+            return false;
+            
+        extract($this->_layoutVars, EXTR_PREFIX_ALL, 'layout');
+        extract($__vars);
+        
+        if (!include $__path)
+            return false;
+        
+        ${'layout_content'} = ob_get_clean();
+        return ${'layout_content'};
+    }
 }
