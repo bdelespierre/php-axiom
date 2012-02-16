@@ -9,8 +9,8 @@
 /**
  * This is the bootstrap file of your application, and is loaded immediately after the front controller (`index.php`) 
  * is invoked. This file initializes your Axiom application library, configuration and routes. All the other parts
- * of the application (such as localization, caching, logging etc.) are loaded 'on demand' when the app uses them
- * to save performances during the boostrap step. The Axiom main libraries are accessible through the Axiom static
+ * of the application (such as localization, caching, logging etc.) are loaded 'on demand' when the application uses 
+ * them to save performances during the boostrap step. The Axiom main libraries are accessible through the Axiom static
  * class, they are configured using the parameters located in your configuration file (by default `config.ini`). 
  */
 
@@ -47,9 +47,9 @@ require_once AXIOM_LIB_PATH . '/axiom/axExtensionFilterIterator.class.php';
 require_once AXIOM_LIB_PATH . '/axiom/axLibrary.class.php';
 
 /**
- * Uncomment this line to disable cache for library
+ * Uncomment this line to disable cache globally
  */
-Axiom::library(false);
+Axiom::$cache = false;
 
 /**
  * Adding the Axiom core library
@@ -82,13 +82,14 @@ Axiom::library()->add(AXIOM_APP_PATH, array('recursive' => true));
  * * // or (to get the native value)
  * * Axiom::configuration()->key->subkey->subsubkey->getValue();
  * 
- * Note: object returned by the the configuration (no matter which level) are instances of axTreeItem. These objects are
- * bundled with a __toString implementation so you can always convert them using the cast operator 
+ * Note: object returned by the the configuration (no matter which depth level) are instances of axTreeItem. These 
+ * objects have __toString implementation so you can always convert them using the cast operator 
  * E.G:
- * * $option = (string)Axiom::configuration()->option;
+ * * $option = (string)Axiom::configuration()->option->suboption;
+ * 
  * Another possibility to get the native parameter type is to use the getValue method on the axTreeItem.
  * E.G:
- * * $option = Axiom::configuration()->option->getValue();
+ * * $option = Axiom::configuration()->option->suboption->getValue();
  * 
  * See axIniConfiguration for more details about this behavior.
  */
@@ -113,3 +114,4 @@ Axiom::log()->addLogger(new axTextLogger(AXIOM_APP_PATH . '/ressource/log/app.lo
 // TODO add section description
 
 axRouter::connect('/{:lang::?}/{:controller}/{:action::?}');
+axRouter::connect('/{:lang::?}/', 'IndexController');

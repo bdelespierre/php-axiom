@@ -63,9 +63,9 @@ class axLocale implements IteratorAggregate {
 	 * @throws axMissingFileException If the lang file could not be found
 	 */
 	public function __construct ($lang_file, $lang = "auto", $default_lang = "en", $cache_dir = false) {
-		$this->_lang = strtolower($lang);
-		$this->_cache_dir = realpath($cache_dir);
-		$this->_tree = array();
+		$this->_lang      = strtolower($lang);
+		$this->_cache_dir = $cache_dir !== false ? realpath($cache_dir) : false;
+		$this->_tree      = array();
 		
 		if (!$this->_file = realpath($lang_file)) {
 			throw new axMissingFileException($lang_file);
@@ -127,6 +127,14 @@ class axLocale implements IteratorAggregate {
 			return false;
 		
 		return $this;
+	}
+	
+	/**
+	 * Get the current lang
+	 * @return string
+	 */
+	public function getLang () {
+	    return $this->_lang;
 	}
 	
 	/**

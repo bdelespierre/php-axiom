@@ -360,7 +360,7 @@ final class Axiom {
 	        
         $conf      = self::configuration()->view;
         $layout    = (string)$conf->layout->getValue();
-        $vars      = $conf->layout->vars->getValue();
+        $vars      = $conf->layout->vars->getValue() ? $conf->layout->vars->getValue() : array();
         $format    = (string)$conf->format->default;
         $view_path = AXIOM_APP_PATH . '/view';
         

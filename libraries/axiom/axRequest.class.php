@@ -38,7 +38,7 @@ class axRequest {
      * Default constructor
      */
     public function __construct () {
-        $this->_request_parameters = $_REQUEST;
+        $this->_request_parameters = & $_REQUEST;
         
         if (class_exists('Browscap', true)) {
             $this->_browscap = new Browscap(AXIOM_APP_PATH . '/ressource/cache');

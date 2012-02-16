@@ -9,4 +9,4 @@
 require dirname(dirname(dirname(__FILE__))) . "/application/config/bootstrap.php";
 
 // TODO axRouter refactoring :)
-//axRouter::run();
+axRouter::run();

@@ -292,7 +292,10 @@ class axResponse {
      * @param string $method [optional] [default `axResponse::MERGE_VARS`] Possible values are `axResponse::MERGE_VARS` 
      * or `axResponse::ADD_VARS`
      */
-    public function addVars (array $collection, $method = self::MERGE_VARS) {
+    public function addVars ($collection, $method = self::MERGE_VARS) {
+        if (!$collection)
+            return $this;
+        
         switch ($method) {
             case self::MERGE_VARS:
                 $this->_vars = array_merge($this->_vars, $collection);
@@ -326,7 +329,7 @@ class axResponse {
      * @return axResponse
      */
     public function setHeader ($field, $value) {
-        $this->_headers[] = "{$field}: {$value}";
+        $this->_headers[$field] = "{$field}: {$value}";
         return $this;
     }
     
@@ -353,11 +356,21 @@ class axResponse {
     }
     
     /**
+     * Set the HTTP status
+     * @param string $http_status
+     * @return axResponse
+     */
+    public function setStatus ($http_status) {
+        $this->_headers['status'] = $http_status;
+        return $this;
+    }
+    
+    /**
      * Get the headers list
      * @return array
      */
     public function getHeaders () {
-        return $this->_headers;
+        return array_unique($this->_headers);
     }
     
     /**

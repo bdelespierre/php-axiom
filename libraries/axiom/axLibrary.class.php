@@ -61,8 +61,8 @@ class axLibrary {
 	 */
 	public function __construct ($cache_dir = false) {
 		$this->_directories = array();
-		$this->_classes = array();
-		$this->_cache_dir = realpath($cache_dir);
+		$this->_classes     = array();
+		$this->_cache_dir   = $cache_dir !== false ? realpath($cache_dir) : false;
 	}
 	
 	/**
@@ -183,6 +183,9 @@ class axLibrary {
 	 * @return boolean
 	 */
 	protected function _cache () {
+	    if (!$this->_cache_dir)
+	        return false;
+	    
 		$buffer = '<?php $classes=' . var_export($this->_classes, true) . '; ?>';
 		return (boolean)file_put_contents($this->_cache_dir . '/' . self::CACHE_FILE, $buffer);
 	}

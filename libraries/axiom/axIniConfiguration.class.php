@@ -55,9 +55,9 @@ class axIniConfiguration implements axConfiguration {
      * @throws RuntimeException
      */
     public function __construct ($file, $section, $cache_dir = false) {
-    	$this->_file = $file;
-    	$this->_section = $section;
-    	$this->_cache_dir = realpath($cache_dir);
+    	$this->_file      = $file;
+    	$this->_section   = $section;
+    	$this->_cache_dir = $cache_dir !== false ? realpath($cache_dir) : false;
     }
 
     /**
