@@ -21,18 +21,24 @@ class axRouter {
     
     /**
      * Routes
+     * @internal
+     * @staticvar
      * @var array
      */
     protected static $_routes;
 
     /**
      * axRequest object
+     * @internal
+     * @staticvar
      * @var axRequest
      */
     protected static $_request;
     
     /**
      * axResponse object
+     * @internal
+     * @staticvar
      * @var axResponse
      */
     protected static $_response;
@@ -40,20 +46,21 @@ class axRouter {
     /**
      * Connect a route
      *
-     * Routes are matched according a given template,
-     * templates follow the following format:
-     * "/[string|{:key<:pattern><:?>}]/...
-     * Eg:
-     * /{:lang:\w{2}:?}/admin/{:controller}/{:id:\d+}/{:args}
+     * Routes are matched according to a given template. Ttemplates follow the following format:
+     * * "/[string|{:key<:pattern><:?>}]/...
+     * 
+     * E.G.
+     * * axRouter::connect('/{:lang:\w{2}:?}/admin/{:controller}/{:id:\d+}/{:args}', 'AnyController::anyaction', $opts);
      *
      * Three prototypes are available:
-     * axRouter::connect(new Route($template, $params, $options))
-     * axRouter::connect($template, array('controller' => 'xxx', 'action' => 'yyy' ...));
-     * axRouter::connect($template, 'controller::action');
+     * * axRouter::connect(new Route($template, $params, $options))
+     * * axRouter::connect($template, array('controller' => 'xxx', 'action' => 'yyy' ...));
+     * * axRouter::connect($template, 'controller::action');
      *
      * @param mixed $template The template or the objet to match the url against
-     * @param mixed $params The parameters of the route (must contain at least the controller's name)
-     * @param array $options Not currently used
+     * @param mixed $params [optional] [default `array`] The parameters of the route (must contain at least the 
+     * controller's name), you may leave it blank if your template catches the controller's name
+     * @param array $options [optional] [default `array()`] The route option
      * @throws RuntimeException
      * @return void
      */
@@ -75,14 +82,12 @@ class axRouter {
     /**
      * Run router.
      *
-     * If not route/action is given, the router
-     * will match the proper route by matching
-     * against the URL.
-     * See axRouter::connect for more information
-     * about connecting routes.
+     * If not route/action is given, the router will determine the route based on the URL. See axRouter::connect for 
+     * more information about connecting routes.
      *
-     * @param mixed $route = null
-     * @param string $action = null
+     * @static
+     * @param mixed $route [optional] [default `null`]
+     * @param string $action [optional] [defualt  `null`]
      * @throws RuntimeException
      * @return void
      */
@@ -143,17 +148,19 @@ class axRouter {
         if (!class_exists($controller, true))
             list($controller, $action) = array('ErrorController', 'http404');
         
-        self::load($controller, $action);
+        self::_load($controller, $action);
     }
     
     /**
-     * Load the given controller and the given action
+     * Invoke the given controller / action and load the corresponding view
+     * @internal
+     * @static
      * @param string $controller
-     * @param string $action = null
+     * @param string $action [optional] [default `null`]
      * @throws BadMethodCallException
      * @return void
      */
-    public static function load ($controller, $action = null) {
+    protected static function _load ($controller, $action = null) {
         if (empty($action))
             $action = "index";
             
@@ -173,7 +180,7 @@ class axRouter {
             return self::load($e->getController(), $e->getAction());
         }
         catch (axRedirectException $e) {
-            return self::redirect($e);
+            return self::_redirect($e);
         }
         catch (Exception $e) {
             if ($code = $e->getCode())
@@ -198,6 +205,7 @@ class axRouter {
             echo Axiom::view()->load(self::$_response);
         }
         catch (Exception $e) {
+            self::$_response->reset();
             if ($code = $e->getCode())
                 self::$_response->error_code = $code;
             return self::run("error", "http500");
@@ -211,9 +219,11 @@ class axRouter {
      * browser and optionnaly load the
      * ErrorController::redirection view.
      *
+     * @static
+     * @internal
      * @return void
      */
-    public static function redirect (axRedirectException $exception) {
+    protected static function _redirect (axRedirectException $exception) {
         header((string)$exception);
         
         if ($exception->getMethod() == axRedirectException::REDIRECT_REFRESH) {
@@ -233,6 +243,7 @@ class axRouter {
      * * axRouter::connect('/a/b', array('controller' => 'FooController', 'action' => 'bar'));
      *
      * @internal
+     * @static
      * @param string $params
      * @return array
      */

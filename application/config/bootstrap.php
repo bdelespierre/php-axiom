@@ -115,3 +115,4 @@ Axiom::log()->addLogger(new axTextLogger(AXIOM_APP_PATH . '/ressource/log/app.lo
 
 axRouter::connect('/{:lang::?}/{:controller}/{:action::?}');
 axRouter::connect('/{:lang::?}/', 'IndexController');
+axRouter::connect('/', 'IndexController');

@@ -113,6 +113,25 @@ class axResponse {
     }
     
     /**
+     * Reset the axResponse instance to its initial state
+     * @return void
+     */
+    public function reset () {
+        $this->_view           = null;
+        $this->_viewSection    = null;
+        $this->_viewFormat     = null;
+        $this->_viewLayout     = null;
+        $this->_outputCallback = null;
+        $this->_filter         = null;
+        $this->_layoutEnabled  = true;
+        $this->_vars           = array();
+        $this->_headers        = array();
+        $this->_messages       = array();
+        $this->_styleSheets    = array();
+        $this->_scripts        = array();
+    }
+    
+    /**
      * Get the view name
      * 
      * Will return `null` if no view name was specified.
