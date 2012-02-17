@@ -189,8 +189,8 @@ class axRouter {
         }
         
         if (!self::$_response->getViewSection()) {
-            $section = strtolower($action);
-            $section = ($offset = strpos($section, 'Controller')) !== false ? 
+            $section = strtolower($controller);
+            $section = ($offset = strpos($section, 'controller')) !== false ? 
                 substr($section, 0, $offset): 
                 $section;
             self::$_response->setViewSection($section);
