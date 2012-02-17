@@ -11,7 +11,7 @@
  *
  * @author Delespierre
  * @package libaxiom
- * @subpackage core
+ * @subpackage model
  */
 class axPDOStatementIterator extends IteratorIterator implements SeekableIterator, Countable {
 
@@ -59,11 +59,19 @@ class axPDOStatementIterator extends IteratorIterator implements SeekableIterato
 	    return $this->_count;
     }
     
+    /**
+     * Get the first item
+     * @return mixed
+     */
     public function first () {
         $this->rewind();
         return $this->valid() ? $this->current() : null;
     }
     
+    /**
+     * Get the last item
+     * @return mixed
+     */
     public function last () {
         $this->seek($this->count());
         return $this->valid() ? $this->current() : null;
