@@ -103,7 +103,7 @@ Axiom::configuration(AXIOM_APP_PATH . '/config/config.ini', 'dev');
 
 // TODO add section description
 
-Axiom::log()->addLogger(new axTextLogger(AXIOM_APP_PATH . '/ressource/log/app.log'));
+//Axiom::log()->addLogger(new axTextLogger(AXIOM_APP_PATH . '/ressource/log/app.log'));
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------

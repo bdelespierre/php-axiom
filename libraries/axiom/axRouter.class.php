@@ -11,7 +11,7 @@
  * 
  * TODO long description
  * 
- * Note: this class rely on the Axiom class for logging and modules facilities.
+ * Note: this class rely on the Axiom class for locale and modules settings.
  *
  * @author Delespierre
  * @package libaxiom
@@ -54,13 +54,13 @@ class axRouter {
      *
      * Three prototypes are available:
      * * axRouter::connect(new Route($template, $params, $options))
-     * * axRouter::connect($template, array('controller' => 'xxx', 'action' => 'yyy' ...));
-     * * axRouter::connect($template, 'controller::action');
+     * * axRouter::connect($template, array('controller' => 'xxx', 'action' => 'yyy' ...), $options);
+     * * axRouter::connect($template, 'controller::action', $options);
      *
      * @param mixed $template The template or the objet to match the url against
      * @param mixed $params [optional] [default `array`] The parameters of the route (must contain at least the 
      * controller's name), you may leave it blank if your template catches the controller's name
-     * @param array $options [optional] [default `array()`] The route option
+     * @param array $options [optional] [default `array()`] The route options
      * @throws RuntimeException
      * @return void
      */
@@ -118,9 +118,8 @@ class axRouter {
             if (!empty($params['lang']))
                 $lang = $params['lang'];
             
-            if (!empty($lang) && Axiom::locale() && $lang != Axiom::locale()->getLang()) {
+            if (!empty($lang) && Axiom::locale() && $lang != Axiom::locale()->getLang())
                 Axiom::locale()->setLang($lang);
-            }
             
             if (!empty($options['module'])) {
                 try {
