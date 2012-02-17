@@ -7,162 +7,95 @@
  */
 
 /**
- * Model Base Class
- *
- * @abstract
+ * Interface for all model entities
+ * 
+ * A model entity consist in a single row, extracted from an RDBMS table.
+ * 
+ * IMPORTANT: You MUST implement this interface if you want your classes to be generated throught the `axDatabase` 
+ * factory.
+ * 
  * @author Delespierre
+ * @since 1.2.0
  * @package libaxiom
- * @subpackage core
+ * @subpackage model
  */
-abstract class axModel {
-
-    /**
-     * axModel key id
-     * @var string
-     */
-    protected $_id_key = 'id';
-
-    /**
-     * axModel's data
-     * @var array
-     */
-    protected $_data = array();
-
-    /**
-     * Statements cache
-     * @var array
-     */
-    protected $_statements = array();
-
-    /**
-     * Initialize a model statement (part of CRUD)
-     * @abstract
-     * @param string $statement
-     * @return PDOStatement
-     */
-    abstract protected function _init ($statement);
-
+interface axModel {
+    
     /**
      * Default constructor
-     * @param mixed $id
-     * @throws RuntimeException
+     * 
+     * @param PDO $pdo The database connection instance
+     * @param mixed $id [optional] [default `null`] The ID of the row to match
      */
-    public function __construct ($id = null) {
-        if ($id !== null && $id !== false && !$this->find($id))
-            throw new RuntimeException("Cannot instanciate model", 2009);
-    }
-
+    public function __construct (PDO $pdo, $id = null);
+    
     /**
-     * __sleep overloading
-     * @return array
-     */
-    public function __sleep () {
-        return array('_id_key', '_data');
-    }
-
-    /**
-     * Getter
-     * @param string $key
-     * @return mixed
-     */
-    public function __get ($key) {
-        return isset($this->_data[$key]) ? $this->_data[$key] : null;
-    }
-
-    /**
-     * Setter
-     * @param string $key
-     * @param mixed $value
-     * @return void
-     */
-    public function __set ($key, $value) {
-        $this->_data[$key] = $value;
-    }
-
-    /**
-     * __isset overloading
-     * @param string $key
-     * @return boolean
-     */
-    public function __isset ($key) {
-        return isset($this->_data[$key]);
-    }
-
-    /**
-     * Get internal data
-     * @internal
-     * @return array
-     */
-    public function getData () {
-        return $this->_data;
-    }
-
-    /**
-     * Retrieve method
-     * Will return false in case of error
-     * @param mixed $id
+     * Create a record
+     * 
+     * Returns the current record in case of success (instance of `axModel`) or false on failure.
+     * 
+     * @param array $data The data to be recorded
      * @return axModel
      */
-    public function find ($id) {
-        if (!$this->_init("retrieve"))
-            throw new RuntimeException("Cannot initialize " . __METHOD__, 2010);
-         
-        if ($this->_statements['retrieve']->execute(array(":{$this->_id_key}" => $id))) {
-            if ($this->_statements['retrieve']->rowCount()) {
-                $this->_data = $this->_statements['retrieve']->fetch(PDO::FETCH_ASSOC);
-                return $this;
-            }
-        }
-        return false;
-    }
-
+    public function create (array $data);
+    
     /**
-     * Create methode
-     * Will return false in case of error
-     * @param array $data
-     * @throws RuntimeException
+     * Fetches data from a record according to its id
+     * 
+     * Returns the current record in case of success (instance of `axModel`) or false on failure.
+     * 
+     * @param mixed $id The ID of the record
      * @return axModel
      */
-    public function create ($data) {
-        if (!$this->_init("create"))
-            throw new RuntimeException("Cannot initialize " . __METHOD__, 2011);
-         
-        if ($this->_statements['create']->execute(array_keys_prefix($data, ':'))) {
-        	// FIXME this call is very ugly !
-        	// maybe a factory could help...
-            $id = Axiom::database()->lastInsertId();
-            return $this->find($id);
-        }
-        return false;
-    }
-
+    public function retrieve ($id);
+    
     /**
-     * Update method
-     * @throws RuntimeException
+     * Update a record, optionaly added with the `$data` parameter 
+     * 
+     * Returns the current record in case of success (instance of `axModel`) or false on failure.
+     * 
+     * @param array $data [optional] [default `array()`] The data to add to the record
+     * @return axModel
+     */
+    public function update (array $data = array());
+    
+    /**
+     * Delete a record
+     * 
+     * Returns the deletion status.
+     * 
      * @return boolean
      */
-    public function update ($data = array()) {
-        if (!$this->_init("update"))
-            throw new RuntimeException("Cannot initialize " . __METHOD__, 2012);
-         
-        if (!empty($this->_data)) {
-            $inputs = array_merge($this->_data, array_intersect_key($data, $this->_data));
-            return $this->_statements['update']->execute(array_keys_prefix($inputs, ':'));
-        }
-        return false;
-    }
-
+    public function delete ();
+    
     /**
-     * Delete method
-     * @throws RuntimeException
-     * @return boolean
+     * Get a list of records, optionaly filtered by `$search_params` and `$options` parameters
+     * 
+     * Returns the list as an instance of `PDOStatementIterator` in case of success, false on failure.
+     * 
+     * @param PDO $pdo
+     * @param array $search_params [optional] [default `array()`] The filtering parameters
+     * @param array $options [optional] [default `array()`] The options parameters
+     * @return axPDOStatementIterator
      */
-    public function delete () {
-        if (!$this->_init("delete"))
-            throw new RuntimeException("Cannot initialize " . __METHOD__, 2013);
-         
-        if (!empty($this->_data))
-            return $this->_statements['delete']->execute(array(":{$this->_id_key}" => $this->_data[$this->_id_key]));
-        return false;
-    }
+    public static function all (PDO $pdo, array $search_params = array(), array $options = array());
+    
+    /**
+     * Get the record's original table name
+     * @return string
+     */
+    public function getTable ();
+    
+    /**
+     * Get the record's original table columns
+     * @return array
+     */
+    public function getColumns ();
+        
+    /**
+     * Get the record's native data
+     * @return array
+     */
+    public function getData ();
+    
 }
