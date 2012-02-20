@@ -148,13 +148,13 @@ abstract class axBaseModel implements axModel {
      * @throws RuntimeException
      * @return axModel
      */
-    public function create ($data) {
+    public function create (array $data) {
         if (!$this->_init("create"))
             throw new RuntimeException("Cannot initialize " . __METHOD__, 2011);
          
-        if ($this->_statements['create']->execute(array_keys_prefix($data, ':'))) {
+        if ($this->_statements['create']->execute($data)) {
             $id = $this->_pdo->lastInsertId();
-            return $this->find($id);
+            return $this->retrieve($id);
         }
         return false;
     }
@@ -188,7 +188,7 @@ abstract class axBaseModel implements axModel {
      * @throws RuntimeException
      * @return boolean
      */
-    public function update ($data = array()) {
+    public function update (array $data = array()) {
         if (!$this->_init("update"))
             throw new RuntimeException("Cannot initialize " . __METHOD__, 2012);
          

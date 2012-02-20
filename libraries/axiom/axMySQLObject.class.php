@@ -109,7 +109,7 @@ class axMySQLObject extends axBaseModel {
             throw new RuntimeException("Cannot determine {$tablename} structure");
             
         $this->_table = self::_sanitizeTablename($tablename);
-        parent::__construct($id);
+        parent::__construct($pdo, $id);
     }
     
     /**
@@ -227,7 +227,7 @@ class axMySQLObject extends axBaseModel {
      * Get the table columns
      * @return array
      */
-    public function getColumnNames () {
+    public function getColumns () {
         return array_keys($this->_structure);
     }
     

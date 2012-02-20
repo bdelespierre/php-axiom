@@ -207,7 +207,7 @@ final class Axiom {
 	 * If the database connection object construction fails, a PDOException is emitted (see PDO::__construct).
 	 * 
 	 * @static
-	 * @return PDO
+	 * @return axDatabase
 	 */
 	public static function database () {
 		if (isset(self::$_database))
@@ -223,7 +223,7 @@ final class Axiom {
 		
 		list($driver_options) = func_get_args() + array(array());
 		
-		return self::$_database = new PDO($dsn, $user, $pass, $driver_options);
+		return self::$_database = new axDatabase($dsn, $user, $pass, $driver_options);
 	}
 	
 	/**

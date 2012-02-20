@@ -33,7 +33,7 @@ class axDatabase extends PDO {
      */
     public function factory ($model, $id = null) {
         try {
-            if (is_string($model) && strpos($mode, '.') !== false) {
+            if (is_string($model) && strpos($model, '.') !== false) {
                 return new axMySQLObject($this, $model, $id);
             }
             elseif (class_exists($model, true)) {
