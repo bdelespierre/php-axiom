@@ -67,7 +67,7 @@ class axDatabase extends PDO {
      */
     public function fetchAll ($model, array $search_params = array(), array $options = array()) {
         try {
-            if (is_string($model) && strpos($mode, '.') !== false) {
+            if (is_string($model) && strpos($model, '.') !== false) {
                 return axMySQLObject::all($this, $search_params, $options, $model);
             }
             elseif (class_exists($model, true)) {

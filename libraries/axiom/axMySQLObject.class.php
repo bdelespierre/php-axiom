@@ -194,7 +194,7 @@ class axMySQLObject extends axBaseModel {
         if (!isset($mysql_obj))
             $mysql_obj = new self($table);
             
-        $query  = "SELECT `" . implode('`,`', $mysql_obj->getColumnNames()) . "` FROM " . $mysql_obj->getTable();
+        $query  = "SELECT `" . implode('`,`', $mysql_obj->getColumns()) . "` FROM " . $mysql_obj->getTable();
         $query .= self::_generateWhereClause($search_params);
         $query .= self::_generateOptionClause($options);
         

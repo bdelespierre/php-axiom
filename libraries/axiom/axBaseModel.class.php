@@ -76,7 +76,7 @@ abstract class axBaseModel implements axModel {
         
         $this->_pdo = $pdo;
             
-        if ($id !== null && $id !== false && !$this->find($id))
+        if ($id !== null && $id !== false && !$this->retrieve($id))
             throw new RuntimeException("Cannot instanciate model");
     }
 
@@ -194,7 +194,7 @@ abstract class axBaseModel implements axModel {
          
         if (!empty($this->_data)) {
             $inputs = array_merge($this->_data, array_intersect_key($data, $this->_data));
-            return $this->_statements['update']->execute(array_keys_prefix($inputs, ':')) ? $this : false;
+            return $this->_statements['update']->execute($inputs) ? $this : false;
         }
         return false;
     }
