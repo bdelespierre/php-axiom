@@ -83,6 +83,15 @@ class axResponse {
     protected $_filter;
     
     /**
+     * Filter flag
+     * 
+     * Tells whenever the filter has been applied and should not be applied again.
+     * 
+     * @var boolean
+     */
+    protected $_filterFlag;
+    
+    /**
      * View messages
      * @var array
      */
@@ -245,7 +254,9 @@ class axResponse {
      * @return mixed
      */
     public function getVar ($name) {
-        $this->_applyFilter();
+        if ($this->_filterFlag)
+            $this->_applyFilter();
+        
         return isset($this->_vars[$name]) ? $this->_vars[$name] : null;
     }
     
@@ -257,6 +268,7 @@ class axResponse {
      */
     public function setVar ($name, $value) {
         $this->_vars[(string)$name] = $value;
+        $this->_filterFlag = true;
         return $this;
     }
     
@@ -298,7 +310,9 @@ class axResponse {
      * @return array
      */
     public function getVars () {
-        $this->_applyFilter();
+        if ($this->_filterFlag)
+            $this->_applyFilter();
+        
         return $this->_vars;
     }
     
@@ -325,6 +339,7 @@ class axResponse {
             default:
                 return false;
         }
+        $this->_filterFlag = true;
         return $this;
     }
     
@@ -436,6 +451,14 @@ class axResponse {
     }
     
     /**
+     * Tells whenever a filter has been registered or not
+     * @return boolean
+     */
+    public function hasFilter () {
+        return isset($this->_filter);
+    }
+    
+    /**
      * Get the registered filter
      * 
      * @see http://php.net/manual/en/function.filter-var-array.php
@@ -454,6 +477,8 @@ class axResponse {
      * IMPORTANT: The `$filter` parameter must be compliant with the `$definition` parameter of `filter_var_array`. 
      * If the filtering ends up with an error, all variables registered in axResponse and will throw a RuntimeException 
      * when accessing datas with `axResponse::getVar`, `axResponse::__get` or `axResponse::getVars`.
+     * NOTE: The filter will be applied on read so your changes won't take effects until you extract response data with
+     * `axResponse::getVar`, `axResponse::getVars` or with the magic method `__get`.
      * 
      * @see http://php.net/manual/en/function.filter-var-array.php
      * @param array $filter
@@ -461,6 +486,7 @@ class axResponse {
      */
     public function setFilter (array $filter) {
         $this->_filter = $filter;
+        $this->_filterFlag = true;
         return $this;
     }
         
@@ -597,6 +623,54 @@ class axResponse {
     }
     
     /**
+     * PHP setcookie alias
+     * 
+     * Returns the current instance in case of success, false otherwise.
+     * 
+     * @link http://php.net/manual/en/function.setcookie.php
+     * @param string $name
+     * @param string $value [optional] [default `""`]
+     * @param integer $expire [optional] [default `0`]
+     * @param string $path [optional] [default `""`]
+     * @param string $domain [optional] [default `""`]
+     * @param boolean $secure [optional] [default `false`]
+     * @param string $httponly [optional] [default `false`]
+     */
+    public function setCookie ($name, 
+                               $value = "", 
+                               $expire = 0, 
+                               $path = "",
+                               $domain = "", 
+                               $secure = false, 
+                               $httponly = false) {
+        return setcookie($name,$value,$expire,$path,$domain,$secure,$httponly) ? $this : false;
+    }
+    
+    /**
+     * PHP setrawcookie alias
+     * 
+     * Returns the current instance in case of success, false otherwise.
+     * 
+     * @link http://www.php.net/manual/en/function.setrawcookie.php
+     * @param string $name
+     * @param string $value [optional] [default `""`]
+     * @param integer $expire [optional] [default `0`]
+     * @param string $path [optional] [default `""`]
+     * @param string $domain [optional] [default `""`]
+     * @param boolean $secure [optional] [default `false`]
+     * @param string $httponly [optional] [default `false`]
+     */
+    public function setRawCookie ($name, 
+                                  $value = "", 
+                                  $expire = 0, 
+                                  $path = "",
+                                  $domain = "", 
+                                  $secure = false, 
+                                  $httponly = false) {
+        return setrawcookie($name,$value,$expire,$path,$domain,$secure,$httponly) ? $this : false;
+    }
+    
+    /**
      * If any, apply the filter on the registered variables
      * 
      * IMPORTANT: if the filter fails, all variables will be erased as well as the registered filter to prevent the 
@@ -611,6 +685,7 @@ class axResponse {
             return false;
         
         $this->_vars = filter_var_array($this->_vars, $this->_filter);
+        $this->_filterFlag = false;
         if (!$this->_vars) {
             $this->clearVars();
             $this->_filter = null;

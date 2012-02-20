@@ -15,113 +15,163 @@
  */
 class axRequest {
     
-    /**
-     * axRequest paramerers
-     * @var array
-     */
-    protected $_request_parameters;
-    
-    /**
-     * axRequest parameters filter definition
-     * @see http://www.php.net/manual/en/function.filter-var-array.php
-     * @var array
-     */
-    protected $_filter;
-    
-    /**
-     * Browser Capabilities
-     * @var Browscap
-     */
+    protected $_headers;
+    protected $_post;
+    protected $_get;
+    protected $_request;
+    protected $_cookies;
+    protected $_files;
+    protected $_filters;
     protected $_browscap;
     
-    /**
-     * Default constructor
-     */
-    public function __construct () {
-        $this->_request_parameters = & $_REQUEST;
+    public function __construct ($cache_dir) {
+        $this->_headers  = getallheaders();
+        $this->_post     = $_POST;
+        $this->_get      = $_GET;
+        $this->_request  = $_REQUEST;
+        $this->_cookies  = $_COOKIE;
+        $this->_files    = $_FILES;
+        $this->_filters  = array();
+        $this->_browscap = ($cache_dir && class_exists('Browscap', true)) ? new Browscap($cache_dir) : null;
+    }
+    
+    public function reset () {
+        $this->_headers  = getallheaders();
+        $this->_post     = $_POST;
+        $this->_get      = $_GET;
+        $this->_request  = $_REQUEST;
+        $this->_cookies  = $_COOKIE;
+        $this->_filters  = array();
+    }
+    
+    public function getHeaders () {
+        return $this->_headers;
+    }
+    
+    public function headerExists ($header) {
+        return isset($this->_headers[$header]);
+    }
+    
+    public function getHeader ($header) {
+        return $this->headerExists($header) ? $this->_headers[$header] : null;
+    }
+    
+    public function getMethod () {
+        return $this->_server['REQUEST_METHOD'];
+    }
+    
+    public function getEnv ($varname) {
+        return getenv($varname);
+    }
+    
+    public function getServer ($varname = null) {
+        if ($varname)
+            return isset($_SERVER[$varname]) ? $_SERVER[$varname] : null;
         
-        if (class_exists('Browscap', true)) {
-            $this->_browscap = new Browscap(AXIOM_APP_PATH . '/ressource/cache');
+        return $_SERVER;
+    }
+    
+    public function getCookies () {
+        return $this->_cookies;
+    }
+    
+    public function cookieExists ($name) {
+        return array_key_exists($name, $this->_cookies);
+    }
+    
+    public function getCookie ($name) {
+        return isset($this->_cookies[$name]) ? $this->_cookies[$name] : null;
+    }
+    
+    public function setFilter (array $filter, $type = null) {
+        if ($type === null) {
+            $this->_filters['default'] = array(
+                'filter' => $filter,
+                'flag'   => true,
+            );
+            return $this;
         }
-    }
-    
-    /**
-     * Getter for request vars
-     * @param string $key
-     * @return mixed
-     */
-    public function __get ($key) {
-        return isset($this->_request_parameters[$key]) ? $this->_request_parameters[$key] : null;
-    }
-    
-    /**
-     * Setter for request vars
-     * @param string $key
-     * @param mixed $value
-     * @return void
-     */
-    public function __set ($key, $value) {
-        $this->_request_parameters[$key] = $value;
-    }
-    
-    /**
-     * Get the request parameters ($_REQUEST)
-     * @return array
-     */
-    public function getRequestParameters () {
-        return $this->_request_parameters;
-    }
-    
-    /**
-     * Add many parameters at once.
-     * Note: this method is not affected by the filtering,
-     * use it carefully if you need to add non-secure data.
-     * @param array $collection
-     * @return void
-     */
-    public function addAll ($collection = array(), $method = "merge") {
-        if (empty($collection))
-            return;
+        
+        if (!$type = self::_determineType($type))
+            throw new InvalidArgumentException("Invalid type");
             
-        switch (strtolower($method)) {
-            default:
-            case 'merge':
-                $this->_request_parameters = array_merge($this->_request_parameters, (array)$collection);
-                break;
-                
-            case 'add':
-                $this->_request_parameters += (array)$collection;
-        }
+        $this->_filters[$type] = array(
+            'filter' => $filter,
+            'flag'   => true,
+        );
+        return $this;
     }
     
-    /**
-     * Sets an input filter
-     * @param array $definition
-     * @return boolean
-     */
-    public function setFilter ($definition) {
-        if ($request_parameters = filter_var_array($this->_request_parameters, $definition)) {
-            $this->_filter = $definition;
-            $this->_request_parameters = $request_parameters;
-            return true;
-        }
-        return false;
+    public function getParameter ($name, $type = INPUT_REQUEST) {
+        if (!$type = self::_determineType($type))
+            throw new InvalidArgumentException("Invalid type");
+        
+        if (isset($this->_filters[$type]) && $this->_filters[$type]['flag'])
+            $this->_applyFilter($type);
+            
+        return isset($this->{"_{$type}"}[$name]) ? $this->{"_{$type}"}[$name] : null; 
     }
     
-    /**
-     * Get the input filter
-     * Wil return null if no filter was set
-     * @return array
-     */
-    public function getFilter () {
-        return $this->_filter;
+    public function getParameters ($type = INPUT_REQUEST) {
+        if (!$type = self::_determineType($type))
+            throw new InvalidArgumentException("Invalid type");
+            
+        if (isset($this->_filters[$type]) && $this->_filters[$type]['flag'])
+            $this->_applyFilter($type);
+            
+        return $this->{"_{$type}"};
+    }
+     
+    public function setParameter ($name, $value, $type = INPUT_REQUEST) {
+        if (!$type = self::_determineType($type))
+            throw new InvalidArgumentException("Invalid type");
+            
+        $this->{"_{$type}"}[$name] = $value;
+        if (isset($this->_filters[$type]))
+            $this->_filters[$type]['flag'] = true;
+        return $this;
     }
     
-    /**
-     * Get the browser capabilities
-     * @return array
-     */
-    public function getBrowser() {
-        return $this->_browscap->getBrowser();
+    public function __get ($key) {
+        return $this->getParameter($key);
+    }
+    
+    public function __set ($key, $value) {
+        $this->setParameter($key, $value);
+    }
+    
+    public function getFile ($param_name) {
+        return isset($this->_files[param_name]) ? $this->_files[param_name] : null;
+    }
+    
+    public function getFiles () {
+        return $this->_files;
+    }
+    
+    protected function _applyFilter ($type) {
+        if (!isset($this->_filters[$type]) || !isset($this->{"_{$type}"}))
+            return false;
+            
+        if (!$this->{"_{$type}")
+    }
+    
+    protected static function _determineType ($type) {
+        $types = array(
+            INPUT_POST    => 'post', 
+            INPUT_GET     => 'get', 
+            INPUT_REQUEST => 'request', 
+            INPUT_COOKIE  => 'cookie',
+        );
+        
+        $type = strtolower($type);
+        
+        if (array_key_exists($type, $types))
+            $type = $types[$type];
+        elseif (!in_array($type, $types))
+            return false;
+            
+        return $type;
     }
 }
+
+defined('INPUT_REQUEST') or define('INPUT_REQUEST', 99);
