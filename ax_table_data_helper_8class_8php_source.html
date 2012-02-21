@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Axiom: Main Page</title>
+<title>Axiom: H:/Workspace/php-axiom/www/php-axiom/libraries/axiom/axTableDataHelper.class.php Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="new_stylesheet.css" rel="stylesheet" type="text/css" />
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
@@ -60,31 +60,38 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-  initNavTree('index.html','');
+  initNavTree('ax_table_data_helper_8class_8php.html','');
 </script>
 <div id="doc-content">
 <div class="header">
   <div class="headertitle">
-<div class="title">Axiom Documentation</div>  </div>
+<div class="title">H:/Workspace/php-axiom/www/php-axiom/libraries/axiom/axTableDataHelper.class.php</div>  </div>
 </div><!--header-->
 <div class="contents">
-<ul><li><a href="index.html"><span>Main&#160;Page</span></a>
-</li><li><a href="modules.html"><span>Modules</span></a>
-</li><li><a href="namespaces.html"><span>Namespaces</span></a>
-<ul><li><a href="namespaces.html"><span>Namespace&#160;List</span></a>
-</li></ul>
-</li><li><a href="annotated.html"><span>Data&#160;Structures</span></a>
-<ul><li><a href="annotated.html"><span>Data&#160;Structures</span></a>
-</li><li><a href="classes.html"><span>Data&#160;Structure&#160;Index</span></a>
-</li><li><a href="inherits.html"><span>Class&#160;Hierarchy</span></a>
-</li><li><a href="functions.html"><span>Data&#160;Fields</span></a>
-</li></ul>
-</li><li><a href="files.html"><span>Files</span></a>
-<ul><li><a href="files.html"><span>File&#160;List</span></a>
-</li><li><a href="globals.html"><span>Globals</span></a>
-</li></ul>
-</li></ul>
-</div><!-- contents -->
+<a href="ax_table_data_helper_8class_8php.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 &lt;?php
+<a name="l00016"></a><a class="code" href="classax_table_data_helper.html">00016</a> <span class="keyword">class </span><a class="code" href="classax_table_data_helper.html">axTableDataHelper</a> <span class="keyword">extends</span> <a class="code" href="classax_base_helper.html">axBaseHelper</a> {
+<a name="l00017"></a>00017     
+<a name="l00026"></a><a class="code" href="classax_table_data_helper.html#aacc24ee88e17182267fc247403cd6c39">00026</a>     <span class="keyword">public</span> <span class="keyword">function</span> <a class="code" href="classax_table_data_helper.html#aacc24ee88e17182267fc247403cd6c39">__construct</a> ($value = null, $type = <span class="stringliteral">&#39;data&#39;</span>) {
+<a name="l00027"></a>00027         <span class="keywordflow">switch</span> (strtolower($type)) {
+<a name="l00028"></a>00028             <span class="keywordflow">case</span> <span class="stringliteral">&#39;th&#39;</span>:
+<a name="l00029"></a>00029             <span class="keywordflow">case</span> <span class="stringliteral">&#39;head&#39;</span>:
+<a name="l00030"></a>00030                 <a class="code" href="classax_table_data_helper.html#aacc24ee88e17182267fc247403cd6c39">parent::__construct</a>(<span class="stringliteral">&#39;th&#39;</span>, array(), $value);
+<a name="l00031"></a>00031                 <span class="keywordflow">break</span>;
+<a name="l00032"></a>00032             
+<a name="l00033"></a>00033             <span class="keywordflow">case</span> <span class="stringliteral">&#39;td&#39;</span>:
+<a name="l00034"></a>00034             <span class="keywordflow">case</span> <span class="stringliteral">&#39;data&#39;</span>:
+<a name="l00035"></a>00035             <span class="keywordflow">default</span>:
+<a name="l00036"></a>00036                 <a class="code" href="classax_table_data_helper.html#aacc24ee88e17182267fc247403cd6c39">parent::__construct</a>(<span class="stringliteral">&#39;td&#39;</span>, array(), $value);
+<a name="l00037"></a>00037                 <span class="keywordflow">break</span>;
+<a name="l00038"></a>00038         }
+<a name="l00039"></a>00039     }
+<a name="l00040"></a>00040     
+<a name="l00047"></a><a class="code" href="classax_table_data_helper.html#a4ed8e961386a75ea058a3c7c1190196d">00047</a>     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">function</span> <a class="code" href="classax_table_data_helper.html#a4ed8e961386a75ea058a3c7c1190196d">export</a> ($value = null, $type = <span class="stringliteral">&#39;data&#39;</span>) {
+<a name="l00048"></a>00048         <span class="keywordflow">return</span> <span class="keyword">new</span> <span class="keyword">self</span> ($value, $type);
+<a name="l00049"></a>00049     }
+<a name="l00050"></a>00050 }
+</pre></div></div><!-- contents -->
+</div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -99,11 +106,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-</div>
   <div id="nav-path" class="navpath">
     <ul>
+      <li class="navelem"><a class="el" href="ax_table_data_helper_8class_8php.html">axTableDataHelper.class.php</a>      </li>
 
-    <li class="footer">Generated on Tue Feb 21 2012 18:14:06 for Axiom by
+    <li class="footer">Generated on Tue Feb 21 2012 18:14:03 for Axiom by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

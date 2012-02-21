@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Axiom: Main Page</title>
+<title>Axiom: H:/Workspace/php-axiom/www/php-axiom/libraries/axiom/axForwardException.class.php Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="new_stylesheet.css" rel="stylesheet" type="text/css" />
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
@@ -60,31 +60,37 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-  initNavTree('index.html','');
+  initNavTree('ax_forward_exception_8class_8php.html','');
 </script>
 <div id="doc-content">
 <div class="header">
   <div class="headertitle">
-<div class="title">Axiom Documentation</div>  </div>
+<div class="title">H:/Workspace/php-axiom/www/php-axiom/libraries/axiom/axForwardException.class.php</div>  </div>
 </div><!--header-->
 <div class="contents">
-<ul><li><a href="index.html"><span>Main&#160;Page</span></a>
-</li><li><a href="modules.html"><span>Modules</span></a>
-</li><li><a href="namespaces.html"><span>Namespaces</span></a>
-<ul><li><a href="namespaces.html"><span>Namespace&#160;List</span></a>
-</li></ul>
-</li><li><a href="annotated.html"><span>Data&#160;Structures</span></a>
-<ul><li><a href="annotated.html"><span>Data&#160;Structures</span></a>
-</li><li><a href="classes.html"><span>Data&#160;Structure&#160;Index</span></a>
-</li><li><a href="inherits.html"><span>Class&#160;Hierarchy</span></a>
-</li><li><a href="functions.html"><span>Data&#160;Fields</span></a>
-</li></ul>
-</li><li><a href="files.html"><span>Files</span></a>
-<ul><li><a href="files.html"><span>File&#160;List</span></a>
-</li><li><a href="globals.html"><span>Globals</span></a>
-</li></ul>
-</li></ul>
-</div><!-- contents -->
+<a href="ax_forward_exception_8class_8php.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 &lt;?php
+<a name="l00016"></a><a class="code" href="classax_forward_exception.html">00016</a> <span class="keyword">class </span><a class="code" href="classax_forward_exception.html">axForwardException</a> <span class="keyword">extends</span> LogicException {
+<a name="l00017"></a>00017     
+<a name="l00023"></a><a class="code" href="classax_forward_exception.html#a95a9934bf4211bc16e6bfe30da483c19">00023</a>     <span class="keyword">protected</span> <a class="code" href="classax_forward_exception.html#a95a9934bf4211bc16e6bfe30da483c19">$_controller</a>;
+<a name="l00024"></a>00024     
+<a name="l00030"></a><a class="code" href="classax_forward_exception.html#adf8db861ded55d5097d0aacc0870ea26">00030</a>     <span class="keyword">protected</span> <a class="code" href="classax_forward_exception.html#adf8db861ded55d5097d0aacc0870ea26">$_action</a>;
+<a name="l00031"></a>00031     
+<a name="l00037"></a><a class="code" href="classax_forward_exception.html#abf63454d13fbf9b69efe5970016befc6">00037</a>     <span class="keyword">public</span> <span class="keyword">function</span> <a class="code" href="classax_forward_exception.html#abf63454d13fbf9b69efe5970016befc6">__construct</a> ($controller, $action = <span class="stringliteral">&#39;index&#39;</span>) {
+<a name="l00038"></a>00038         <a class="code" href="classax_forward_exception.html#abf63454d13fbf9b69efe5970016befc6">parent::__construct</a>(<span class="stringliteral">&quot;Forward action to $controller::$action&quot;</span>);
+<a name="l00039"></a>00039         $this-&gt;_controller = $controller;
+<a name="l00040"></a>00040         $this-&gt;_action = $action;
+<a name="l00041"></a>00041     }
+<a name="l00042"></a>00042     
+<a name="l00047"></a><a class="code" href="classax_forward_exception.html#a0d36781659c21efbcf49f0a95cdcdb9b">00047</a>     <span class="keyword">public</span> <span class="keyword">function</span> <a class="code" href="classax_forward_exception.html#a0d36781659c21efbcf49f0a95cdcdb9b">getController</a> () {
+<a name="l00048"></a>00048         <span class="keywordflow">return</span> $this-&gt;_controller;
+<a name="l00049"></a>00049     }
+<a name="l00050"></a>00050     
+<a name="l00055"></a><a class="code" href="classax_forward_exception.html#a5af9369a1e9fba2e7c1e63e080931445">00055</a>     <span class="keyword">public</span> <span class="keyword">function</span> <a class="code" href="classax_forward_exception.html#a5af9369a1e9fba2e7c1e63e080931445">getAction</a> () {
+<a name="l00056"></a>00056         <span class="keywordflow">return</span> $this-&gt;_action;
+<a name="l00057"></a>00057     }
+<a name="l00058"></a>00058 }
+</pre></div></div><!-- contents -->
+</div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -99,11 +105,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-</div>
   <div id="nav-path" class="navpath">
     <ul>
+      <li class="navelem"><a class="el" href="ax_forward_exception_8class_8php.html">axForwardException.class.php</a>      </li>
 
-    <li class="footer">Generated on Tue Feb 21 2012 18:14:06 for Axiom by
+    <li class="footer">Generated on Tue Feb 21 2012 18:14:02 for Axiom by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

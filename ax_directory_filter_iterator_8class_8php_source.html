@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Axiom: Main Page</title>
+<title>Axiom: H:/Workspace/php-axiom/www/php-axiom/libraries/axiom/axDirectoryFilterIterator.class.php Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="new_stylesheet.css" rel="stylesheet" type="text/css" />
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
@@ -60,31 +60,40 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-  initNavTree('index.html','');
+  initNavTree('ax_directory_filter_iterator_8class_8php.html','');
 </script>
 <div id="doc-content">
 <div class="header">
   <div class="headertitle">
-<div class="title">Axiom Documentation</div>  </div>
+<div class="title">H:/Workspace/php-axiom/www/php-axiom/libraries/axiom/axDirectoryFilterIterator.class.php</div>  </div>
 </div><!--header-->
 <div class="contents">
-<ul><li><a href="index.html"><span>Main&#160;Page</span></a>
-</li><li><a href="modules.html"><span>Modules</span></a>
-</li><li><a href="namespaces.html"><span>Namespaces</span></a>
-<ul><li><a href="namespaces.html"><span>Namespace&#160;List</span></a>
-</li></ul>
-</li><li><a href="annotated.html"><span>Data&#160;Structures</span></a>
-<ul><li><a href="annotated.html"><span>Data&#160;Structures</span></a>
-</li><li><a href="classes.html"><span>Data&#160;Structure&#160;Index</span></a>
-</li><li><a href="inherits.html"><span>Class&#160;Hierarchy</span></a>
-</li><li><a href="functions.html"><span>Data&#160;Fields</span></a>
-</li></ul>
-</li><li><a href="files.html"><span>Files</span></a>
-<ul><li><a href="files.html"><span>File&#160;List</span></a>
-</li><li><a href="globals.html"><span>Globals</span></a>
-</li></ul>
-</li></ul>
-</div><!-- contents -->
+<a href="ax_directory_filter_iterator_8class_8php.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 &lt;?php
+<a name="l00020"></a><a class="code" href="classax_directory_filter_iterator.html">00020</a> <span class="keyword">class </span><a class="code" href="classax_directory_filter_iterator.html">axDirectoryFilterIterator</a> <span class="keyword">extends</span> FilterIterator {
+<a name="l00021"></a>00021     
+<a name="l00022"></a><a class="code" href="classax_directory_filter_iterator.html#af331a851334621de97a50c0c994375a9">00022</a>     <span class="keyword">protected</span> <a class="code" href="classax_directory_filter_iterator.html#af331a851334621de97a50c0c994375a9">$_exclude</a>;
+<a name="l00023"></a>00023     
+<a name="l00028"></a><a class="code" href="classax_directory_filter_iterator.html#a0aba880dccef4e6b3bff0d6e5fb09495">00028</a>     <span class="keyword">public</span> <span class="keyword">function</span> <a class="code" href="classax_directory_filter_iterator.html#a0aba880dccef4e6b3bff0d6e5fb09495">__construct</a>(DirectoryIterator $iterator, array $exclude = array(<span class="charliteral">&#39;.&#39;</span>, <span class="stringliteral">&#39;..&#39;</span>)) {
+<a name="l00029"></a>00029         <a class="code" href="classax_directory_filter_iterator.html#a0aba880dccef4e6b3bff0d6e5fb09495">parent::__construct</a>($iterator);
+<a name="l00030"></a>00030     }
+<a name="l00031"></a>00031     
+<a name="l00036"></a><a class="code" href="classax_directory_filter_iterator.html#ae3846d1063f9942aa499564615cdb26f">00036</a>     <span class="keyword">public</span> <span class="keyword">function</span> <a class="code" href="classax_directory_filter_iterator.html#ae3846d1063f9942aa499564615cdb26f">accept</a> () {
+<a name="l00037"></a>00037         <span class="keywordflow">if</span> (empty($this-&gt;_exclude))
+<a name="l00038"></a>00038             <span class="keywordflow">return</span> <span class="keyword">true</span>;
+<a name="l00039"></a>00039         <span class="keywordflow">else</span>
+<a name="l00040"></a>00040             <span class="keywordflow">return</span> $this-&gt;current()-&gt;isFile() &amp;&amp; !in_array((<span class="keywordtype">string</span>)$this-&gt;current(), $this-&gt;_exclude);
+<a name="l00041"></a>00041     }
+<a name="l00042"></a>00042     
+<a name="l00048"></a><a class="code" href="classax_directory_filter_iterator.html#a147bac7e2dfa7004cf804a6c22360bf2">00048</a>     <span class="keyword">public</span> <span class="keyword">function</span> <a class="code" href="classax_directory_filter_iterator.html#a147bac7e2dfa7004cf804a6c22360bf2">exclude</a> ($filename) {
+<a name="l00049"></a>00049         <span class="keywordflow">if</span> (!func_num_args())
+<a name="l00050"></a>00050             <span class="keywordflow">return</span> $this;
+<a name="l00051"></a>00051         
+<a name="l00052"></a>00052         $this-&gt;_exclude = array_merge($this-&gt;_exclude, func_get_args());
+<a name="l00053"></a>00053         <span class="keywordflow">return</span> $this;
+<a name="l00054"></a>00054     }
+<a name="l00055"></a>00055 }
+</pre></div></div><!-- contents -->
+</div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -99,11 +108,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-</div>
   <div id="nav-path" class="navpath">
     <ul>
+      <li class="navelem"><a class="el" href="ax_directory_filter_iterator_8class_8php.html">axDirectoryFilterIterator.class.php</a>      </li>
 
-    <li class="footer">Generated on Tue Feb 21 2012 18:14:06 for Axiom by
+    <li class="footer">Generated on Tue Feb 21 2012 18:14:02 for Axiom by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>

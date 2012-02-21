@@ -1,0 +1,27 @@
+var classax_view_manager =
+[
+    [ "__construct", "classax_view_manager.html#ab62605c1b9913cb0bda43972b92fc566", null ],
+    [ "__get", "classax_view_manager.html#a19182b48b227956fb898a833629ad975", null ],
+    [ "__isset", "classax_view_manager.html#a3b9c6507b7c07e0ade114bb4191eab04", null ],
+    [ "__set", "classax_view_manager.html#a041c5643222f57598a168b16d7b7e4fc", null ],
+    [ "__unset", "classax_view_manager.html#ab7ba2fba713d4ca257edd2864d076854", null ],
+    [ "_findLayout", "classax_view_manager.html#a7762d5d020454d4dc21c34d0e723145b", null ],
+    [ "_findView", "classax_view_manager.html#a8bcde80eb0579f11a1bc2ce8a828813f", null ],
+    [ "_loadLayout", "classax_view_manager.html#a193dcb5fc5104aed016090f98caa64c9", null ],
+    [ "_loadView", "classax_view_manager.html#a613bcc37950a8513363811d14fe4ce49", null ],
+    [ "add", "classax_view_manager.html#a58cbdda15b0e2009ed4df3bb3d672a8d", null ],
+    [ "addAll", "classax_view_manager.html#a0de8a472a17a17cc1d85df4b2cb5705d", null ],
+    [ "getVar", "classax_view_manager.html#ab29ecf2b808aac91c599ebfa56e59e54", null ],
+    [ "load", "classax_view_manager.html#a8915b4b283f939b611752398d12fc553", null ],
+    [ "setLayout", "classax_view_manager.html#a7842c2ecd4451854419e5045da9a878e", null ],
+    [ "setOutputCallback", "classax_view_manager.html#a1fa7cec88e85522442fe5de56bf76c27", null ],
+    [ "setOutputFormat", "classax_view_manager.html#aa8268d7ee53fe98c1ab0fe906fa840ad", null ],
+    [ "setVar", "classax_view_manager.html#aa3f40ebe75a9793ef2817039330319a2", null ],
+    [ "$_defaultFormat", "classax_view_manager.html#a4de25bde5d2b75417e99ee40fbd7463d", null ],
+    [ "$_layout", "classax_view_manager.html#a9dcad2558b717a644f493e9e2374cb28", null ],
+    [ "$_layoutVars", "classax_view_manager.html#a7a69321a405bfe9565165d38ba4a32c9", null ],
+    [ "$_outputCallback", "classax_view_manager.html#a08e03a83ea95156b9f2b851dc844693f", null ],
+    [ "$_viewPaths", "classax_view_manager.html#a67bed63c75bf9eb60b5c0d3c48c2afb0", null ],
+    [ "ADD_VARS", "classax_view_manager.html#a70ffe2611fc4f444e45d8d0b0a984ad5", null ],
+    [ "MERGE_VARS", "classax_view_manager.html#a666d08e1a499c0d6d3ff2db1f4ce2b78", null ]
+];

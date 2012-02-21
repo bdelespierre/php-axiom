@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Axiom: Main Page</title>
+<title>Axiom: H:/Workspace/php-axiom/www/php-axiom/libraries/axiom/axTextLogger.class.php Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="new_stylesheet.css" rel="stylesheet" type="text/css" />
 <link href="navtree.css" rel="stylesheet" type="text/css"/>
@@ -60,31 +60,38 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-  initNavTree('index.html','');
+  initNavTree('ax_text_logger_8class_8php.html','');
 </script>
 <div id="doc-content">
 <div class="header">
   <div class="headertitle">
-<div class="title">Axiom Documentation</div>  </div>
+<div class="title">H:/Workspace/php-axiom/www/php-axiom/libraries/axiom/axTextLogger.class.php</div>  </div>
 </div><!--header-->
 <div class="contents">
-<ul><li><a href="index.html"><span>Main&#160;Page</span></a>
-</li><li><a href="modules.html"><span>Modules</span></a>
-</li><li><a href="namespaces.html"><span>Namespaces</span></a>
-<ul><li><a href="namespaces.html"><span>Namespace&#160;List</span></a>
-</li></ul>
-</li><li><a href="annotated.html"><span>Data&#160;Structures</span></a>
-<ul><li><a href="annotated.html"><span>Data&#160;Structures</span></a>
-</li><li><a href="classes.html"><span>Data&#160;Structure&#160;Index</span></a>
-</li><li><a href="inherits.html"><span>Class&#160;Hierarchy</span></a>
-</li><li><a href="functions.html"><span>Data&#160;Fields</span></a>
-</li></ul>
-</li><li><a href="files.html"><span>Files</span></a>
-<ul><li><a href="files.html"><span>File&#160;List</span></a>
-</li><li><a href="globals.html"><span>Globals</span></a>
-</li></ul>
-</li></ul>
-</div><!-- contents -->
+<a href="ax_text_logger_8class_8php.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 &lt;?php
+<a name="l00016"></a><a class="code" href="classax_text_logger.html">00016</a> <span class="keyword">class </span><a class="code" href="classax_text_logger.html">axTextLogger</a> <span class="keyword">extends</span> <a class="code" href="classax_logger.html">axLogger</a> {
+<a name="l00017"></a>00017     
+<a name="l00022"></a><a class="code" href="classax_text_logger.html#a3f3ba3c1d5fe8b7c70bfcb433d454edd">00022</a>     <span class="keyword">protected</span> <a class="code" href="classax_text_logger.html#a3f3ba3c1d5fe8b7c70bfcb433d454edd">$_file</a>;
+<a name="l00023"></a>00023     
+<a name="l00039"></a><a class="code" href="classax_text_logger.html#a819d503732268a96ba7e003ef6f3353c">00039</a>     <span class="keyword">public</span> <a class="code" href="classax_text_logger.html#a819d503732268a96ba7e003ef6f3353c">$format</a>;
+<a name="l00040"></a>00040     
+<a name="l00055"></a><a class="code" href="classax_text_logger.html#aada3a26f79f54debec85b78940590e7e">00055</a>     <span class="keyword">public</span> <span class="keyword">function</span> <a class="code" href="classax_text_logger.html#aada3a26f79f54debec85b78940590e7e">__construct</a> ($filename, $mask = <span class="keyword">false</span>, <a class="code" href="classax_text_logger.html#a819d503732268a96ba7e003ef6f3353c">$format</a> = <span class="keyword">false</span>, $open_mode = <span class="charliteral">&#39;a&#39;</span>) {
+<a name="l00056"></a>00056         <a class="code" href="classax_text_logger.html#aada3a26f79f54debec85b78940590e7e">parent::__construct</a>($mask);
+<a name="l00057"></a>00057         <span class="keywordflow">try</span> {
+<a name="l00058"></a>00058             $this-&gt;_file = <span class="keyword">new</span> SplFileObject($filename, $open_mode);
+<a name="l00059"></a>00059         }
+<a name="l00060"></a>00060         <span class="keywordflow">catch</span> (RuntimeException $e) {
+<a name="l00061"></a>00061             <span class="keywordflow">return</span>;
+<a name="l00062"></a>00062         }
+<a name="l00063"></a>00063         $this-&gt;format = <a class="code" href="classax_text_logger.html#a819d503732268a96ba7e003ef6f3353c">$format</a> === <span class="keyword">false</span> ? <span class="stringliteral">&quot;[%s] %s: %s\n&quot;</span> : <a class="code" href="classax_text_logger.html#a819d503732268a96ba7e003ef6f3353c">$format</a>;
+<a name="l00064"></a>00064     }
+<a name="l00065"></a>00065     
+<a name="l00070"></a><a class="code" href="classax_text_logger.html#aae4dddc2dcb0ccb90fc752d7c5e68e03">00070</a>     <span class="keyword">public</span> <span class="keyword">function</span> <a class="code" href="classax_text_logger.html#aae4dddc2dcb0ccb90fc752d7c5e68e03">writeMessage</a> ($msg, $severity) {
+<a name="l00071"></a>00071         $this-&gt;_file-&gt;fwrite(sprintf($this-&gt;format, date(<span class="charliteral">&#39;r&#39;</span>), $severity, $msg));
+<a name="l00072"></a>00072     }
+<a name="l00073"></a>00073 }
+</pre></div></div><!-- contents -->
+</div>
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -99,11 +106,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-</div>
   <div id="nav-path" class="navpath">
     <ul>
+      <li class="navelem"><a class="el" href="ax_text_logger_8class_8php.html">axTextLogger.class.php</a>      </li>
 
-    <li class="footer">Generated on Tue Feb 21 2012 18:14:06 for Axiom by
+    <li class="footer">Generated on Tue Feb 21 2012 18:14:03 for Axiom by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.6.1 </li>
    </ul>
