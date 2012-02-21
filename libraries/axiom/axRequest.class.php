@@ -152,7 +152,11 @@ class axRequest {
         if (!isset($this->_filters[$type]) || !isset($this->{"_{$type}"}))
             return false;
             
-        if (!$this->{"_{$type}")
+        if (!$this->{"_{$type}"} = filter_var_array($this->{"_{$type}"}, $this->_filters[$type]))
+            throw new RuntimeException("Invalid filter");
+
+        $this->_filters[$type]['flag'] = false;
+        return $this;
     }
     
     protected static function _determineType ($type) {
