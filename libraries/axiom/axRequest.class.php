@@ -7,7 +7,9 @@
  */
 
 /**
- * Request Class
+ * Request Clas
+ * 
+ * TODO long description
  *
  * @author Delespierre
  * @package libaxiom
@@ -15,16 +17,59 @@
  */
 class axRequest {
     
+    /**
+     * Request headers
+     * @var array
+     */
     protected $_headers;
+    
+    /**
+     * HTTP POST parameters
+     * @var array
+     */
     protected $_post;
+    
+    /**
+     * HTTP GET parameters
+     * @var array
+     */
     protected $_get;
+    
+    /**
+     * Request parameters (POST + GET)
+     * @var arrat
+     */
     protected $_request;
+    
+    /**
+     * Request cookies
+     * @var array
+     */
     protected $_cookies;
+    
+    /**
+     * HTTP POST files
+     * @var array
+     */
     protected $_files;
+    
+    /**
+     * Request variables filters
+     * @var array
+     */
     protected $_filters;
+    
+    /**
+     * Browser capabilities class
+     * @var Browscap
+     */
     protected $_browscap;
     
-    public function __construct ($cache_dir) {
+    /**
+     * Default constructor
+     * @param string $cache_dir [optionnal] [default `null`] The cache dir for the browscap settings
+     */
+    public function __construct ($cache_dir = null) {
         $this->_headers  = getallheaders();
         $this->_post     = $_POST;
         $this->_get      = $_GET;
@@ -35,6 +80,10 @@ class axRequest {
         $this->_browscap = ($cache_dir && class_exists('Browscap', true)) ? new Browscap($cache_dir) : null;
     }
     
+    /**
+     * Resets the request object in its default state
+     * @return void
+     */
     public function reset () {
         $this->_headers  = getallheaders();
         $this->_post     = $_POST;
@@ -44,26 +93,61 @@ class axRequest {
         $this->_filters  = array();
     }
     
+    /**
+     * Get the request headers
+     * @return array
+     */
     public function getHeaders () {
         return $this->_headers;
     }
     
+    /**
+     * Tells if a header had been recieved (identified by its name)
+     * @param string $header
+     * @return boolean
+     */
     public function headerExists ($header) {
         return isset($this->_headers[$header]);
     }
     
+    /**
+     * Get the given request header value (identified by its name)
+     * @param string $header
+     * @return string
+     */
     public function getHeader ($header) {
         return $this->headerExists($header) ? $this->_headers[$header] : null;
     }
     
+    /**
+     * Get the HTTP request method
+     * @return string
+     */
     public function getMethod () {
         return $this->_server['REQUEST_METHOD'];
     }
     
+    /**
+     * Get an environment variable (provided by Apache for instance)
+     * 
+     * This method is an alias of native php `getenv`
+     * 
+     * @link http://php.net/manual/fr/function.getenv.php
+     * @param string $varname
+     * @return string
+     */
     public function getEnv ($varname) {
         return getenv($varname);
     }
     
+    /**
+     * Get server variable
+     * 
+     * If not variable is specified, the complete `$_SERVER` structure is returned.
+     * 
+     * @param string $varname [optional] [default `null`]
+     * @return string
+     */
     public function getServer ($varname = null) {
         if ($varname)
             return isset($_SERVER[$varname]) ? $_SERVER[$varname] : null;
@@ -71,27 +155,54 @@ class axRequest {
         return $_SERVER;
     }
     
+    /**
+     * Get the request cookies
+     * @return array
+     */
     public function getCookies () {
         return $this->_cookies;
     }
     
+    /**
+     * Tells if the given cookie exists (identified by its name)
+     * @param string $name
+     * @return boolean
+     */
     public function cookieExists ($name) {
         return array_key_exists($name, $this->_cookies);
     }
     
+    /**
+     * Get the given cookie (identified by its name)
+     * @param string $name
+     * @return string
+     */
     public function getCookie ($name) {
         return isset($this->_cookies[$name]) ? $this->_cookies[$name] : null;
     }
     
-    public function setFilter (array $filter, $type = null) {
-        if ($type === null) {
-            $this->_filters['default'] = array(
-                'filter' => $filter,
-                'flag'   => true,
-            );
-            return $this;
-        }
-        
+    /**
+     * Set a request variable filter
+     * 
+     * When you set a variable filter, all data you may extract with `axRequest::getParameters`, 
+     * `axRequest::getParameter` or `axResponse::__get` are filtered using `filter_var_array` before they  are returned,
+     * allowing you to set sanitize or validation filter, for instance to prevent injection attacks.
+     * 
+     * IMPORTANT: The `$filter` parameter must be compliant with the `$definition` parameter of `filter_var_array`. 
+     * If the filtering ends up with an error, all variables registered in axResponse and will throw a RuntimeException 
+     * when accessing datas with `axResponse::getVar`, `axResponse::__get` or `axResponse::getVars`.
+     * 
+     * NOTE: The filter will be applied on read so your changes won't take effects until you extract response data with
+     * `axRequest::getParameters`, `axRequest::getParameter` or `axResponse::__get`.
+     * 
+     * @param array $filter The filter description (must be compliant with `filter_var_array` filter description)
+     * @param mixed $type [optional] [default `INPUT_REQUEST`] The kind of request parameters to filter. Can be either 
+     * `INPUT_GET`, `INPUT_POST`, `INPUT_REQUEST`, `INPUT_COOKIE` or string `get`, `post`, `request`, `cookie` (the
+     * case is insensitive)
+     * @throw InvalidArgumentException In case of invalid `$type`
+     * @return axRequest
+     */
+    public function setFilter (array $filter, $type = INPUT_REQUEST) {
         if (!$type = self::_determineType($type))
             throw new InvalidArgumentException("Invalid type");
             
@@ -102,6 +213,16 @@ class axRequest {
         return $this;
     }
     
+    /**
+     * Get a request parameter
+     * 
+     * @param string $name
+     * @param mixed $type [optional] [default `INPUT_REQUEST`] The kind of request parameters to filter. Can be either 
+     * `INPUT_GET`, `INPUT_POST`, `INPUT_REQUEST`, `INPUT_COOKIE` or string `get`, `post`, `request`, `cookie` (the
+     * case is insensitive)
+     * @throw InvalidArgumentException In case of invalid `$type`
+     * @return mixed
+     */
     public function getParameter ($name, $type = INPUT_REQUEST) {
         if (!$type = self::_determineType($type))
             throw new InvalidArgumentException("Invalid type");
@@ -112,6 +233,15 @@ class axRequest {
         return isset($this->{"_{$type}"}[$name]) ? $this->{"_{$type}"}[$name] : null; 
     }
     
+    /**
+     * Get all request parameters
+     * 
+     * @param mixed $type [optional] [default `INPUT_REQUEST`] The kind of request parameters to filter. Can be either 
+     * `INPUT_GET`, `INPUT_POST`, `INPUT_REQUEST`, `INPUT_COOKIE` or string `get`, `post`, `request`, `cookie` (the
+     * case is insensitive)
+     * @throw InvalidArgumentException In case of invalid `$type`
+     * @return array
+     */
     public function getParameters ($type = INPUT_REQUEST) {
         if (!$type = self::_determineType($type))
             throw new InvalidArgumentException("Invalid type");
@@ -121,7 +251,18 @@ class axRequest {
             
         return $this->{"_{$type}"};
     }
-     
+    
+    /**
+     * Manually set a request parameter
+     * 
+     * @param string $name
+     * @param mixed $value
+     * @param mixed $type [optional] [default `INPUT_REQUEST`] The kind of request parameters to filter. Can be either 
+     * `INPUT_GET`, `INPUT_POST`, `INPUT_REQUEST`, `INPUT_COOKIE` or string `get`, `post`, `request`, `cookie` (the
+     * case is insensitive)
+     * @throw InvalidArgumentException In case of invalid `$type`
+     * @return axRequest
+     */
     public function setParameter ($name, $value, $type = INPUT_REQUEST) {
         if (!$type = self::_determineType($type))
             throw new InvalidArgumentException("Invalid type");
@@ -132,26 +273,69 @@ class axRequest {
         return $this;
     }
     
+    /**
+     * __get implementation
+     * 
+     * Alias of `axRequest::getParameter`.
+     * Will always return variables from `$_REQUEST` structure.
+     * 
+     * @param string $key
+     * @return mixed
+     */
     public function __get ($key) {
         return $this->getParameter($key);
     }
     
+    /**
+     * __set implementation
+     * 
+     * Alias of `axRequest::setParameter`.
+     * Will always set variables from `$_REQUEST` structure.
+     * 
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
     public function __set ($key, $value) {
         $this->setParameter($key, $value);
     }
     
+    /**
+     * Get the given file (identified by the parameter name)
+     * 
+     * Will return `null` if the file isn't set in `$_FILES` structure.
+     * 
+     * @param string $param_name The POST parameter name
+     * @return array
+     */
     public function getFile ($param_name) {
         return isset($this->_files[param_name]) ? $this->_files[param_name] : null;
     }
     
+    /**
+     * Get the `$_FILES`structure
+     * 
+     * @return array
+     */
     public function getFiles () {
         return $this->_files;
     }
     
+    /**
+     * Applies a filter on the given variable type
+     * 
+     * Will return false if no filter is defined for this type.
+     * 
+     * @param mixed $type [optional] [default `INPUT_REQUEST`] The kind of request parameters to filter. Can be either 
+     * `INPUT_GET`, `INPUT_POST`, `INPUT_REQUEST`, `INPUT_COOKIE` or string `get`, `post`, `request`, `cookie` (the
+     * case is insensitive)
+     * @throws RuntimeException In case of incorrect type
+     * @return axRequest
+     */
     protected function _applyFilter ($type) {
         if (!isset($this->_filters[$type]) || !isset($this->{"_{$type}"}))
             return false;
-            
+        
         if (!$this->{"_{$type}"} = filter_var_array($this->{"_{$type}"}, $this->_filters[$type]))
             throw new RuntimeException("Invalid filter");
 
@@ -159,6 +343,12 @@ class axRequest {
         return $this;
     }
     
+    /**
+     * Determine the real type according to the `$type` parameter
+     * 
+     * @param mixed $type
+     * @return string
+     */
     protected static function _determineType ($type) {
         $types = array(
             INPUT_POST    => 'post', 

@@ -474,9 +474,11 @@ class axResponse {
      * When you set a variable filter, all data you may extract with `axResponse::getVar`, `axResponse::__get` or 
      * `axResponse::getVars` are filtered using `filter_var_array` before they  are returned, allowing you to set 
      * sanitize or validation filter, for instance to prevent XSS attacks.
+     * 
      * IMPORTANT: The `$filter` parameter must be compliant with the `$definition` parameter of `filter_var_array`. 
      * If the filtering ends up with an error, all variables registered in axResponse and will throw a RuntimeException 
      * when accessing datas with `axResponse::getVar`, `axResponse::__get` or `axResponse::getVars`.
+     * 
      * NOTE: The filter will be applied on read so your changes won't take effects until you extract response data with
      * `axResponse::getVar`, `axResponse::getVars` or with the magic method `__get`.
      * 

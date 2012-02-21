@@ -1,122 +1,120 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Axiom class file
+ * @file Axiom.class.php
  */
 
 /**
- * Axiom Class
+ * @brief Main framework class.
  * 
- * TODO Long description here
+ * This class is a front-end to the most used class in the Axiom framework. It provides direct access to
+ * @li Configuration (Axiom::configuration)
+ * @li Libraries (Axiom::library)
+ * @li Localization (Axiom::locale)
+ * @li Database Connection (Axiom::database)
+ * @li Session (Axiom::session)
+ * @li Logging (Axiom::log)
+ * @li Captcha (Axiom::captcha)
+ * @li Module Management (Axiom::module)
+ * @li View Management (Axiom::view)
+ * This class is also a bridge between the different libraries compounded in the framework and their configuration that
+ * is being held by the axConfiguration object. Axiom class brings all these items together so you don't have to setup 
+ * the configuration manually.
  * 
- * @final
- * @static
+ * @class Axiom
  * @author Delespierre
- * @package libaxiom
- * @subpackage core
+ * @ingroup Core
  * @since 1.2.0
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 final class Axiom {
     
     /**
-     * Axiom Framework Version
-     * @var string
+     * @brief Axiom Framework Version
      */
     const VERSION = '1.2.0';
 
     /**
-     * Flag used to toggle cache
-     * @staticvar
-     * @var boolean
+     * @brief Flag used to toggle cache
+     * @internal
+     * @property boolean $cache
      */
     public static $cache = true;
     
     /**
-     * Configuration object
+     * @brief Configuration object
      * @internal
-     * @staticvar
-     * @var axConfiguration
+     * @property axConfiguration $_config
      */
 	private static $_config;
 	
 	/**
-	 * Library object
+	 * @brief Library object
 	 * @internal
-	 * @staticvar
-	 * @var axLibrary
+	 * @property axLibrary $_library
 	 */
 	private static $_library;
 	
 	/**
-	 * Localization object
+	 * @brief Localization object
 	 * @internal
-	 * @staticvar
-	 * @var axLocale
+	 * @property axLocale $_locale
 	 */
 	private static $_locale;
 
 	/**
-	 * Database connection object
+	 * @brief Database connection object
 	 * @internal
-	 * @staticvar
-	 * @var PDO
+	 * @property axDatabase $_database
 	 */
 	private static $_database;
 	
 	/**
-	 * Session object
+	 * @brief Session object
 	 * @internal
-	 * @staticvar
-	 * @var axSession
+	 * @property axSession $_session
 	 */
 	private static $_session;
 	
 	/**
-	 * Log object
+	 * @brief Log object
 	 * @internal
-	 * @staticvar
-	 * @var axLog
+	 * @property axLog $_log
 	 */
 	private static $_log;
 	
 	/**
-	 * Captcha object
+	 * @brief Captcha object
 	 * @internal
-	 * @staticvar
-	 * @var axCaptcha
+	 * @property axCaptcha $_captcha
 	 */
 	private static $_captcha;
 	
 	/**
-	 * Module Manager object
+	 * @brief Module Manager object
 	 * @internal
-	 * @staticvar
-	 * @var axModuleManager
+	 * @property axModuleManager $_module
 	 */
 	private static $_module;
 	
 	/**
-	 * View Manager object
-	 * @staticvar
-	 * @var axViewManager
+	 * @brief View Manager object
+	 * @internal
+	 * @property axViewManager $_view
 	 */
 	private static $_view;
 	
 	/**
-	 * Get the configuration object
+	 * @brief Get the configuration object
 	 * 
 	 * If the configuration object is not defined it will be initialized according to the method parameters.
 	 * If no parameter is provided for the first call (implicit initialization) then the default parameters will be 
-	 * used.
-	 * Will throw a RuntimeException if the configuration class cannot be found (a lookup in the library will be
+	 * used. Will throw a `RuntimeException` if the configuration class cannot be found (a lookup in the library will be
 	 * performed).
-	 * 
-	 * @static
-	 * @param string $file [optional] [default '/application/config/config.ini'] The configuration file
-	 * @param string $section [optional] [default 'default'] The configuration section to be used
-	 * @param string $class [optional] [default 'axIniConfiguration'] The configuration class to be used
+	 * @param string $file (optional) The configuration file to be used
+	 * @param string $section (optional) The configuration section to be used
+	 * @param string $class (optional) The configuration class to be used
 	 * @throws RuntimeException
 	 * @return axConfiguration
 	 */
@@ -139,19 +137,10 @@ final class Axiom {
 	}
 	
 	/**
-	 * Get the library object
+	 * @brief Get the library object
 	 * 
 	 * If the library object is not defined it will be initialized. No parameter is required to initialize the library 
-	 * object.
-	 * 
-	 * To add new libraries, call the 'add' method as follow.
-	 * * Axiom::library()->add('myLib');
-	 * A lookup in the '/library' and '/application/library' will be performed. If no such directory is found, the
-	 * library object will throw an exception.
-	 * 
-	 * Calling this method for the first time will register the library object as default Autoloader for PHP.
-	 * 
-	 * @static
+	 * object. Calling this method for the first time will register the library object as default Autoloader for PHP.
 	 * @return axLibrary
 	 */
 	public static function library () {
@@ -166,12 +155,10 @@ final class Axiom {
 	}
 	
 	/**
-	 * Get the localization object
+	 * @brief Get the localization object
 	 * 
-	 * If the localization object is not defined, it will be initialized using the configuration parameters (see
-	 * Axiom::configuration method).
-	 * 
-	 * @static
+	 * If the localization object is not defined, it will be initialized using the configuration parameters (see 
+	 * Axiom::configuration).
 	 * @return axLocale
 	 */
 	public static function locale () {
@@ -195,18 +182,15 @@ final class Axiom {
 	}
 	
 	/**
-	 * Get the database connection object
+	 * @brief Get the database connection object
 	 * 
-	 * If the database connection object is not defined, it will be initialized using the configuration parameter (see
-	 * Axiom::configuration method).
-	 * Note: when calling Axiom::database for the first time, you may pass an array as only parameter, this array
-	 * will be used as the $options parameters of the PDO constructor (see PDO::__construct).
-	 * E.G.
-	 * * Axiom::database(array(PDO::ATTR_PERSISTENT => true, PDO::ATTR_ORACLE_NULL => true));
-	 * 
-	 * If the database connection object construction fails, a PDOException is emitted (see PDO::__construct).
-	 * 
-	 * @static
+	 * If the database connection object is not defined, it will be initialized using the configuration parameter (see 
+	 * Axiom::configuration).
+	 * When calling Axiom::database for the first time, you may pass an array as only parameter, this array
+	 * will be used as the $driver_options parameters of the PDO constructor
+	 * (see {@link http://www.php.net/manual/en/pdo.construct.php PDO::__construct}). If the database connection object 
+	 * construction fails, a PDOException is emitted.
+	 * @param array $driver_options (optional) The driver options
 	 * @return axDatabase
 	 */
 	public static function database () {
@@ -227,12 +211,10 @@ final class Axiom {
 	}
 	
 	/**
-	 * Get the session object
+	 * @brief Get the session object
 	 * 
 	 * If the session object is not defined, it will be initialized using the configuration parameters (see 
-	 * Axiom::configuration method).
-	 * 
-	 * @static
+	 * Axiom::configuration).
 	 * @return axSession
 	 */
 	public static function session () {
@@ -247,15 +229,10 @@ final class Axiom {
 	}
 	
 	/**
-	 * Get the log object
+	 * @brief Get the log object
 	 * 
 	 * If the log object is not defined, it will be initialized using the configuration parameters (see 
-	 * `Axiom::configuration`).
-	 * To add a logger in the log chain, simply call the `addLogger` method on the log object.
-	 * E.G.
-	 * * Axiom::log()->addLogger(new AxTextLogger(AXIOM_APP_PATH . '/ressource/log/app.log'));
-	 * 
-	 * @static
+	 * Axiom::configuration).
 	 * @return axLog
 	 */
 	public static function log () {
@@ -276,12 +253,10 @@ final class Axiom {
 	}
 	
 	/**
-	 * Get the captcha object
+	 * @brief Get the captcha object
 	 * 
 	 * If the captcha object is not defined, it will be initialized using the configuration parameters (see 
-	 * Axiom::configuration method).
-	 * 
-	 * @static
+	 * Axiom::configuration).
 	 * @return axCaptcha
 	 */
 	public static function captcha () {
@@ -302,20 +277,10 @@ final class Axiom {
 	}
 	
 	/**
-	 * Get the module manager object
+	 * @brief Get the module manager object
 	 * 
 	 * If the module manager object is not defined, it will be initialized using the configuration parameters (see 
-	 * Axiom::configuration method).
-	 * 
-	 * To check for module existency, use the exists method on the module manager object.
-	 * E.G.
-	 * * Axiom::module()->exists('module');
-	 * 
-	 * To load a module, use the load method.
-	 * E.G.
-	 * * Axiom::module()->load('module');
-	 * 
-	 * @static
+	 * Axiom::configuration).
 	 * @return axModuleManager
 	 */
 	public static function module () {
@@ -335,23 +300,10 @@ final class Axiom {
 	}
 	
 	/**
-	 * Get the view manager
+	 * @brief Get the view manager
 	 * 
 	 * If the view manager object is not defined, it will be initialized using the configuration parameters (see 
-	 * Axiom::configuration method).
-	 * 
-	 * To load a view, use the load method on the view manager object.
-	 * E.G.
-	 * * Axiom::view()->load(...);
-	 * 
-	 * To add layout vars, use the view manager's getters / setters.
-	 * E.G.
-	 * * Axiom::view()->var = 'value';
-	 * * // or
-	 * * Axiom::view()->setVar('var', 'value');
-	 * * // or
-	 * * Axiom::view()->setVars(array('var' => 'value', ...));
-	 * 
+	 * Axiom::configuration).
 	 * @return axViewManager
 	 */
 	public static function view () {
@@ -367,3 +319,14 @@ final class Axiom {
         return self::$_view = new axViewManager($layout, $view_path, $format, $vars);
 	}
 }
+
+/**
+ * @brief Core Module
+ * 
+ * The Core module contains the core framework. Axiom framework cannot work properly without at least those libraries.
+ * 
+ * @defgroup Core
+ * @author Delespierre
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ */
