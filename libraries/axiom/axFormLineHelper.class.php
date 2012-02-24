@@ -1,27 +1,45 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Form line helper class file
+ * @file axFormLineHelper.class.php
  */
 
 /**
- * Form Line Helper Class
- *
+ * @brief Form Line Helper Class
+ * 
+ * @todo axFormLineHelper long description
+ * @class axFormLineHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axFormLineHelper extends axBaseHelper {
     
     /**
-     * Default constructor
-     * @param string $name
-     * @param string $display_name = null
-     * @param string $type = "text"
-     * @param scalar $value = ""
-     * @param array $classes = array()
+     * @brief Constructor
+     * 
+     * The type parameter can be one of (the class used for the input field is in parenthesis):
+     * @li text (axInputHelper)
+     * @li image (axInputHelper)
+     * @li hidden (axInputHelper)
+     * @li checkbox (axInputHelper)
+     * @li radio (axInputHelper)
+     * @li submit (axInputHelper)
+     * @li button (axInputHelper)
+     * @li file (axInputHelper)
+     * @li password (axInputHelper)
+     * @li textarea (axTextareaHelper)
+     * @li select (axSelectHelper)
+     * @li radio-group (axRadioGroupHelper)
+     * @li checkbox-group (axCheckboxGroupHelper)
+     * 
+     * @param string $name The line's name
+     * @param string $display_name @optional @default{null} The display name
+     * @param string $type @optional @default{"text"} The type of line
+     * @param scalar $value @optional @default{""} The input's values
+     * @param string $classes @optional @default{array()} The CSS classe(s)
+     * @throws LogicException If the type doesn't correspond to a valid input type
      */
     public function __construct ($name, $display_name = null, $type = "text", $value = "", $class = "") {
         parent::__construct('div');
@@ -71,8 +89,7 @@ class axFormLineHelper extends axBaseHelper {
     }
 
     /**
-     * (non-PHPdoc)
-     * @see axBaseHelper::setValue()
+     * @copydoc axBaseHelper::setValue()
      */
     public function setValue ($value) {
         $this->getInput()->setValue($value);
@@ -80,15 +97,15 @@ class axFormLineHelper extends axBaseHelper {
     }
 
     /**
-     * (non-PHPdoc)
-     * @see axBaseHelper::getValue()
+     * @copydoc axBaseHelper::getValue()
      */
     public function getValue () {
         return $this->getInput()->getValue();
     }
     
     /**
-     * Get the form line's input name
+     * @brief Get the form line's input name
+     * 
      * @return string
      */
     public function getName () {
@@ -96,7 +113,8 @@ class axFormLineHelper extends axBaseHelper {
     }
     
     /**
-     * Get the inner input type
+     * @brief Get the inner input type
+     * 
      * @return string
      */
     public function getType () {
@@ -104,7 +122,8 @@ class axFormLineHelper extends axBaseHelper {
     }
     
     /**
-     * Set the internal field as checked or not
+     * @brief Set the internal field as checked or not
+     * 
      * @param string $c
      * @return axFormLineHelper
      */
@@ -114,7 +133,8 @@ class axFormLineHelper extends axBaseHelper {
     }
 
     /**
-     * Get the form line's input
+     * @brief Get the form line's input
+     * 
      * @return axBaseHelper
      */
     public function getInput () {
@@ -122,7 +142,7 @@ class axFormLineHelper extends axBaseHelper {
     }
 
     /**
-     * Get the form line's label
+     * @brief Get the form line's label
      * @return axLabelHelper
      */
     public function getLabel () {
@@ -130,11 +150,8 @@ class axFormLineHelper extends axBaseHelper {
     }
 
     /**
-     * Constructor static helper
-     * @param string $name
-     * @param string $display_name = null
-     * @param string $type = "text"
-     * @param scalar $value = ""
+     * @copydoc axFormLineHelper::__construct()
+     * @brief Constuctor static alias
      * @return axFormLineHelper
      */
     public static function export ($name, $display_name = null, $type = "text", $value = "", $class = "") {

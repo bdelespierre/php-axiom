@@ -1,59 +1,61 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Model base class file
+ * @file axBaseModel.class.php 
  */
 
 /**
  * Model Base Class
  * 
- * TODO long description
+ * @todo axBaseModel long description
  * 
- * IMPORTANT: only tables with strictly one attribute as primary key can be used with this class. For more complex 
- * object types, you should describe your own behavior by implementing `axModel`.
+ * @warning Only tables with strictly one attribute as primary key can be used with this class. For more complex 
+ * object types, you should describe your own behavior by implementing axModel.
  *
- * @abstract
+ * @class axBaseModel
+ * @ingroup Model
+ * @since 1.2.0
  * @author Delespierre
- * @package libaxiom
- * @subpackage model
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 abstract class axBaseModel implements axModel {
 
     /**
-     * Database connection
-     * @var PDO
+     * @brief Database connection object
+     * @property PDO $_pdo
      */
     protected $_pdo;
     
     /**
-     * Name of the identifying key (the PRIMARY KEY of your table in fact)
-     * @var string
+     * @brief Name of the identifying key (the PRIMARY KEY of your table in fact)
+     * @property string $_idKey
      */
     protected $_idKey = "id";
 
     /**
-     * Record data
-     * @var array
+     * @brief Record data
+     * @property array $_data
      */
     protected $_data = array();
 
     /**
-     * Statements cache
-     * @var array
+     * @brief Statements cache
+     * @property array $_statements
      */
     protected $_statements = array();
 
     /**
-     * Initialize a statement
+     * @brief Initialize a statement
      * 
-     * This method is intended to create the `PDOStatement` objects used by CRUD methods (create, retrieve, update, 
-     * delete). A statement is identified by its name:
-     * * create   : for record creation
-     * * retrieve : for record retrieving
-     * * update   : for record update
-     * * delete   : for deleting a record
+     * This method is intended to create the `PDOStatement` objects used by @e CRUD methods (create, retrieve, update, 
+     * delete).
+     * 
+     * A statement is identified by its name:
+     * @li create   : for record creation
+     * @li retrieve : for record retrieving
+     * @li update   : for record update
+     * @li delete   : for deleting a record
      * 
      * @abstract
      * @param string $statement The statement name
@@ -62,13 +64,14 @@ abstract class axBaseModel implements axModel {
     abstract protected function _init ($statement);
 
     /**
-     * Default constructor
+     * @brief Constructor
      * 
-     * If `$id` is provided, the `retrive` method will be called with this parameter.
-     * Will throw a RuntimeException if the `$id` parameter did not match an existing record.
+     * If @c $id is provided, the axModel::retrieve() method will be called with this parameter.
      * 
-     * @param mixed $id
-     * @throws RuntimeException
+     * @param PDO $pdo The database connection object
+     * @param mixed $id @optional @default{null}
+     * @throws InvalidArgumentException If the @c $pdo parameter is null 
+     * @throws RuntimeException If the @c $id parameter did not match an existing record
      */
     public function __construct (PDO $pdo, $id = null) {
         if (!$pdo)
@@ -81,7 +84,7 @@ abstract class axBaseModel implements axModel {
     }
 
     /**
-     * __sleep implementation
+     * @brief __sleep implementation
      * @return array
      */
     public function __sleep () {
@@ -89,9 +92,9 @@ abstract class axBaseModel implements axModel {
     }
 
     /**
-     * __get implementation
+     * @brief __get implementation
      * 
-     * Retrieves a record data identified by the `$key` parameter.
+     * Retrieves a record data identified by the @c $key parameter.
      * 
      * @param string $key
      * @return mixed
@@ -101,10 +104,10 @@ abstract class axBaseModel implements axModel {
     }
 
     /**
-     * __set implementation
+     * @brief __set implementation
      * 
-     * Updates a record data identified by the `$key` parameter with the  `$value` parameter.
-     * NOTE: no implicit call is done to the `update` method. You will have to update manually.
+     * Updates a record data identified by the @c $key parameter with the @c $value parameter.
+     * @note no implicit call is done to the axModel::update() method. You will have to update manually.
      * 
      * @param string $key
      * @param mixed $value
@@ -115,7 +118,7 @@ abstract class axBaseModel implements axModel {
     }
 
     /**
-     * __isset implementation
+     * @brief __isset implementation
      * 
      * Tells if a record data exists.
      * 
@@ -127,11 +130,10 @@ abstract class axBaseModel implements axModel {
     }
 
     /**
-     * Get record data
+     * @breif Get record data
      * 
-     * Will retur null if the record hasn't been fetched yet (no call to `retrieve` has been done).
+     * Will return null if the record hasn't been fetched yet (no call to axModel::retrieve() has been done).
      * 
-     * @internal
      * @return array
      */
     public function getData () {
@@ -139,14 +141,14 @@ abstract class axBaseModel implements axModel {
     }
 
     /**
-     * Create method (Crud)
+     * @brief Create method (Crud)
      * 
-     * Creates the record over the RDBMS using the 'create' prepared statement.
+     * Creates the record over the RDBMS using the @c create prepared statement.
      * Will return false in case of error
      * 
      * @param array $data
-     * @throws RuntimeException
-     * @return axModel
+     * @throws RuntimeException If the @c create statement couldn't be initialized
+     * @return axBaseModel
      */
     public function create (array $data) {
         if (!$this->_init("create"))
@@ -160,12 +162,13 @@ abstract class axBaseModel implements axModel {
     }
     
 	/**
-     * Retrieve method (cRud)
+     * @brief Retrieve method (cRud)
      * 
-     * Reads the record over the RDBMS using the 'retrieve' prepared statement.
+     * Reads the record over the RDBMS using the @c retrieve prepared statement.
      * 
      * @param mixed $id
-     * @return axModel
+     * @throws RuntimeException If the @c retrieve statement couldn't be initialized
+     * @return axBaseModel
      */
     public function retrieve ($id) {
         if (!$this->_init("retrieve"))
@@ -181,12 +184,14 @@ abstract class axBaseModel implements axModel {
     }
 
     /**
-     * Update method (crUd)
+     * @brief Update method (crUd)
      * 
-     * Updates the record over the RDBMS using the 'update' prepared statement.
+     * Updates the record over the RDBMS using the @c update prepared statement.
+     * The @c $data parameter will be merged with the current record data.
      * 
-     * @throws RuntimeException
-     * @return boolean
+     * @param array $data @optional @default{array()} The data to add for updating
+     * @throws RuntimeException If the @c update statemetn couldn't be initialized
+     * @return axBaseModel
      */
     public function update (array $data = array()) {
         if (!$this->_init("update"))
@@ -200,11 +205,11 @@ abstract class axBaseModel implements axModel {
     }
 
     /**
-     * Delete method (cruD)
+     * @brief Delete method (cruD)
      * 
-     * Destruct the record over the RDBMS using the 'delete' prepared statement.
+     * Destruct the record over the RDBMS using the @c delete prepared statement.
      * 
-     * @throws RuntimeException
+     * @throws RuntimeException If the @c delete statement coulnd't be initialized
      * @return boolean
      */
     public function delete () {

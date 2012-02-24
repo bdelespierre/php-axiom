@@ -1,37 +1,39 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Form helper class file
+ * @file axFormHelper.class.php
  */
 
 /**
- * Form Helper Class
+ * @brief HTML Form Helper Class
  *
+ * @todo axFormHelper long description
+ * @class axFormHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axFormHelper extends axBaseHelper {
 
     /**
-     * An associative map of the lines added to the form
-     * @var array
+     * @brief An associative map of the lines added to the form
+     * @property array $_form_lines
      */
     protected $_form_lines = array();
     
     /**
-     * A list of fieldsets added to the form
-     * @var array
+     * @brief A list of fieldsets added to the form
+     * @property array $_form_fieldsets
      */
     protected $_form_fieldsets = array();
     
     /**
-     * Default constructor
-     * @param string $url = ''
-     * @param string $method = 'post'
-     * @param string $enctype = null
+     * @brief Constructor
+     * 
+     * @param string $url @optional @default{''} Form url attribute
+     * @param string $method @optional @default{'post'} Form method attribute
+     * @param string $enctype @optional @default{null} Form enctyppe attribute
      */
     public function __construct ($url = '', $method = 'post', $enctype = null) {
         parent::__construct ('form', array('action' => $url, 'method' => $method));
@@ -40,12 +42,14 @@ class axFormHelper extends axBaseHelper {
     }
 
     /**
-     * Add a form-line to the form
-     * @see axFormLineHelper::export
-     * @param string $name
-     * @param string $display_name = null
-     * @param string $type = "text"
-     * @param scalar $value = ""
+     * @brief Add a form-line to the form
+     * 
+     * @see axFormLineHelper::export()
+     * @param string $name The line's name
+     * @param string $display_name @optional @default{null} The display name
+     * @param string $type @optional @default{"text"} The form line's type
+     * @param scalar $value @optional @default{""} The input's value
+     * @param string $class @optional @default{""} The CSS class
      * @return axFormHelper
      */
     public function addLine ($name, $display_name = null, $type = "text", $value = "", $class = "") {
@@ -54,7 +58,8 @@ class axFormHelper extends axBaseHelper {
     }
     
     /**
-     * Get a given line attached to the form helper
+     * @brief Get a given line attached to the form helper
+     * 
      * @param string $name
      * @return axFormLineHelper
      */
@@ -63,7 +68,8 @@ class axFormHelper extends axBaseHelper {
     }
     
     /**
-     * Mark the given lines as error (adding the CSS error class)
+     * @breif Mark the given lines as error (adding the CSS error class)
+     * 
      * @param array $names
      * @return axFormHelper
      */
@@ -85,9 +91,10 @@ class axFormHelper extends axBaseHelper {
     }
     
     /**
-     * Add a fieldset to the form
-     * @see axFieldsetHelper::export
-     * @param strign $legend = ""
+     * @brief Add a fieldset to the form
+     * 
+     * @see axFieldsetHelper::__construct()
+     * @param strign $legend @optional @default{""}
      * @return axFieldsetHelper
      */
     public function addFieldset ($legend = "") {
@@ -95,10 +102,10 @@ class axFormHelper extends axBaseHelper {
     }
     
     /**
-     * Fill the form inner inputs and fieldsets
-     * automatically with a descriptor.
-     * The $desc parameter can be either an array
-     * or a axModel instance.
+     * @brief Fill the form inner inputs and fieldsets automatically with a descriptor.
+     * 
+     * The @c $desc parameter can be either an array or a axModel instance.
+     * 
      * @param mixed $desc
      * @return axFormHelper
      */
@@ -109,7 +116,7 @@ class axFormHelper extends axBaseHelper {
             }
             if ($node instanceof Helper) {
                 $name = $node->getName();
-                if (is_object($desc) && $desc instanceof axModel && isset($desc->$name)) {
+                if ($desc instanceof axModel && isset($desc->$name)) {
                     $value = $desc->$name;
                 }
                 elseif (is_array($desc) && isset($desc[$name])) {
@@ -134,10 +141,8 @@ class axFormHelper extends axBaseHelper {
     }
     
     /**
-     * Constructor static alias
-     * @param strign $url  = ''
-     * @param strign $method = 'post'
-     * @param string $enctype = null
+     * @copydoc axFormHelper::__construct()
+     * @brief Constructor static alias
      * @return axFormHelper
      */
     public static function export ($url = '', $method = 'post', $enctype = null) {

@@ -1,74 +1,75 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Feed entry class file
+ * @file axFeedEntry.class.php
  */
 
 /**
- * Feed Entry Class
+ * @brief Feed Entry Class
  *
+ * @todo axFeedEntry long description
+ * @class axFeedEntry
  * @author Delespierre
- * @package libaxiom
- * @subpackage feed
+ * @ingroup Feed
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @license http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axFeedEntry {
     
     /**
-     * Entry ID
-     * @var integer
+     * @biref Entry ID
+     * @property integer $_id
      */
 	protected $_id;
 	
 	/**
-	 * Entry title
-	 * @var string
+	 * @brief Entry title
+	 * @property string $_title
 	 */
 	protected $_title;
 	
 	/**
-	 * Entry date (RFC 2822)
-	 * @var string
+	 * @brief Entry date (RFC 2822)
+	 * @property string $_date
 	 */
 	protected $_date;
 	
 	/**
-	 * Entry author
-	 * @var string
+	 * @brief Entry author
+	 * @property string $_author
 	 */
 	protected $_author;
 	
 	/**
-	 * Entry description
-	 * @var string
+	 * @brief Entry description
+	 * @property string $_description
 	 */
 	protected $_decription;
 	
 	/**
-	 * Entry content
-	 * @var string
+	 * @brief Entry content
+	 * @property string $content
 	 */
 	protected $content;
 
 	/**
-	 * Entry link
-	 * @var string
+	 * @brief Entry link
+	 * @property string $link
 	 */
 	protected $link;
     
 	/**
-	 * Entry comments URL
-	 * @var string
+	 * @brief Entry comments URL
+	 * @property string $comments
 	 */
 	protected $comments;
 	
 	/**
-	 * Default constructor.
+	 * @brief Constructor.
 	 *
 	 * You may pass an array of attributes to initialize the axFeedEntry propreties.
 	 *
-	 * @param array $values
+	 * @param array $values @optional @default{array()}
 	 */
 	public function __construct (array $values = array()) {
 	    if (!empty($values)) {
@@ -79,9 +80,10 @@ class axFeedEntry {
 	}
 	
 	/**
-	 * Getter functions helper
+	 * @brief Getter
+	 * 
 	 * @param string $key
-	 * @throws InvalidArgumentException
+	 * @throws InvalidArgumentException If @c $key doesn't exists
 	 * @return mixed
 	 */
     public function __get ($key) {
@@ -92,7 +94,8 @@ class axFeedEntry {
     }
     
     /**
-     * Setter functions helper
+     * @brief Setter
+     * 
      * @param string $key
      * @param mixed $value
      * @return void
@@ -105,7 +108,7 @@ class axFeedEntry {
     }
     
     /**
-     * Get id
+     * @brief Get id
      * @return integer
      */
     public function getId () {
@@ -113,18 +116,21 @@ class axFeedEntry {
     }
     
     /**
-     * Set id.
+     * @brief Set id.
      *
-     * First parameter $id will be converted to integer
+     * First parameter @c $id will be converted to integer
      *
      * @param mixed $id
+     * @return axFeedEntry
      */
     public function setId ($id) {
         $this->_id = (int)$id;
+        return $this;
     }
     
     /**
-     * Get title
+     * @brief Get title
+     * 
      * @return string
      */
     public function getTitle () {
@@ -132,17 +138,19 @@ class axFeedEntry {
     }
     
     /**
-     * Set title
+     * @brief Set title
+     * 
      * @param string $title
      * @return void
      */
     public function setTitle ($title) {
         $title = strip_tags($title);
         $this->_title = $title;
+        return $this;
     }
     
     /**
-     * Get date (RFC 2822)
+     * @brief Get date (RFC 2822)
      * @return string
      */
     public function getDate () {
@@ -150,13 +158,12 @@ class axFeedEntry {
     }
     
     /**
-     * Set date.
+     * @brief Set date.
      *
-     * Date parameter may be integer or string;
-     * it will be converted to RFC 2822 date.
+     * Date parameter may be integer or string; it will be converted to RFC 2822 date.
      *
      * @param mixed $date
-     * @return void
+     * @return axFeedEntry
      */
     public function setDate ($date) {
         if ($time = strtotime($date))
@@ -165,10 +172,12 @@ class axFeedEntry {
             throw new InvalidArgumentException("Invalid date format", 4002);
             
         $this->_date = $date;
+        return $this;
     }
     
     /**
-     * Get author
+     * @brief Get author
+     * 
      * @return string
      */
     public function getAuthor () {
@@ -176,10 +185,11 @@ class axFeedEntry {
     }
     
     /**
-     * Set author
-     * @throws InvalidArgumentException
+     * @brief Set author
+
+     * @throws InvalidArgumentException If author's mail, name or URI is invalid
      * @param array $author
-     * @return void
+     * @return axFeedEntry
      */
     public function setAuthor (array $author) {
         $author = array_intersect_key($author, array_flip(array('mail', 'name', 'uri')));
@@ -197,10 +207,12 @@ class axFeedEntry {
             throw new InvalidArgumentException("Author description must contain at least a name or email or URI", 4006);
             
         $this->_author = $author;
+        return $this;
     }
     
     /**
-     * Get description
+     * @brief Get description
+     * 
      * @return string
      */
     public function getDescription () {
@@ -208,17 +220,20 @@ class axFeedEntry {
     }
     
     /**
-     * Set description
+     * @brief Set description
+     * 
      * @param string $description
-     * @return void
+     * @return axFeedEntry
      */
     public function setDescription ($description) {
         $description = strip_tags($description);
         $this->_description = $description;
+        return $this;
     }
     
     /**
-     * Get content
+     * @brief Get content
+     * 
      * @return string
      */
     public function getContent () {
@@ -226,16 +241,19 @@ class axFeedEntry {
     }
     
     /**
-     * Set content
+     * @brief Set content
+     * 
      * @param string $content
-     * @return void
+     * @return axFeedEntry
      */
     public function setContent ($content) {
         $this->content = $content;
+        return $this;
     }
     
     /**
-     * Get link
+     * @brief Get link
+     * 
      * @return string
      */
     public function getLink () {
@@ -243,19 +261,22 @@ class axFeedEntry {
     }
     
     /**
-     * Set link
+     * @brief Set link
+     * 
      * @param string $url
-     * @throws InvalidArgumentException
-     * @return void
+     * @throws InvalidArgumentException If @c $url parameter is not a valid URL
+     * @return axFeedEntry
      */
     public function setLink ($url) {
         if (!$url = filter_var($url, FILTER_VALIDATE_URL))
             throw new InvalidArgumentException("Invalid URL", 4007);
         $this->link = $url;
+        return $this;
     }
     
     /**
-     * Get comments url
+     * @brief Get comments url
+     * 
      * @return string
      */
     public function getComments () {
@@ -263,14 +284,16 @@ class axFeedEntry {
     }
     
     /**
-     * Sets comments url
+     * @brief Sets comments url
+     * 
      * @param string $url
-     * @throws InvalidArgumentException
-     * @return void
+     * @throws InvalidArgumentException If @c $url parameter is not a valid URL 
+     * @return axFeedEntry
      */
     public function setComments ($url) {
         if (!$url = filter_var($url, FILTER_VALIDATE_URL))
             throw new InvalidArgumentException("Invalid URL", 4007);
         $this->comments = $url;
+        return $this;
     }
 }

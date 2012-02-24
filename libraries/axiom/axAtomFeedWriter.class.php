@@ -1,23 +1,26 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Atom feed writer class file
+ * @file axAtomFeedWriter.class.php
  */
 
 /**
- * Atom Feed Writer Class
- *
+ * @brief Atom Feed Writer.
+ * 
+ * Instances of this class are intended to be attached an axFeed instance to display this feed according to the Atom
+ * format.
+ * 
+ * @class axAtomFeedWriter
  * @author Delespierre
- * @package libaxiom
- * @subpackage feed
+ * @ingroup Feed
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axAtomFeedWriter extends axFeedWriter {
     
     /**
-     * Default constructor
-     * @param Feed $feed
+     * @brief Constructor
+     * @param Feed $feed The feed to build
      */
     public function __construct (axFeed $feed) {
         parent::__construct($feed);
@@ -31,8 +34,7 @@ class axAtomFeedWriter extends axFeedWriter {
     }
     
     /**
-     * (non-PHPdoc)
-     * @see axFeedWriter::buildFeedInfo()
+     * @copydoc axFeedWriter::buildFeedInfo()
      */
     protected function buildFeedInfo () {
         $this->_atom->appendChild(new DOMElement('id', $this->_feed->getId()));
@@ -60,14 +62,11 @@ class axAtomFeedWriter extends axFeedWriter {
     }
     
     /**
-     * (non-PHPdoc)
-     * @see axFeedWriter::buildItems()
+     * @copydoc axFeedWriter::buildItems()
+     * @todo Add entry validation here
      */
     protected function buildItems () {
         foreach ($this->_feed->getEntries() as $entry) {
-            
-            // TODO add entry validation here.
-            
             $item = $this->_atom->appendChild(new DOMElement('entry'));
             
             $item->appendChild(new DOMElement('id', $entry->getId()));

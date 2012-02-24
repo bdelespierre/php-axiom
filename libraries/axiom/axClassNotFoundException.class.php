@@ -1,26 +1,24 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Class not found exception class file
+ * @file axClassNotFoundException.class.php
  */
 
 /**
- * Class not found exception
+ * @brief Exception thrown if a class load fails
  * 
- * Exception thrown if a class load fails.
- * 
+ * @class axClassNotFoundException
  * @author Delespierre
  * @since 1.1.4
- * @package libaxiom
- * @subpackage exception
+ * @ingroup Exception
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axClassNotFoundException extends Exception {
 	
 	/**
-	 * Defualt constructor
-	 * @param string $class the class name
+	 * @brief Constructor
+	 * @param string $class The class name
 	 */
 	public function __construct ($class) {
 		parent::__construct("Class {$class} not found");

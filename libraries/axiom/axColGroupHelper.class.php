@@ -1,30 +1,29 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Col group helper class file
+ * @file axColGroupHelper.class.php
  */
 
 /**
- * Column Group Helper Class
+ * @brief Column Group Helper Class
  *
+ * @class axColGroupHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axColGroupHelper extends axBaseHelper {
     
     /**
-     * Default constructor
+     * @brief Constructor
      */
     public function __construct () {
         parent::__construct('colgroup');
     }
     
     /**
-     * Add a column to the colgroup and
-     * return it
+     * @brief Add a column to the colgroup and return it
      * @return axColHelper
      */
     public function addCol () {
@@ -32,7 +31,7 @@ class axColGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Constructor static alias
+     * @brief Constructor static alias
      * @return axColGroupHelper
      */
     public static function export () {

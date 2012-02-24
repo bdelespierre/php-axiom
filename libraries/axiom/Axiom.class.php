@@ -17,6 +17,7 @@
  * @li Captcha (Axiom::captcha)
  * @li Module Management (Axiom::module)
  * @li View Management (Axiom::view)
+ * 
  * This class is also a bridge between the different libraries compounded in the framework and their configuration that
  * is being held by the axConfiguration object. Axiom class brings all these items together so you don't have to setup 
  * the configuration manually.
@@ -37,7 +38,6 @@ final class Axiom {
 
     /**
      * @brief Flag used to toggle cache
-     * @internal
      * @property boolean $cache
      */
     public static $cache = true;
@@ -110,12 +110,12 @@ final class Axiom {
 	 * 
 	 * If the configuration object is not defined it will be initialized according to the method parameters.
 	 * If no parameter is provided for the first call (implicit initialization) then the default parameters will be 
-	 * used. Will throw a `RuntimeException` if the configuration class cannot be found (a lookup in the library will be
-	 * performed).
-	 * @param string $file (optional) The configuration file to be used
-	 * @param string $section (optional) The configuration section to be used
-	 * @param string $class (optional) The configuration class to be used
-	 * @throws RuntimeException
+	 * used.
+	 * 
+	 * @param string $file @optional @default{"/application/config/config.ini"} The configuration file to be used
+	 * @param string $section @optional @default{"default"} The configuration section to be used
+	 * @param string $class @optional @default{"axIniConfiguration"} The configuration class to be used
+	 * @throws RuntimeException If the configuration class cannot be found
 	 * @return axConfiguration
 	 */
 	public static function configuration () {
@@ -141,6 +141,7 @@ final class Axiom {
 	 * 
 	 * If the library object is not defined it will be initialized. No parameter is required to initialize the library 
 	 * object. Calling this method for the first time will register the library object as default Autoloader for PHP.
+	 * 
 	 * @return axLibrary
 	 */
 	public static function library () {
@@ -159,6 +160,7 @@ final class Axiom {
 	 * 
 	 * If the localization object is not defined, it will be initialized using the configuration parameters (see 
 	 * Axiom::configuration).
+	 * 
 	 * @return axLocale
 	 */
 	public static function locale () {
@@ -188,9 +190,10 @@ final class Axiom {
 	 * Axiom::configuration).
 	 * When calling Axiom::database for the first time, you may pass an array as only parameter, this array
 	 * will be used as the $driver_options parameters of the PDO constructor
-	 * (see {@link http://www.php.net/manual/en/pdo.construct.php PDO::__construct}). If the database connection object 
-	 * construction fails, a PDOException is emitted.
-	 * @param array $driver_options (optional) The driver options
+	 * (see @link{http://www.php.net/manual/en/pdo.construct.php}).
+	 * 
+	 * @param array $driver_options @optional @default{array()} The driver options
+	 * @throws PDOException If the database connection object construction fails
 	 * @return axDatabase
 	 */
 	public static function database () {
@@ -215,6 +218,7 @@ final class Axiom {
 	 * 
 	 * If the session object is not defined, it will be initialized using the configuration parameters (see 
 	 * Axiom::configuration).
+	 * 
 	 * @return axSession
 	 */
 	public static function session () {
@@ -233,6 +237,7 @@ final class Axiom {
 	 * 
 	 * If the log object is not defined, it will be initialized using the configuration parameters (see 
 	 * Axiom::configuration).
+	 * 
 	 * @return axLog
 	 */
 	public static function log () {
@@ -257,6 +262,7 @@ final class Axiom {
 	 * 
 	 * If the captcha object is not defined, it will be initialized using the configuration parameters (see 
 	 * Axiom::configuration).
+	 * 
 	 * @return axCaptcha
 	 */
 	public static function captcha () {
@@ -281,6 +287,7 @@ final class Axiom {
 	 * 
 	 * If the module manager object is not defined, it will be initialized using the configuration parameters (see 
 	 * Axiom::configuration).
+	 * 
 	 * @return axModuleManager
 	 */
 	public static function module () {
@@ -304,6 +311,7 @@ final class Axiom {
 	 * 
 	 * If the view manager object is not defined, it will be initialized using the configuration parameters (see 
 	 * Axiom::configuration).
+	 * 
 	 * @return axViewManager
 	 */
 	public static function view () {

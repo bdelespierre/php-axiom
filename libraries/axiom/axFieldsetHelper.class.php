@@ -1,29 +1,31 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Fieldset helper class file
+ * @file axFieldsetHelper.class.php
  */
 
 /**
- * Fieldset Helper Class
- *
+ * @brief HTML Fieldset Helper Class
+ * 
+ * This class creates and manages a form fieldset.
+ * 
+ * @class axFieldsetHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axFieldsetHelper extends axBaseHelper {
 
     /**
-     * An associative map of the lines added to the fieldset
-     * @var array
+     * @brief An associative map of the lines added to the fieldset
+     * @property array $_fieldset_lines
      */
     protected $_fieldset_lines = array();
     
     /**
-     * Default constructor
-     * @param string $legend = ""
+     * @brief Constructor
+     * @param string $legend @optional @default{""} The fieldset legend (if any)
      */
     public function __construct ($legend = "") {
         parent::__construct('fieldset');
@@ -32,12 +34,14 @@ class axFieldsetHelper extends axBaseHelper {
     }
 
     /**
-     * Add a form-line to the fieldset.
-     * @see axFormLineHelper::export
-     * @param string $name
-     * @param string $display_name = null
-     * @param string $type = "text"
-     * @param scalar $value = ""
+     * @brief Add a form-line to the fieldset.
+     * 
+     * @see axFormLineHelper::export()
+     * @param string $name Input name
+     * @param string $display_name @optional @default{null} The name to display
+     * @param string $type @optional @default{"text"} The type of input to display
+     * @param scalar $value @optional @default{""} The value of input to display
+     * @param string $class @optional @default{""} The CSS classe(s) to apply
      * @return axFieldsetHelper
      */
     public function addLine ($name, $display_name = null, $type = "text", $value = "", $class = "") {
@@ -46,7 +50,8 @@ class axFieldsetHelper extends axBaseHelper {
     }
     
 	/**
-     * Get a given line attached to the fieldset helper
+     * @brief Get a given line attached to the fieldset helper
+     * 
      * @param string $name
      * @return axFormLineHelper
      */
@@ -55,7 +60,8 @@ class axFieldsetHelper extends axBaseHelper {
     }
     
     /**
-     * Mark the $names line as error (adding the CSS error class)
+     * @brief Mark the @c $names line as error (adding the CSS 'error' class)
+     * 
      * @param array $names
      * @return axFieldsetHelper
      */
@@ -68,10 +74,10 @@ class axFieldsetHelper extends axBaseHelper {
     }
     
     /**
-     * Fill the fieldset inner inputs automatically
-     * with a descriptor.
-     * The $desc parameter can be either an array
-     * or a axModel instance.
+     * @breif Fill the fieldset inner inputs automatically with a descriptor.
+     * 
+     * The @c $desc parameter can be either an array or a axModel instance.
+     * 
      * @param mixed $desc
      * @return axFieldsetHelper
      */
@@ -104,8 +110,8 @@ class axFieldsetHelper extends axBaseHelper {
     }
     
 	/**
-     * Constructor static alias
-     * @param string $legend = ""
+     * @copydoc axFieldsetHelper::__construct()
+     * @brief Constructor static alias
      * @return axFieldsetHelper
      */
     public static function export ($legend = "") {

@@ -1,31 +1,31 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Caption helper class file
+ * @file axCaptionHelper.class.php
  */
 
 /**
- * Table Caption Helper Class
+ * @brief HTML table caption helper
  *
+ * @class axCaptionHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axCaptionHelper extends axBaseHelper {
     
     /**
-     * Default constructor
-     * @param string $value
+     * @biref Constructor
+     * @param string $value The caption value
      */
     public function __construct ($value) {
         parent::__construct('caption', array(), $value);
     }
     
     /**
-     * Constructor static helper
-     * @param string $value
+     * @brief Constructor static helper
+     * @param string $value The caption value
      */
     public static function export ($value) {
         return new self ($value);

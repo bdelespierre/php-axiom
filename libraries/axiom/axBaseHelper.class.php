@@ -1,48 +1,52 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence   http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Base helper class file
+ * @file axBaseController.class.php
  */
 
 /**
- * Base Helper Abstract Class
- * @abstract
- * @author     Delespierre
- * @package    libaxiom
- * @subpackage helper
+ * @brief Base class for helpers
+ * 
+ * This class provides a default implementation for most axHelper methods.
+ * 
+ * @class axBaseHelper
+ * @ingroup Helper
+ * @author Delespierre
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 abstract class axBaseHelper implements axHelper {
 
     /**
-     * Node's name
-     * @var string
+     * @brief Node name
+     * @property string $_node_name;
      */
     protected $_node_name;
 
     /**
-     * Node's value
-     * @var mixed
+     * @brief Node value
+     * @property mixed $_node_value
      */
     protected $_node_value;
 
     /**
-     * Node's attributes
-     * @var array
+     * @brief Node attributes
+     * @property array $_attributes
      */
     protected $_attributes;
 
     /**
-     * Ndeo's children
-     * @var array
+     * @brief Node children
+     * @property array $_children
      */
     protected $_children;
 
     /**
-     * Default constructor
-     * @param string $node_name
-     * @param array  $attributes = array()
-     * @param mixed  $node_value = null
+     * @brief Constructor
+     * 
+     * @param string $node_name The node name
+     * @param array $attributes @optional @default{array()} The node attributes 
+     * @param mixed $node_value @optional @default{null} The node value
      */
     public function __construct ($node_name, $attributes = array(), $node_value = null) {
         $this->_node_name  = $node_name;
@@ -51,8 +55,8 @@ abstract class axBaseHelper implements axHelper {
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Helper::setAttributes()
+     * @copybrief axHelper::setAttributes
+     * @see Helper::setAttributes
      */
     public function setAttributes ($attributes) {
         foreach ($attributes as $key => $value) {
@@ -62,27 +66,27 @@ abstract class axBaseHelper implements axHelper {
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Helper::setValue()
+     * @copydoc axHelper::setValue()
      */
     public function setValue ($value) {
         $this->_node_value = $value;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Helper::getValue()
+     * @copydoc axHelper::getValue()
      */
     public function getValue () {
         return $this->_node_value;
     }
 
     /**
-     * __call overloading
-     * Enable the use of axBaseHelper::setX() and axBaseHelper::getX()
-     * where X is an attribute of the current node
+     * @brief __call implementation
+     * 
+     * Enable the use of axBaseHelper::setX() and axBaseHelper::getX() where X is an attribute of the current node.
+     * Will return the current instance for chaining purposes.
+     * 
      * @param string $method
-     * @param array  $args
+     * @param array $args
      * @return axBaseHelper
      */
     public function __call ($method, $args) {
@@ -97,16 +101,14 @@ abstract class axBaseHelper implements axHelper {
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Helper::appendChild()
+     * @copydoc axHelper::appendChild()
      */
     public function appendChild ($node) {
         return $this->_children[] = $node;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Helper::prependChild()
+     * @copydoc axHelper::prependChild()
      */
     public function prependChild ($node) {
         array_unshift($this->_children, $node);
@@ -114,8 +116,7 @@ abstract class axBaseHelper implements axHelper {
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Helper::__toString()
+     * @copydoc axHelper::__toString()
      */
     public function __toString () {
         $attr = array();
@@ -140,6 +141,13 @@ abstract class axBaseHelper implements axHelper {
 }
 
 if (!function_exists("lcfirst")) {
+    /**
+     * @fn string lcfirst (string $string)
+     * @brief lcfirst function implementation (PHP < 5.1)
+     * @link http://php.net/manual/fr/function.lcfirst.php
+     * @param string $string The input string
+     * @return string
+     */
     function lcfirst ($string) {
         $string{0} = strtolower($string{0});
         return $string;

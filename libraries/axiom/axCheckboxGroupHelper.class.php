@@ -1,39 +1,37 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Checkbox group helper class file
+ * @file axCheckboxGroupHelper.class.php
  */
 
 /**
- * Checkbox Group Helper Class
+ * @brief Checkbox Group Helper Class
  *
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axCheckboxGroupHelper extends axBaseHelper {
 
     /**
-     * Inner input's name
-     * @var string
+     * @brief Inner input's name
+     * @property string $_name
      */
     protected $_name;
 
     /**
-     * Current position
-     * @internal
-     * @var integer
+     * @brief Current position
+     * @property integer $_count
      */
     protected static $_count = 1;
 
     /**
-     * Default constructor
-     * @param string $name
-     * @param array $values = array()
+     * @brief Constructor
+     * @param string $name Group name (HTML name attribute value)
+     * @param array $values @optional @default{array()} Values list (one per checkbox), keys will be used as label
      */
-    public function __construct ($name, $values = array()) {
+    public function __construct ($name, array $values = array()) {
         parent::__construct('span');
         $this->_name = $name;
 
@@ -42,7 +40,7 @@ class axCheckboxGroupHelper extends axBaseHelper {
     }
 
     /**
-     * Add an option (a checkbox) to the group
+     * @brief Add an option (a checkbox) to the group
      * @param string $label
      * @param scalar $value
      * @return axCheckboxGroupHelper
@@ -54,21 +52,19 @@ class axCheckboxGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Add multiple options at once.
-     * The $values parameters must be formatted
-     * as follow: { [key: value, ...] }
-     * @param array $values
+     * @brief Add multiple options at once.
+     * @see axCheckboxGroupHelper::addOption()
+     * @param array $values Values list (one per checkbox), keys will be used as label
      * @return axCheckboxGroupHelper
      */
-    public function addOptions ($values) {
+    public function addOptions (array $values) {
         foreach ($values as $key => $value)
             $this->addOption($key, $value);
         return $this;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see axBaseHelper::setValue()
+     * @copydoc axBaseHelper::setValue()
      */
     public function setValue ($value) {
         foreach ($this->_children as &$node) {
@@ -76,12 +72,12 @@ class axCheckboxGroupHelper extends axBaseHelper {
                 $node->setChecked('checked');
             }
         }
-
+        
         return $this;
     }
     
     /**
-     * Get group's name
+     * @brief Get group's name
      * @return string
      */
     public function getName () {
@@ -89,12 +85,13 @@ class axCheckboxGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Constructor static alias
+     * @brief Constructor static alias
+     * @see axCheckboxGroupHelper::__construct
      * @param string $name
-     * @param array $values = array()
+     * @param array $values @optional @default{array()}
      * @return axCheckboxGroupHelper
      */
-    public static function export ($name, $values = array()) {
+    public static function export ($name, array $values = array()) {
         return new self ($name, $values);
     }
 }

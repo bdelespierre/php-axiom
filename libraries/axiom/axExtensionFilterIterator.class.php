@@ -1,36 +1,33 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Extension filter iterator class file
+ * @file axExtensionFilterIterator
  */
 
 /**
- * Extention filter iterator
+ * @brief Extention filter iterator
  * 
- * Filter iterators that filters files according
- * to their extensions. Multiple extensions separated by 
- * comma are supported.
+ * Iterator that filters files according to their extensions. Multiple extensions separated by comma are supported.
  * 
+ * @class axExtensionFilterIterator
  * @author Delespierre
  * @since 1.1.4
- * @package libaxiom
- * @subpackage iterator
+ * @ingroup Core
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axExtensionFilterIterator extends FilterIterator {
 	
 	/**
-	 * Extensions to filter
-	 * @var array
+	 * @brief Extensions to filter
+	 * @property array $_ext;
 	 */
 	protected $_ext;
 	
 	/**
-	 * Defualt constructor
+	 * @brief Constructor
 	 * 
-	 * You may pass as many extensions as you want by separating them
-	 * with a comma character.
+	 * You may pass as many extensions as you want by separating them with a comma character.
 	 * 
 	 * @param Iterator $iterator
 	 * @param string $extension
@@ -41,9 +38,11 @@ class axExtensionFilterIterator extends FilterIterator {
 	}
 	
 	/**
-	 * (non-PHPdoc)
-	 * @see FilterIterator::accept()
-	 */
+     * @brief FilterIterator::accept() implementation
+     * @todo The filter validation is really poor and need to be reworked
+     * @link http://www.php.net/manual/en/filteriterator.accept.php
+     * @return boolean
+     */
 	public function accept () {
 		foreach ($this->_ext as $ext) {
 			if (strpos((string)$this->current(), $ext) !== false)
