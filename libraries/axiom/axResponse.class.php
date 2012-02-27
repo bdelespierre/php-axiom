@@ -325,7 +325,7 @@ class axResponse {
      * @param string $method [optional] [default `axResponse::MERGE_VARS`] Possible values are `axResponse::MERGE_VARS` 
      * or `axResponse::ADD_VARS`
      */
-    public function addVars ($collection, $method = self::MERGE_VARS) {
+    public function add ($collection, $method = self::MERGE_VARS) {
         if (!$collection)
             return $this;
         

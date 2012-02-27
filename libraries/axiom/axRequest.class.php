@@ -274,6 +274,39 @@ class axRequest {
     }
     
     /**
+     * @brief Add a collection of parameters
+     * 
+     * The @c method parameter can be either @c 'add', @c 'merge', axRequest::PROPERTY_MERGE, or axRequest::PROPERTY_ADD 
+     * 
+     * @param mixed $collection An associative structure to import
+     * @param mixed $method @optional @default{axRequest::PROPERTY_MERGE} The merge mode
+     * @param mixed $type @optional @default{INPUT_REQUEST} The type of variables to be added
+     * @throws InvalidArgumentException If the @c $method parameter is invalid
+     * @return axRequest
+     */
+    public function add ($collection, $method = self::PROPERTY_MERGE, $type = INPUT_REQUEST) {
+        if (!$type = self::_determineType($type))
+            throw new InvalidArgumentException("Invalid type");
+        
+        switch (strtolower($method)) {
+            case 'merge':
+            case self::PROPERTY_MERGE:
+                $this->{"_{$type}"} = array_merge($this->{"_{$type}"}, $collection);
+                break;
+            case 'add':
+            case self::PROPERTY_ADD:
+                $this->{"_{$type}"} += $collection;
+                break;
+            default:
+                throw new InvalidArgumentException("Invalid method {$method}");
+        }
+        if (isset($this->_filters[$type]))
+            $this->_filters[$type]['flag'] = true;
+            
+        return $this;
+    } 
+    
+    /**
      * __get implementation
      * 
      * Alias of `axRequest::getParameter`.
@@ -366,6 +399,13 @@ class axRequest {
             
         return $type;
     }
+    
+    /**
+     * Property adding flags
+     * @var integer
+     */
+    const PROPERTY_MERGE = 1;
+    const PROPERTY_ADD   = 2;
 }
 
 defined('INPUT_REQUEST') or define('INPUT_REQUEST', 99);

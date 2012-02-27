@@ -108,7 +108,7 @@ class axRouter {
             if (empty($params['controller']))
                 throw new RuntimeException("No controller specified");
 
-            self::$_request->addAll($params);
+            self::$_request->add($params);
             $controller = ucfirst($params['controller']);
             $action     = !empty($params['action']) ? $params['action'] : 'index';
             
@@ -167,7 +167,7 @@ class axRouter {
             call_user_func_array(array($controller, '_init'), array(&self::$_request, &self::$_response));
             if (!is_callable(array($controller, $action)))
                 throw new BadMethodCallException("No such action for $controller", 2003);
-            self::$_response->addVars(call_user_func(array($controller, $action)));
+            self::$_response->add(call_user_func(array($controller, $action)));
         }
         catch (BadMethodCallException $e) {
             return self::run("error", "http404");
