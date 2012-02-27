@@ -123,7 +123,7 @@ class axLocale implements IteratorAggregate {
 		if ($lang === "auto" && !($this->_lang = $this->_determineLanguage()))
 			return false;
 		
-		if (!setlocale(LC_ALL^LC_MESSAGES, $this->_lang = $lang))
+		if (!setlocale(LC_ALL, $this->_lang = $lang))
 			return false;
 		
 		return $this;
