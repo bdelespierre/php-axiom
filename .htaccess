@@ -1,11 +1,6 @@
 <IfModule mod_rewrite.c>
-    SetEnv REWRITE_BASE /axiom
-</IfModule>
-
-<IfModule mod_rewrite.c>
     RewriteEngine on
-    RewriteBase /axiom
-    RewriteRule ^$ application/webroot/    [L]
+    RewriteRule ^$ application/webroot/     [L]
     RewriteRule (.*) application/webroot/$1 [L]
 </IfModule>
 
