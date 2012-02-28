@@ -50,7 +50,7 @@ require_once AXIOM_LIB_PATH . '/axiom/axLibrary.class.php';
 /**
  * Uncomment this line to disable cache globally
  */
-Axiom::$cache = false;
+//Axiom::$cache = false;
 
 /**
  * Adding the Axiom core library
