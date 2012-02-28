@@ -1,27 +1,25 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Table row helper class file
+ * @file axTableRowHelper.class.php
  */
 
 /**
- * Table Row Helper
+ * @brief Table Row Helper
  *
+ * @class axTableRowHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axTableRowHelper extends axBaseHelper {
     
     /**
-     * Default constructor
+     * @brief Constructor
      *
-     * The $cell_type parameter can be either "data" or "head"
-     *
-     * @param Traversable $values = null
-     * @param string $cells_type
+     * @param Traversable|array $values @optional @default{array()} 
+     * @param string $cells_type @optional @default{"data"} Can be either "data" or "head"
      */
     public function __construct ($values = null, $cells_type = "data") {
         parent::__construct('tr');
@@ -31,12 +29,10 @@ class axTableRowHelper extends axBaseHelper {
     }
     
     /**
-     * Add multiple cells at once.
+     * @brief Add multiple cells at once.
      *
-     * The $cell_type parameter can be either "data" or "head"
-     *
-     * @param Traversable $values
-     * @param string $cells_type = "data"
+     * @param Traversable|array $values @optional @default{array()} 
+     * @param string $cells_type @optional @default{"data"} Can be either "data" or "head"
      * @return axTableRowHelper
      */
     public function addCells ($values, $cells_type = "data") {
@@ -54,12 +50,10 @@ class axTableRowHelper extends axBaseHelper {
     }
     
     /**
-     * Add cell.
+     * @brief Add cell.
      *
-     * The $cell_type parameter can be either "data" or "head"
-     *
-     * @param scalar $value
-     * @param string $cells_type
+     * @param Traversable|array $values @optional @default{array()} 
+     * @param string $cells_type @optional @default{"data"} Can be either "data" or "head"
      * @return axTableRowHelper
      */
     public function addCell ($value, $cells_type = "data") {
@@ -68,12 +62,10 @@ class axTableRowHelper extends axBaseHelper {
     }
     
     /**
-     * Constructor static alias
-     *
-     * The $cell_type parameter can be either "data" or "head"
-     *
-     * @param Traversable $values = null
-     * @param string $cells_type = "data"
+     * @brief Constructor static alias
+     * @static
+     * @param Traversable|array $values @optional @default{array()} 
+     * @param string $cells_type @optional @default{"data"} Can be either "data" or "head"
      * @return axTableRowHelper
      */
     public static function export ($values = null, $cells_type = "data") {

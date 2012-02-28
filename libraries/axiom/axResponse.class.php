@@ -1,116 +1,108 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Response class file
+ * @file axResponse.class.php
  */
 
 /**
- * Response Class
+ * @brief Response Class
  * 
- * TODO long description
- *
+ * @todo axResponse long description
+ * @class axResponse
  * @author Delespierre
- * @package libaxiom
- * @subpackage core
+ * @ingroup Core
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axResponse {
     
     /**
-     * View name
-     * @internal
-     * @var string
+     * @brief View name
+     * @property string $_view
      */
     protected $_view;
     
     /**
-     * View section
-     * @internal
-     * @var string
+     * @brief View section
+     * @property string $_viewSection
      */
     protected $_viewSection;
     
     /**
-     * View format
-     * @internal
-     * @var string
+     * @brief View format
+     * @property string $_viewFormat
      */
     protected $_viewFormat;
     
     /**
-     * Layout name
-     * @internal
-     * @var string
+     * @brief Layout name
+     * @property string $_viewLayout
      */
     protected $_viewLayout;
     
     /**
-     * Enabled layout flag
-     * @internal
-     * @var boolean
+     * @brief Enabled layout flag
+     * @property boolean $_layoutEnabled
      */
     protected $_layoutEnabled;
     
     /**
-     * View variables
-     * @internal
-     * @var array
+     * @brief View variables
+     * @property array $_vars
      */
     protected $_vars;
     
     /**
-     * Headers list
-     * @internal
-     * @var array
+     * @brief Response Headers
+     * @property array $_headers
      */
     protected $_headers;
     
     /**
-     * Output callback
+     * @brrief Output callback
      * 
-     * This callback will be executed on the response buffer.
+     * This callback will be executed on the response buffer (the stream sent to the browser).
      * 
-     * @var callback 
+     * @property callback $_outputCallback 
      */
     protected $_outputCallback;
     
     /**
-     * View vars filter
+     * @brief View vars filter
      * @see http://www.php.net/manual/en/function.filter-var-array.php
-     * @var array
+     * @property array $_filters
      */
     protected $_filter;
     
     /**
-     * Filter flag
+     * @brief Filter flag
      * 
      * Tells whenever the filter has been applied and should not be applied again.
      * 
-     * @var boolean
+     * @property boolean $_filterFlag
      */
     protected $_filterFlag;
     
     /**
-     * View messages
-     * @var array
+     * @brief View messages
+     * @property array $_messages
      */
     protected $_messages;
     
     /**
-     * View stylesheets
-     * @var array
+     * @brief View stylesheets
+     * @property array
      */
     protected $_styleSheets;
     
     /**
-     * View scripts
-     * @var array
+     * @brief View scripts
+     * @property array $_scripts 
      */
     protected $_scripts;
     
     /**
-     * Default constructor
+     * @brief Constructor
      */
     public function __construct () {
         $this->_layoutEnabled = true;
@@ -122,7 +114,7 @@ class axResponse {
     }
     
     /**
-     * Reset the axResponse instance to its initial state
+     * @brief Reset the axResponse instance to its initial state
      * @return void
      */
     public function reset () {
@@ -141,9 +133,9 @@ class axResponse {
     }
     
     /**
-     * Get the view name
+     * @brief Get the view name
      * 
-     * Will return `null` if no view name was specified.
+     * Will return @c null if no view name was specified.
      * 
      * @return string
      */
@@ -152,7 +144,7 @@ class axResponse {
     }
     
     /**
-     * Set view name
+     * @brief Set view name
      * @param string $view
      * @return axResponse
      */
@@ -162,9 +154,9 @@ class axResponse {
     }
     
     /**
-     * Get the view section
+     * @brief Get the view section
      * 
-     * Will return `null` if no view section was specified.
+     * Will return @c null if no view section was specified.
      * 
      * @return string
      */
@@ -173,7 +165,7 @@ class axResponse {
     }
     
     /**
-     * set View section
+     * @brief set View section
      * @param string $section
      * @return axResponse
      */
@@ -183,9 +175,9 @@ class axResponse {
     }
     
     /**
-     * Get view format
+     * @brief Get view format
      * 
-     * Will return `null` if no format was specified.
+     * Will return @c null if no format was specified.
      * 
      * @return string
      */
@@ -194,7 +186,7 @@ class axResponse {
     }
     
     /**
-     * Set view format
+     * @brief Set view format
      * @param srting $format
      * @return axResponse
      */
@@ -204,9 +196,9 @@ class axResponse {
     }
     
     /**
-     * Get view layout
+     * @brief Get view layout
      * 
-     * Will return `null` if not layout was specified
+     * Will return @c null if not layout was specified
      * 
      * @return string
      */
@@ -215,7 +207,7 @@ class axResponse {
     }
     
     /**
-     * Set view layout
+     * @brief Set view layout
      * @param string $layout
      * @return axResponse
      */
@@ -225,8 +217,8 @@ class axResponse {
     }
     
     /**
-     * Enable of disable layout according to the $enabled parameter
-     * @param boolean $enabled [optional] [default `true`]
+     * @brief Enable of disable layout according to the $enabled parameter
+     * @param boolean $enabled @optional @default{true}
      * @return axResponse
      */
     public function enableLayout ($enabled = true) {
@@ -235,7 +227,7 @@ class axResponse {
     }
     
     /**
-     * Tells if the layout is enabled (`null`) or not (`null`)
+     * @brief Tells if the layout is enabled or not
      * @return boolean
      */
     public function layoutState () {
@@ -243,12 +235,11 @@ class axResponse {
     }
     
     /**
-     * Get the given var
+     * @brief Get the given var
      * 
      * If a filter was set using axResponse::setFilter, the filter will be applied before the data is returned.
-     * Will return null if the corresponding var is not set.
-     * Will return false if the filter fails.
-     * IMPORTANT: You will loose all vars that doesn't pass the filter, they'll be set to `false`.
+     * Will return null if the corresponding var is not set. Will return false if the filter fails.
+     * @warning You will loose all vars that doesn't pass the filter, they'll be set to @c false.
      * 
      * @param string $name
      * @return mixed
@@ -261,7 +252,7 @@ class axResponse {
     }
     
     /**
-     * Set the given var
+     * @brief Set the given var
      * @param string $name
      * @param mixed $value
      * @return axResponse
@@ -273,11 +264,9 @@ class axResponse {
     }
     
     /**
-     * __get implementation
+     * @brief __get implementation
      * 
-     * Alias of axResponse::getVar
-     * 
-     * @see axResponse::getVar
+     * @see axResponse::getVar()
      * @param string $key
      * @return mixed
      */
@@ -286,11 +275,9 @@ class axResponse {
     }
     
     /**
-     * __set implementation
+     * @brief __set implementation
      * 
-     * Alias of axResponse::setVar
-     * 
-     * @see axResponse::setVar
+     * @see axResponse::setVar()
      * @param string $key
      * @param mixed $value
      * @return void
@@ -300,11 +287,11 @@ class axResponse {
     }
     
     /**
-     * Get all the registered var
+     * @brief Get all the registered var
      * 
      * If a filter was set using axResponse::setFilter, the filter will be applied before the data are returned.
      * Will return false if the filter fails.
-     * IMPORTANT: You will loose all vars that doesn't pass the filter, they'll be set to `false`.
+     * @warning You will loose all vars that doesn't pass the filter, they'll be set to @c false.
      * 
      * @see http://www.php.net/manual/en/function.filter-var-array.php
      * @return array
@@ -317,13 +304,14 @@ class axResponse {
     }
     
     /**
-     * Add or merge a collection to the current registered variables 
+     * @brief Add or merge a collection to the current registered variables 
      * 
-     * Will return false if the `$method` parameter is unknown.
+     * Will return false if the @c $method parameter is unknown.
      * 
      * @param array $collection
-     * @param string $method [optional] [default `axResponse::MERGE_VARS`] Possible values are `axResponse::MERGE_VARS` 
-     * or `axResponse::ADD_VARS`
+     * @param string $method @optional @default{axResponse::MERGE_VARS} Possible values are axResponse::MERGE_VARS 
+     * or axResponse::ADD_VARS
+     * @return axResponse
      */
     public function add ($collection, $method = self::MERGE_VARS) {
         if (!$collection)
@@ -344,7 +332,7 @@ class axResponse {
     }
     
     /**
-     * Remove all the registered variables
+     * @brief Remove all the registered variables
      * @return axResponse 
      */
     public function clearVars () {
@@ -353,12 +341,12 @@ class axResponse {
     }
     
     /**
-     * Add an header to the header list
+     * @brief Add an header to the header list
      * 
      * If the header is already present in the list, it will be replaced.
-     * NOTE: HTTP Response header fields have been presets as axResponse constants.
+     * @note HTTP Response header fields have been presets as axResponse constants.
      * 
-     * @param string $field Should be on on axResponse::HEADER_*
+     * @param string $field Should be one of axResponse::HEADER_*
      * @param string $value
      * @return axResponse
      */
@@ -368,17 +356,19 @@ class axResponse {
     }
     
     /**
-     * Set multiple headers at once
+     * @brief Set multiple headers at once
      * 
-     * The `$headers` parameters must be an associative array which keys are header fields and values header values.
-     * E.G.
+     * The @c $headers parameters must be an associative array which keys are header fields and values header values.
+     * Example:
+     * @code
      * $response->setHeaders(array(
      * 	   axResponse::HEADER_CONTENT_TYPE         => 'application/octet-stream',
      * 	   axResponse::HEADER_CONTENT_DISCPOSITION => 'attachment; filename=download.abc'
      * ));
+     * @endcode
      * If some header were previously set, they will be replaced.
      * 
-     * @see axResponse::addHeader
+     * @see axResponse::addHeader()
      * @param array $headers
      * @return axResponse
      */
@@ -390,7 +380,8 @@ class axResponse {
     }
     
     /**
-     * Set the HTTP status
+     * @brief Set the HTTP status
+     * @link http://en.wikipedia.org/wiki/List_of_HTTP_status_codes
      * @param string $http_status
      * @return axResponse
      */
@@ -400,7 +391,7 @@ class axResponse {
     }
     
     /**
-     * Get the headers list
+     * @brief Get the headers list
      * @return array
      */
     public function getHeaders () {
@@ -408,7 +399,7 @@ class axResponse {
     }
     
     /**
-     * Clear all registered headers
+     * @brief Clear all registered headers
      * @return axResponse
      */
     public function clearHeaders () {
@@ -417,16 +408,18 @@ class axResponse {
     }
     
     /**
-     * Set a callback to be executed on the output buffer before it is sent to the browser
+     * @brief Set a callback to be executed on the output buffer before it is sent to the browser
      * 
-     * E.G.
+     * Usage:
+     * @code
      * // Let's replace all <h1> tags by <h3>
      * $response->setOutputCallback(create_function(
      *     '$buffer',
      *     'return str_replace(array('<h1>','</h1>'),array('<h3>','</h3>'),$buffer);'
      * ));
-     * Callback must be a valid callback (see http://php.net/manual/en/language.pseudo-types.php),
-     * false will be returned otherwise.
+     * @endcode
+     * Callback must be a valid callback (see http://php.net/manual/en/language.pseudo-types.php), false will be 
+     * returned otherwise.
      * 
      * @param callback $callback
      * @return axResponse
@@ -440,9 +433,9 @@ class axResponse {
     }
     
     /**
-     * Get the output callback
+     * @brief Get the output callback
      * 
-     * Will return `null` if no output callback was set.
+     * Will return @c null if no output callback was set.
      * 
      * @return callback
      */
@@ -451,7 +444,7 @@ class axResponse {
     }
     
     /**
-     * Tells whenever a filter has been registered or not
+     * @brief Tells whenever a filter has been registered or not
      * @return boolean
      */
     public function hasFilter () {
@@ -459,7 +452,7 @@ class axResponse {
     }
     
     /**
-     * Get the registered filter
+     * @brief Get the registered filter
      * 
      * @see http://php.net/manual/en/function.filter-var-array.php
      * @return array
@@ -469,18 +462,18 @@ class axResponse {
     }
     
     /**
-     * Set a response variable filter
+     * @brief Set a response variable filter
      * 
-     * When you set a variable filter, all data you may extract with `axResponse::getVar`, `axResponse::__get` or 
-     * `axResponse::getVars` are filtered using `filter_var_array` before they  are returned, allowing you to set 
+     * When you set a variable filter, all data you may extract with axResponse::getVar(), axResponse::__get(), or 
+     * axResponse::getVars() are filtered using filter_var_array before they  are returned, allowing you to set 
      * sanitize or validation filter, for instance to prevent XSS attacks.
      * 
-     * IMPORTANT: The `$filter` parameter must be compliant with the `$definition` parameter of `filter_var_array`. 
-     * If the filtering ends up with an error, all variables registered in axResponse and will throw a RuntimeException 
-     * when accessing datas with `axResponse::getVar`, `axResponse::__get` or `axResponse::getVars`.
+     * @warning The @c $filter parameter must be compliant with the @c $definition parameter of PHP's filter_var_array. 
+     * If the filtering ends up with an error, all variables registered in axResponse are erased and a RuntimeException 
+     * will be thrown when accessing datas with axResponse::getVar(), axResponse::__get(), or axResponse::getVars().
      * 
-     * NOTE: The filter will be applied on read so your changes won't take effects until you extract response data with
-     * `axResponse::getVar`, `axResponse::getVars` or with the magic method `__get`.
+     * @note The filter will be applied on read so your changes won't take effects until you extract response data with
+     * axResponse::getVar(), axResponse::getVars() or with the magic method axResponse::__get().
      * 
      * @see http://php.net/manual/en/function.filter-var-array.php
      * @param array $filter
@@ -493,15 +486,14 @@ class axResponse {
     }
         
     /**
-     * Adds a view message
+     * @brief Adds a view message
      * 
-     * For convenience, the `$message` parameter will be casted to string.
-     * Custom levels are authorized.
+     * For convenience, the `$message` parameter will be casted to string. Custom levels are authorized.
      * 
      * @param string $message
-     * @param strign $level [optional] [default `axResponse::MESSAGE_WARNING`] One of 
-     * `axResponse::MESSAGE_WARNING`,`axResponse::MESSAGE_NOTICE` or `axResponse::MESSAGE_ALERT` or any string 
-     * describing a level
+     * @param strign $level @optional @default{axResponse::MESSAGE_WARNING} One of 
+     * axResponse::MESSAGE_WARNING,axResponse::MESSAGE_NOTICE, or axResponse::MESSAGE_ALERT or any string  describing a 
+     * level
      * @return axResponse
      */
     public function addMessage ($message, $level = self::MESSAGE_WARNING) {
@@ -513,10 +505,7 @@ class axResponse {
     }
     
     /**
-     * Remove a view message
-     * 
-     * For convenience, the `$message` parameter will be casted to string.
-     * 
+     * @breif Remove a view message
      * @param string $message
      * @return axResponse
      */
@@ -529,11 +518,11 @@ class axResponse {
     }
     
     /**
-     * Get all view messages, optionnaly filtered by their level
+     * @brief Get all view messages, optionnaly filtered by their level
      * 
      * If no level is provided, all messages from all levels will be returned in a 2 dimentionnal associative array.
      * 
-     * @param string $level [optionnal] [default `null`]
+     * @param string $level @optionnal @default{null}
      * @return array
      */
     public function getMessages ($level = null) {
@@ -544,7 +533,7 @@ class axResponse {
     }
     
     /**
-     * Erase all registered messages
+     * @brief Erase all registered messages
      * @return axResponse
      */
     public function clearMessages () {
@@ -553,14 +542,13 @@ class axResponse {
     }
     
     /**
-     * Add a view style sheet
+     * @brief Add a view style sheet
      * @param string $stylesheet The `href` attribute of the `<link />` tag
-     * @param unknown_type $type [optional] [default `"text/css"`] The `type` attribute of the `<link />` tag
-     * @param unknown_type $media [optional] [default `"screen"`] The `media` attribute of the `<link />` tag
+     * @param unknown_type $type @optional @default{"text/css"} The `type` attribute of the `<link />` tag
+     * @param unknown_type $media @optional @default{"screen"} The `media` attribute of the `<link />` tag
      * @return axResponse
      */
     public function addStyleSheet ($stylesheet, $type= "text/css", $media = "screen") {
-        // TODO add helper instance here
         $this->_styleSheets[$stylesheet] = array(
         	'href'  => $stylesheet, 
         	'type'  => $type,
@@ -570,7 +558,7 @@ class axResponse {
     }
     
     /**
-     * Remove a style sheet (identified by its `href`)
+     * @brief Remove a style sheet (identified by its `href` attribute)
      * @see axResponse::addStyleSheet
      * @param string $stylehseet
      * @return axResponse
@@ -581,7 +569,7 @@ class axResponse {
     }
     
     /**
-     * Erase all registered stylesheets
+     * @brief Erase all registered stylesheets
      * @return axResponse
      */
     public function clearStyleSheets () {
@@ -590,13 +578,12 @@ class axResponse {
     }
     
     /**
-     * Add a view script 
-     * @param string $script The `scr` attribute of the `<script>` tag
-     * @param string $type [optional] [default `"text/javascript"`] The `type` attribute of the `<script>` tag
+     * @breif Add a view script 
+     * @param string $script The `src` attribute of the `<script>` tag
+     * @param string $type @optional @default{"text/javascript"} The `type` attribute of the `<script>` tag
      * @return axResponse
      */
     public function addScript ($script, $type = "text/javascript") {
-        // TODO add helper instance here
         $this->_scripts[$script] = array(
             'src'  => $script,
             'type' => $type
@@ -605,7 +592,7 @@ class axResponse {
     }
     
     /**
-     * Remove a script (identified by its `src`)
+     * @brief Remove a script (identified by its `src`)
      * @see axResponse::addScript
      * @param string $script 
      * @return axResponse
@@ -616,7 +603,7 @@ class axResponse {
     }
     
     /**
-     * Erase all registered scripts
+     * @brief Erase all registered scripts
      * @return axResponse
      */
     public function clearScripts () {
@@ -625,18 +612,19 @@ class axResponse {
     }
     
     /**
-     * PHP setcookie alias
+     * @brief PHP setcookie alias
      * 
      * Returns the current instance in case of success, false otherwise.
      * 
      * @link http://php.net/manual/en/function.setcookie.php
      * @param string $name
-     * @param string $value [optional] [default `""`]
-     * @param integer $expire [optional] [default `0`]
-     * @param string $path [optional] [default `""`]
-     * @param string $domain [optional] [default `""`]
-     * @param boolean $secure [optional] [default `false`]
-     * @param string $httponly [optional] [default `false`]
+     * @param string $value @optional @default{""}
+     * @param integer $expire @optional @default{0}
+     * @param string $path @optional @default{""}
+     * @param string $domain @optional @default{""}
+     * @param boolean $secure @optional @default{false}
+     * @param string $httponly @optional @default{false}
+     * @return boolean
      */
     public function setCookie ($name, 
                                $value = "", 
@@ -649,18 +637,19 @@ class axResponse {
     }
     
     /**
-     * PHP setrawcookie alias
+     * @brief PHP setrawcookie alias
      * 
      * Returns the current instance in case of success, false otherwise.
      * 
      * @link http://www.php.net/manual/en/function.setrawcookie.php
      * @param string $name
-     * @param string $value [optional] [default `""`]
-     * @param integer $expire [optional] [default `0`]
-     * @param string $path [optional] [default `""`]
-     * @param string $domain [optional] [default `""`]
-     * @param boolean $secure [optional] [default `false`]
-     * @param string $httponly [optional] [default `false`]
+     * @param string $value @optional @default{""}
+     * @param integer $expire @optional @default{0}
+     * @param string $path @optional @default{""}
+     * @param string $domain @optional @default{""}
+     * @param boolean $secure @optional @default{false}
+     * @param string $httponly @optional @default{false}
+     * @return boolean
      */
     public function setRawCookie ($name, 
                                   $value = "", 
@@ -673,13 +662,13 @@ class axResponse {
     }
     
     /**
-     * If any, apply the filter on the registered variables
+     * @brief If any, apply the filter on the registered variables
      * 
-     * IMPORTANT: if the filter fails, all variables will be erased as well as the registered filter to prevent the 
-     * script to be stuck. A `RuntimeException` will also be thrown.
+     * @important If the filter fails, all variables will be erased as well as the registered filter to prevent the 
+     * script to be stuck. A RuntimeException will also be thrown.
      * 
      * @internal
-     * @throws RuntimeException
+     * @throws RuntimeException If the filter fails
      * @return boolan
      */
     protected function _applyFilter () {
@@ -697,24 +686,24 @@ class axResponse {
     }
     
     /**
-     * Var merging flags
-     * @see axResponse::addVars
+     * @brief Var merging flags
+     * @see axResponse::addVars()
      * @var string
      */
     const MERGE_VARS      = "merge";
     const ADD_VARS        = "add";
     
     /**
-     * Message level flags
-     * @var unknown_type
+     * @brief Message level flags
+     * @var string
      */
     const MESSAGE_NOTICE  = "notice";
     const MESSAGE_WARNING = "warning";
     const MESSAGE_ALERT   = "alert";
     
     /**
-     * Header fields
-     * @see axResponse::addHeader
+     * @brief Header fields
+     * @see axResponse::addHeader()
      * @see http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Responses
      * @var string
      */

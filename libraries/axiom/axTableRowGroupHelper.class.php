@@ -1,73 +1,76 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Table row group helper class file
+ * @file axTableRowGroupHelper.class.php
  */
 
 /**
- * Table Row Group Helper Class
+ * @brief Table Row Group Helper Class
  *
+ * @class axTableRowGroupHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axTableRowGroupHelper extends axBaseHelper {
     
     /**
-     * Inner type.
+     * @brief Type
+     * 
      * Can be either:
-     * - head
-     * - foot
-     * - body
-     * @var string
+     * @li head
+     * @li foot
+     * @li body
+     * 
+     * @property string $_type
      */
     protected $_type;
     
     /**
-	 * Row filter
-	 * @var array
+	 * @brief Row filter
+	 * @property array $_filter
      */
     protected $_filter = array();
     
     /**
-     * Cell display callbacks
-     * @var array
+     * @brief Cell display callbacks
+     * @internal
+     * @property array $_callbacks
      */
     protected $_callbacks = array();
     
     /**
-     * Content columns to be added before values
-     * @var mixed
+     * @brief Content columns to be added before values
+     * @property mixed $_before_content
      */
     protected $_before_content;
     
     /**
-     * Content columns to be added before values replacement callback
-     * @var callback
+     * @brief Content columns to be added before values replacement callback
+     * @property callback $_before_callback
      */
     protected $_before_callback;
     
     /**
-     * Content columns to be added after values
-     * @var mixed
+     * @brief Content columns to be added after values
+     * @property mixed $_after_content
      */
     protected $_after_content;
     
     /**
-     * Content columns to be added after values callback
-     * @var callback
+     * @brief Content columns to be added after values callback
+     * @property callback $_after_callback
      */
     protected $_after_callback;
     
     /**
-     * Default constructor.
+     * @brief Constructor
      *
-     * The $type parameter can be either
-     * - head or thead
-     * - foot or tfoot
-     * - body or tbody
+     * The @c $type parameter can be either
+     * @li head or thead
+     * @li foot or tfoot
+     * @li body or tbody
      *
      * @param string $type
      */
@@ -94,7 +97,7 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Type getter
+     * @brief Type getter
      * @return string
      */
     public function getType () {
@@ -102,7 +105,7 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Filter getter
+     * @brief Filter getter
      * @return array
      */
     public function getFilter () {
@@ -110,7 +113,7 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Filter setter
+     * @brief Filter setter
      * @param array $filter
      * @return axTableRowGroupHelper
      */
@@ -120,7 +123,7 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Get any defined column callback
+     * @brief Get any defined column callback
      * @param string $key
      */
     public function getColumnCallback ($key) {
@@ -128,14 +131,10 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Set a column display transformation callback
-     *
-     * Provded callback can be either
-     * - a valid PHP callback
-     * - a string representing a PHP function
+     * @brief Set a column display transformation callback
      *
      * @param string $key
-     * @param mixed $callback
+     * @param callback $callback
      * @return TableGroupHelper
      */
     public function setColumnCallback ($key, $callback) {
@@ -150,7 +149,7 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Set multiple callbacks at once
+     * @brief Set multiple callbacks at once
      * @param array $callbacks
      * @return TableGroupHelper
      */
@@ -167,22 +166,21 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Add column(s) before row content.
+     * @brief Add column(s) before row content.
      *
-     * You may pass a callback to transform those cells and/or
-     * to change replace parameters.
-     * The callback must take a first parameter the cell(s)
-     * you are inserting (as array if multiple cells) and
-     * the rows to be inserted as second parameter.
-     * The second parameter will be provided during the
-     * array construction.
+     * You may pass a callback to transform those cells and/or to change replace parameters. The callback must take as 
+     * first parameter the cell(s) you are inserting (as array if multiple cells) and the rows to be inserted as 
+     * second parameter. The second parameter will be provided during the array construction.
      *
-     * E.G
-     * > // add a message with a provided parameter before each table row
-     * > $table->body->before("Id : %d", 'function ($cell, $values) { return sprintf($cell[0], $values["id"]); }');
+     * Example:
+     * @code
+     * // add a message with a provided parameter before each table row
+     * $table->body->before("Id : %d", 'function ($cell, $values) { return sprintf($cell[0], $values["id"]); }');
+     * @endcode
      *
      * @param mixed $content
-     * @param callback $replace_callback
+     * @param callback $replace_callback @optional @default{null}
+     * @return axTableRowGroupHelper
      */
     public function before ($content, $replace_callback = null) {
         if ($replace_callback) {
@@ -199,11 +197,12 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Works exactly as axTableRowGroupHelper::before does but
-     * add new column(s) after content.
+     * @brief Works exactly as axTableRowGroupHelper::before does but add new column(s) after content.
      *
+     * @see axTableRowGroupHelper::before()
      * @param mixed $content
-     * @param callback $replace_callback
+     * @param callback $replace_callback @optional @default{null}
+     * @return axTableRowGroupHelper
      */
     public function after ($content, $replace_callback = null) {
         if ($replace_callback) {
@@ -220,16 +219,14 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Add multiple rows at once.
+     * @brief Add multiple rows at once.
      *
-     * The $cell_type parameter can be either data, head or auto.
+     * The @c $cell_type parameter can be either 'data', 'head' or 'auto'. If the @c $cell_type is left to auto, it 
+     * will be set to 'head' if current TableGroupHelper is header, 'data' otherwise.
      *
-     * If the $cell_type is left to auto, it will be set to head if
-     * current TableGroupHelper is header, data otherwise.
-     *
-     * @see axTableRowGroupHelper::addRow
-     * @param Traversable $rows
-     * @param string $cell_type = "auto"
+     * @see axTableRowGroupHelper::addRow()
+     * @param Traversable|array $rows
+     * @param string $cell_type @optional @default{"auto"}
      * @return TableGroupHelper
      */
     public function addRows ($rows, $cell_type = "auto") {
@@ -246,15 +243,15 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Add row.
+     * @brief Add row.
      *
-     * The $cell_type parameter can be either data, head or auto.
+     * The @brei $cell_type parameter can be either data, head or auto.
      *
-     * If the $cell_type is left to auto, it will be set to head if
-     * current TableGroupHelper is header, data otherwise.
+     * The @c $cell_type parameter can be either 'data', 'head' or 'auto'. If the @c $cell_type is left to auto, it 
+     * will be set to 'head' if current TableGroupHelper is header, 'data' otherwise.
      *
-     * @param Traversable $values
-     * @param string $cell_type = "auto"
+     * @param Traversable|array $values
+     * @param string $cell_type @optional @default{"auto"}
      * @return TableGroupHelper
      */
     public function addRow ($values, $cell_type = "auto") {
@@ -305,8 +302,7 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * (non-PHPdoc)
-     * @see axBaseHelper::__toString()
+     * @copydoc axBaseHelper::__toString()
      */
     public function __toString () {
         $attr = array();
@@ -322,8 +318,9 @@ class axTableRowGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Constructor static alias
-     * @param string $type
+     * @copydoc axTableRowGroupHelper::__construct()
+     * @static
+     * @brief Constructor static alias
      * @return axTableRowGroupHelper
      */
     public static function export ($type) {

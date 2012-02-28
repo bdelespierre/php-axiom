@@ -1,38 +1,38 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Forward exception class file
+ * @file axForwardException.class.php
  */
 
 /**
- * Foward Exception
+ * @brief Foward Exception
  *
+ * Exception thrown to reroute flow in controllers.
+ *
+ * @class axForwardException
  * @author Delespierre
- * @package libaxiom
- * @subpackage exception
+ * @ingroup Exception
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axForwardException extends LogicException {
     
     /**
-     * Controller to forward to
-     * @internal
-     * @var string
+     * @brief Controller to forward to
+     * @property string $_controller
      */
     protected $_controller;
     
     /**
-     * Action to forward to
-     * @internal
-     * @var string
+     * @brief Action to forward to
+     * @property string $_action
      */
     protected $_action;
     
     /**
-     * Default constructor
-     * @param string $controller
-     * @param string $action
+     * @brief Constructor
+     * @param string $controller The controller to forward flow to
+     * @param string $action The action to forward flow to
      */
     public function __construct ($controller, $action = 'index') {
         parent::__construct("Forward action to $controller::$action");
@@ -41,7 +41,7 @@ class axForwardException extends LogicException {
     }
     
     /**
-     * Get the destination controller
+     * @brief Get the destination controller
      * @return string
      */
     public function getController () {
@@ -49,7 +49,7 @@ class axForwardException extends LogicException {
     }
     
     /**
-     * Get the destination action
+     * @brief Get the destination action
      * @return string
      */
     public function getAction () {

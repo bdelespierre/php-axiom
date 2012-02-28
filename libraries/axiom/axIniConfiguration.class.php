@@ -1,58 +1,56 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief INI configuration class file
+ * @file axIniConfiguration.class.php
  */
 
 /**
- * INI Configuration file parser
+ * @brief INI Configuration file parser
  *
- * TODO class description
- *
+ * @todo axIniConfiguration class description
  * @author Delespierre
- * @package libaxiom
- * @subpackage configuration
+ * @ingroup Configuration
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axIniConfiguration implements axConfiguration {
 
 	/**
-	 * Cache file
+	 * @brief Cache file
 	 * @var string
 	 */
 	const CACHE_FILE = "config.cache.php";
 	
 	/**
-	 * Configuration file
-	 * @var string
+	 * @brief Configuration file path
+	 * @property string $_file
 	 */
 	protected $_file;
 	
 	/**
-	 * Configuration section
-	 * @var string
+	 * @brief Configuration section
+	 * @property string $_section
 	 */
 	protected $_section;
 	
 	/**
-	 * Cache directory
-	 * @var string
+	 * @brief Cache directory (false if cache is disabled)
+	 * @property string $_cache_dir
 	 */
 	protected $_cache_dir;
 
     /**
-     * INI Tree structure
-     * @var axConfigurationItem
+     * @brief INI Tree structure
+     * @property axConfigurationItem $_tree
      */
     protected $_tree;
 
     /**
-     * Default constructor
-     * @param string $file
-     * @param string $section [optional]
-     * @throws axMissingFileException
-     * @throws RuntimeException
+     * @brief Constructor
+     * @note If the @c $cache_dir isn't valid, the cache will be silently disabled
+     * @param string $file The INI file path to parse
+     * @param string $section The section to be used
+     * @param string $cache_dir @optional @default{false} The directory for caching (or false if cache is disabled)
      */
     public function __construct ($file, $section, $cache_dir = false) {
     	$this->_file      = $file;
@@ -61,16 +59,14 @@ class axIniConfiguration implements axConfiguration {
     }
 
     /**
-     * (non-PHPdoc)
-     * @see axConfiguration::__get()
+     * @copydoc axConfiguration::__get()
      */
     public function __get ($key) {
         return $this->getIterator()->$key;
     }
     
     /**
-     * (non-PHPdoc)
-     * @see IteratorAggregate::getIterator()
+     * @copydoc IteratorAggregate::getIterator()
      */
     public function getIterator() {
     	if (!isset($this->_tree)) {
@@ -88,9 +84,9 @@ class axIniConfiguration implements axConfiguration {
     }
 	
 	/**
-     * Generates the tree structure using the INI structure
-     * @param string $section
-     * @throws RuntimeException
+     * @brief Generates the tree structure using the INI structure
+     * @param string $section The section to use
+     * @throws RuntimeException If the file cannot be parsed
      * @return void
      */
     protected function _generateTree ($section) {
@@ -121,7 +117,10 @@ class axIniConfiguration implements axConfiguration {
     }
     
     /**
-     * Put current configuration tree in cache for later use
+     * @brief Put current configuration tree in cache for later use
+     * 
+     * Does nothing if the cache is disabled.
+     * 
      * @return boolean
      */
 	protected function _cache () {

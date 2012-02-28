@@ -1,73 +1,72 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Request class file
+ * @file axRequest.class.php
  */
 
 /**
- * Request Clas
+ * @brief Request Class
  * 
- * TODO long description
- *
+ * @todo axRequest long description
+ * @class axRequest
  * @author Delespierre
- * @package libaxiom
- * @subpackage core
+ * @ingroup Core
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axRequest {
     
     /**
-     * Request headers
-     * @var array
+     * @brief Request headers
+     * @property array $_headers
      */
     protected $_headers;
     
     /**
-     * HTTP POST parameters
-     * @var array
+     * @brief HTTP POST parameters
+     * @property array $_post
      */
     protected $_post;
     
     /**
-     * HTTP GET parameters
-     * @var array
+     * @brief HTTP GET parameters
+     * @property array $_get
      */
     protected $_get;
     
     /**
-     * Request parameters (POST + GET)
-     * @var arrat
+     * @brief Request parameters (POST + GET)
+     * @property array $_request
      */
     protected $_request;
     
     /**
-     * Request cookies
-     * @var array
+     * @brief Request cookies
+     * @property array $_cookies
      */
     protected $_cookies;
     
     /**
-     * HTTP POST files
-     * @var array
+     * @brief HTTP POST files
+     * @property array $_files
      */
     protected $_files;
     
     /**
-     * Request variables filters
-     * @var array
+     * @brief Request variables filters
+     * @property array $_filters
      */
     protected $_filters;
     
     /**
-     * Browser capabilities class
-     * @var Browscap
+     * @brief Browser capabilities instance
+     * @property Browscap $_browscap
      */
     protected $_browscap;
     
     /**
-     * Default constructor
-     * @param string $cache_dir [optionnal] [default `null`] The cache dir for the browscap settings
+     * @brief Constructor
+     * @param string $cache_dir @optional @default{null} The cache dir for the browscap settings (null to disable cache)
      */
     public function __construct ($cache_dir = null) {
         $this->_headers  = getallheaders();
@@ -81,7 +80,7 @@ class axRequest {
     }
     
     /**
-     * Resets the request object in its default state
+     * @brief Resets the request object in its default state
      * @return void
      */
     public function reset () {
@@ -94,7 +93,7 @@ class axRequest {
     }
     
     /**
-     * Get the request headers
+     * @brief Get the request headers
      * @return array
      */
     public function getHeaders () {
@@ -102,7 +101,7 @@ class axRequest {
     }
     
     /**
-     * Tells if a header had been recieved (identified by its name)
+     * @brief Tells if a header had been recieved (identified by its name)
      * @param string $header
      * @return boolean
      */
@@ -111,7 +110,7 @@ class axRequest {
     }
     
     /**
-     * Get the given request header value (identified by its name)
+     * @brief Get the given request header value (identified by its name)
      * @param string $header
      * @return string
      */
@@ -120,7 +119,7 @@ class axRequest {
     }
     
     /**
-     * Get the HTTP request method
+     * @brief Get the HTTP request method
      * @return string
      */
     public function getMethod () {
@@ -128,9 +127,9 @@ class axRequest {
     }
     
     /**
-     * Get an environment variable (provided by Apache for instance)
+     * @brief Get an environment variable (provided by Apache for instance)
      * 
-     * This method is an alias of native php `getenv`
+     * This method is an alias of PHP's getenv()
      * 
      * @link http://php.net/manual/fr/function.getenv.php
      * @param string $varname
@@ -141,11 +140,11 @@ class axRequest {
     }
     
     /**
-     * Get server variable
+     * @brief Get server variable
      * 
-     * If not variable is specified, the complete `$_SERVER` structure is returned.
+     * If not variable is specified, the complete @c $_SERVER structure is returned.
      * 
-     * @param string $varname [optional] [default `null`]
+     * @param string $varname @optional @default{null}
      * @return string
      */
     public function getServer ($varname = null) {
@@ -156,7 +155,7 @@ class axRequest {
     }
     
     /**
-     * Get the request cookies
+     * @brief Get the request cookies
      * @return array
      */
     public function getCookies () {
@@ -164,7 +163,7 @@ class axRequest {
     }
     
     /**
-     * Tells if the given cookie exists (identified by its name)
+     * @brief Tells if the given cookie exists (identified by its name)
      * @param string $name
      * @return boolean
      */
@@ -173,7 +172,7 @@ class axRequest {
     }
     
     /**
-     * Get the given cookie (identified by its name)
+     * @brief Get the given cookie (identified by its name)
      * @param string $name
      * @return string
      */
@@ -182,24 +181,24 @@ class axRequest {
     }
     
     /**
-     * Set a request variable filter
+     * @brief Set a request variable filter
      * 
-     * When you set a variable filter, all data you may extract with `axRequest::getParameters`, 
-     * `axRequest::getParameter` or `axResponse::__get` are filtered using `filter_var_array` before they  are returned,
+     * When you set a variable filter, all data you may extract with axRequest::getParameters(), 
+     * axRequest::getParameter() or axResponse::__get() are filtered using filter_var_array before they  are returned,
      * allowing you to set sanitize or validation filter, for instance to prevent injection attacks.
      * 
-     * IMPORTANT: The `$filter` parameter must be compliant with the `$definition` parameter of `filter_var_array`. 
-     * If the filtering ends up with an error, all variables registered in axResponse and will throw a RuntimeException 
-     * when accessing datas with `axResponse::getVar`, `axResponse::__get` or `axResponse::getVars`.
+     * @warning The @c $filter parameter must be compliant with the @c $definition parameter of filter_var_array. 
+     * If the filtering ends up with an error, all variables registered in axResponse are erased and a RuntimeException
+     * will be thrown when accessing datas with axResponse::getVar(), axResponse::__get() or axResponse::getVars().
      * 
-     * NOTE: The filter will be applied on read so your changes won't take effects until you extract response data with
-     * `axRequest::getParameters`, `axRequest::getParameter` or `axResponse::__get`.
+     * @note The filter will be applied on read so your changes won't take effects until you extract response data with
+     * axRequest::getParameters(), axRequest::getParameter() or axResponse::__get().
      * 
-     * @param array $filter The filter description (must be compliant with `filter_var_array` filter description)
-     * @param mixed $type [optional] [default `INPUT_REQUEST`] The kind of request parameters to filter. Can be either 
+     * @param array $filter The filter description (must be compliant with filter_var_array filter description)
+     * @param mixed $type @optional @default{INPUT_REQUEST} The kind of request parameters to filter. Can be either 
      * `INPUT_GET`, `INPUT_POST`, `INPUT_REQUEST`, `INPUT_COOKIE` or string `get`, `post`, `request`, `cookie` (the
      * case is insensitive)
-     * @throw InvalidArgumentException In case of invalid `$type`
+     * @throw InvalidArgumentException In case of invalid @c $type
      * @return axRequest
      */
     public function setFilter (array $filter, $type = INPUT_REQUEST) {
@@ -214,13 +213,13 @@ class axRequest {
     }
     
     /**
-     * Get a request parameter
+     * @brief Get a request parameter
      * 
      * @param string $name
-     * @param mixed $type [optional] [default `INPUT_REQUEST`] The kind of request parameters to filter. Can be either 
+     * @param mixed $type @optional @default{INPUT_REQUEST} The kind of request parameters to filter. Can be either 
      * `INPUT_GET`, `INPUT_POST`, `INPUT_REQUEST`, `INPUT_COOKIE` or string `get`, `post`, `request`, `cookie` (the
      * case is insensitive)
-     * @throw InvalidArgumentException In case of invalid `$type`
+     * @throw InvalidArgumentException In case of invalid @c $type
      * @return mixed
      */
     public function getParameter ($name, $type = INPUT_REQUEST) {
@@ -234,12 +233,12 @@ class axRequest {
     }
     
     /**
-     * Get all request parameters
+     * @brief Get all request parameters
      * 
-     * @param mixed $type [optional] [default `INPUT_REQUEST`] The kind of request parameters to filter. Can be either 
+     * @param mixed $type @optional @default{INPUT_REQUEST} The kind of request parameters to filter. Can be either 
      * `INPUT_GET`, `INPUT_POST`, `INPUT_REQUEST`, `INPUT_COOKIE` or string `get`, `post`, `request`, `cookie` (the
      * case is insensitive)
-     * @throw InvalidArgumentException In case of invalid `$type`
+     * @throw InvalidArgumentException In case of invalid @c $type
      * @return array
      */
     public function getParameters ($type = INPUT_REQUEST) {
@@ -253,14 +252,14 @@ class axRequest {
     }
     
     /**
-     * Manually set a request parameter
+     * @brief Manually set a request parameter
      * 
      * @param string $name
      * @param mixed $value
-     * @param mixed $type [optional] [default `INPUT_REQUEST`] The kind of request parameters to filter. Can be either 
+     * @param mixed $type @optional @default{INPUT_REQUEST} The kind of request parameters to filter. Can be either 
      * `INPUT_GET`, `INPUT_POST`, `INPUT_REQUEST`, `INPUT_COOKIE` or string `get`, `post`, `request`, `cookie` (the
      * case is insensitive)
-     * @throw InvalidArgumentException In case of invalid `$type`
+     * @throw InvalidArgumentException In case of invalid @c $type
      * @return axRequest
      */
     public function setParameter ($name, $value, $type = INPUT_REQUEST) {
@@ -307,10 +306,9 @@ class axRequest {
     } 
     
     /**
-     * __get implementation
+     * @brief __get implementation
      * 
-     * Alias of `axRequest::getParameter`.
-     * Will always return variables from `$_REQUEST` structure.
+     * Alias of axRequest::getParameter() using INPUT_REQUEST type.
      * 
      * @param string $key
      * @return mixed
@@ -320,10 +318,9 @@ class axRequest {
     }
     
     /**
-     * __set implementation
+     * @brief __set implementation
      * 
-     * Alias of `axRequest::setParameter`.
-     * Will always set variables from `$_REQUEST` structure.
+     * Alias of axRequest::setParameter() with INPUT_REQUEST type.
      * 
      * @param string $key
      * @param mixed $value
@@ -334,9 +331,9 @@ class axRequest {
     }
     
     /**
-     * Get the given file (identified by the parameter name)
+     * @brief Get the given file (identified by the parameter name)
      * 
-     * Will return `null` if the file isn't set in `$_FILES` structure.
+     * Will return @c null if the file isn't set in $_FILES structure.
      * 
      * @param string $param_name The POST parameter name
      * @return array
@@ -346,7 +343,7 @@ class axRequest {
     }
     
     /**
-     * Get the `$_FILES`structure
+     * @brief Get the $_FILES structure
      * 
      * @return array
      */
@@ -355,11 +352,11 @@ class axRequest {
     }
     
     /**
-     * Applies a filter on the given variable type
+     * @brief Applies a filter on the given variable type
      * 
      * Will return false if no filter is defined for this type.
      * 
-     * @param mixed $type [optional] [default `INPUT_REQUEST`] The kind of request parameters to filter. Can be either 
+     * @param mixed $type @optional @default{INPUT_REQUEST} The kind of request parameters to filter. Can be either 
      * `INPUT_GET`, `INPUT_POST`, `INPUT_REQUEST`, `INPUT_COOKIE` or string `get`, `post`, `request`, `cookie` (the
      * case is insensitive)
      * @throws RuntimeException In case of incorrect type
@@ -377,8 +374,7 @@ class axRequest {
     }
     
     /**
-     * Determine the real type according to the `$type` parameter
-     * 
+     * @brief Determine the real type according to the @c $type parameter
      * @param mixed $type
      * @return string
      */
@@ -401,11 +397,14 @@ class axRequest {
     }
     
     /**
-     * Property adding flags
+     * @brief Property adding flags
      * @var integer
      */
     const PROPERTY_MERGE = 1;
     const PROPERTY_ADD   = 2;
 }
 
+/**
+ * @def INPUT_REQUEST
+ */
 defined('INPUT_REQUEST') or define('INPUT_REQUEST', 99);

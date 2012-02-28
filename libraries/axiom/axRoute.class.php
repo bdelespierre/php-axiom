@@ -1,70 +1,62 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Route class file
+ * @file axRouter.class.php
  */
 
 /**
- * Route Class
+ * @brief Route Class
  *
- * Class intented to manage and to
- * recognize routes.
+ * Class used to manage and to recognize routes. A route is identified by matching a pattern against the $url parameter.
+ * This pattern is provided to the Route insance by using a template, such as /{:controller}/{:action}. 
+ * See axRouter::connect() for more details.
  *
- * A route is identified by matching
- * a pattern against the $url parameter.
- * This pattern is provided to the
- * Route insance by using a template,
- * such as /{:controller}/{:action}.
- * See axRouter::connect for more details.
- *
+ * @class axRoute
  * @author Delespierre
- * @package libaxiom
- * @subpackage core
+ * @ingroup Core
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axRoute {
     
     /**
-     * Template string
-     * @internal
-     * @var string
+     * @brief Template string
+     * @property string $_template
      */
     protected $_template;
     
     /**
-     * PCRE pattern compiled from template
+     * @brief PCRE pattern compiled from template
      * @internal
-     * @var string
+     * @property string $_pattern
      */
     protected $_pattern;
     
     /**
-     * PCRE pattern keys
+     * @brief PCRE pattern keys
      * @internal
-     * @var array
+     * @property array $_keys
      */
     protected $_keys;
 
     /**
-     * Route parameters
-     * @internal
-     * @var array
+     * @brief Route parameters
+     * @property array $_params
      */
     protected $_params;
 
     /**
-     * Route options
-     * @internal
-     * @var array
+     * @brief Route options
+     * @property array $_options;
      */
     protected $_options;
     
     /**
-     * Default constructor
+     * @brief Constructor
      * @param string $template
-     * @param array $params optional parameters to populate the Route instance with
-     * @param array $options arbitraty options array wich can be retrieved with Route::getOptions
+     * @param array $params @optional @default{array()} Parameters to populate the Route instance with
+     * @param array $options @optional @default{array()} Arbitraty options array wich can be retrieved with 
+     * Route::getOptions()
      */
     public function __construct ($template, array $params = array(), array $options = array()) {
         $this->_template = $template;
@@ -74,8 +66,7 @@ class axRoute {
     }
     
     /**
-     * Tells if the Route instance
-     * match the given url.
+     * @brief Tells if the Route instance match the given url.
      * @param string $url
      * @return boolean
      */
@@ -96,8 +87,9 @@ class axRoute {
     }
     
     /**
-     * Compiles the pattern into a PCRE expression.
+     * @brief Compiles the pattern into a PCRE expression.
      * @internal
+     * @todo Add insensitive option
      * @param string $template
      * @return void
      */
@@ -106,6 +98,7 @@ class axRoute {
         $pattern_pieces = array();
         $current_key = 1;
         do {
+            // Here be dragons
             if (preg_match('~\{:(?P<key>\w+)(:(?P<tpl>[^\}:]*))?(:(?P<opt>[^\}:]*))?\}~', $token, $matches)) {
                 if ($matches['key'] == 'lang' && empty($matches['tpl'])) {
                     $matches['tpl'] = '[a-z]{2}';
@@ -137,7 +130,7 @@ class axRoute {
     }
     
     /**
-     * Get the Route parameters
+     * @brief Get the Route parameters
      * @return array
      */
     public function getParams () {
@@ -145,7 +138,7 @@ class axRoute {
     }
     
     /**
-     * Get the Route options
+     * @brief Get the Route options
      * @return array
      */
     public function getOptions () {
@@ -153,8 +146,7 @@ class axRoute {
     }
     
     /**
-     * Get the Route template
-     * (useful for debugging)
+     * @brief Get the Route template (useful for debugging)
      * @return string
      */
     public function getTemplate () {
@@ -162,8 +154,7 @@ class axRoute {
     }
     
     /**
-     * Get teh Route PCRE pattern
-     * (useful for debugging)
+     * @brief Get the Route PCRE pattern (useful for debugging)
      * @return string
      */
     public function getPattern () {

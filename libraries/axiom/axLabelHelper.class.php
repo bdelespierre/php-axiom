@@ -1,24 +1,24 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Label helper class file
+ * @file axLabelHelper.class.php
  */
 
 /**
- * Label Helper Class
+ * @brief Label Helper Class
  *
+ * @class axLabelHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axLabelHelper extends axBaseHelper {
 
     /**
-     * Default constructor
-     * @param scalar $value
-     * @param string $for = ""
+     * @brief Constructor
+     * @param scalar $value The label's value
+     * @param string $for @optional @default{""} The label for attribute value 
      */
     public function __construct ($value, $for = "") {
         parent::__construct('label', array(), $value);
@@ -27,9 +27,8 @@ class axLabelHelper extends axBaseHelper {
     }
 
     /**
-     * Constructor static alias
-     * @param scalar $value
-     * @param string $for = ""
+     * @copydoc axLabelHelper::__construct()
+     * @brief Constructor static alias
      * @return axLabelHelper
      */
     public static function export ($value, $for = "") {

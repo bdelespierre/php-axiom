@@ -1,59 +1,74 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Helper interface file
+ * @file axHelper.class.php
  */
 
 /**
- * Helper Interface
+ * @brief Helper Interface
  *
+ * Interface to be implemented by all HTML helpers.
+ * 
+ * @interface axHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 interface axHelper {
 
     /**
-     * Set any number of attributes at once
+     * @brief Set any number of attributes at once
      * @param array $attributes
-     * @return Helper
+     * @return axHelper
      */
     public function setAttributes ($attributes);
 
     /**
-     * Set the node's value
+     * @brief Set the node's value
      * @param mixed $value
-     * @return Helper
+     * @return axHelper
      */
     public function setValue ($value);
 
     /**
-     * Get the node's value
+     * @brief Get the node's value (if any)
      * @return mixed
      */
     public function getValue ();
 
     /**
-     * Appends a node to current node and return it
-     * @param mixed $node
+     * @brief Appends a node to current node and return it
+     * @param mixed $node An axHelper instance or a string (or anything with a __toString implementation)
      * @return mixed
      */
     public function appendChild ($node);
     
     /**
-     * Prepend a node to the current node and return it
-     * @param mixed  $node
+     * @brief Prepend a node to the current node and return it
+     * @param mixed $node An axHelper instance or a string (or anything with a __toString implementation)
      * @return mixed
      */
     public function prependCHild ($node);
 
     /**
-     * __toString overloading
-     * Get a string represenation of
-     * current node and its children
+     * @brief __toString implementation
+     * 
+     * Get a string represenation of current node and its children.
+     * 
      * @return string
      */
     public function __toString ();
 }
+
+/**
+ * @brief Helper Module
+ * 
+ * This module contains all render helpers classes and interfaces. A render helper aims to ease the description of
+ * complex HTML structures (such as Form or Tables) by providing methods to accelerate view development.
+ * 
+ * @defgroup Helper
+ * @author Delespierre
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ */

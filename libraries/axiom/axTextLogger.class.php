@@ -1,56 +1,54 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Text logger class file
+ * @file axTextLogger.class.php
  */
 
 /**
- * Text Logger Class
+ * @brief Text Logger Class
  *
+ * @class axTextLogger
  * @author Delespierre
- * @package libaxiom
- * @subpackage log
+ * @ingroup Log
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axTextLogger extends axLogger {
     
     /**
-     * File handle
-     * @var SplFileObject
+     * @brief File handle
+     * @property SplFileObject $_file
      */
     protected $_file;
     
     /**
      * Log lines format.
      *
-     * Note: 3 placeholder may be placed in
-     * this string. In order:
-     * 1- date (ISO 2822)
-     * 2- error severity ("Error", "Warning"...)
-     * 3- error message
+     * 3 placeholder may be placed in this string. In order:
+     * @li 1- date (ISO 2822)
+     * @li 2- error severity ("Error", "Warning"...)
+     * @li 3- error message
      *
-     * EG:
+     * Example:
+     * @code
      * "(Date %s) [%s] %s" will display as
      * "(Date Thu, 08 Sep 2011 15:26:45 +0200) [Warning] message..."
+     * @endcode
      *
-     * @var string
+     * @property string
      */
     public $format;
     
     /**
-     * Default constructor.
+     * @brief Constructor.
      *
-     * If $format parameter is not specified, the
-     * default format will be used (which is "[%s] %s: %s\n")
-     *
-     * If $open_mode parameter is not specified, the 'a'
-     * open mode will be used
+     * If $format parameter is not specified, the default format will be used (which is "[%s] %s: %s\n"). If 
+     * @c $open_mode parameter is not specified, the 'a' (Write + Append) open mode will be used
      *
      * @param string $filename
-     * @param interger $mask
-     * @param string $format = fasle
-     * @param unknown_type $open_mode
+     * @param interger $mask @optional @default{false} If false, will handle all priorities
+     * @param string $format @optional @default{false} If false, will use "[%s] %s: %s\n" as format
+     * @param char $open_mode @optional @default{'a'}
      */
     public function __construct ($filename, $mask = false, $format = false, $open_mode = 'a') {
         parent::__construct($mask);
@@ -64,8 +62,7 @@ class axTextLogger extends axLogger {
     }
     
     /**
-     * (non-PHPdoc)
-     * @see Logger::writeMessage()
+     * @copydoc axLogger::writeMessage()
      */
     public function writeMessage ($msg, $severity) {
         $this->_file->fwrite(sprintf($this->format, date('r'), $severity, $msg));

@@ -1,36 +1,36 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief PDOStatement iterator class file
+ * @file axPDOStatementIterator.class.php
  */
 
 /**
- * PDO Statement Iterator Class
+ * @brief PDO Statement Iterator Class
+ * 
+ * This class is a PDOStatement decorator to enable its use as an iterator instead of a traversable instance.
  *
+ * @class axPDOStatementIterator
  * @author Delespierre
- * @package libaxiom
- * @subpackage model
+ * @ingroup Model
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axPDOStatementIterator extends IteratorIterator implements SeekableIterator, Countable {
 
     /**
-     * Internal statement reference
-     * @internal
-     * @var PDOStatement
+     * @brief Internal statement reference
+     * @property PDOStatement $_statement
      */
     protected $_statement;
     
     /**
-     * Internal counter
-     * @internal
-     * @var integer
+     * @brief Internal counter
+     * @property integer $_count
      */
     protected $_count;
     
     /**
-     * Default constructor
+     * @brief Constructor
      * @param PDOStatement $statement
      */
     public function __construct (PDOStatement $statement) {
@@ -38,8 +38,9 @@ class axPDOStatementIterator extends IteratorIterator implements SeekableIterato
     }
     
     /**
-     * (non-PHPdoc)
-     * @see SeekableIterator::seek()
+     * @brief SeekableIterator::seek() Implementation
+     * @param integer $position The position to seek
+     * @return void
      */
     public function seek ($position) {
         if ($position > $this->count() || $position < $this->key())
@@ -50,8 +51,11 @@ class axPDOStatementIterator extends IteratorIterator implements SeekableIterato
     }
     
     /**
-     * (non-PHPdoc)
-     * @see Countable::count()
+     * @breif Countable::count() implementation
+     * 
+     * Get the number of items in the iterator.
+     * 
+     * @return integer
      */
     public function count () {
         if (!isset($this->_count))
@@ -60,7 +64,7 @@ class axPDOStatementIterator extends IteratorIterator implements SeekableIterato
     }
     
     /**
-     * Get the first item
+     * @brief Get the first item
      * @return mixed
      */
     public function first () {
@@ -69,7 +73,7 @@ class axPDOStatementIterator extends IteratorIterator implements SeekableIterato
     }
     
     /**
-     * Get the last item
+     * @brief Get the last item
      * @return mixed
      */
     public function last () {

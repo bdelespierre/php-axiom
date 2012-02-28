@@ -1,25 +1,25 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Select helper class file
+ * @file axSelectHelper.class.php
  */
 
 /**
- * Select Helper Class
+ * @brief Select Helper Class
  *
+ * @class axSelectHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axSelectHelper extends axBaseHelper {
 
     /**
-     * Default constructor
+     * @brief Constructor
      * @param string $name
-     * @param array $values = array()
-     * @param boolean $multiple = false
+     * @param array $values @optional @default{array()}
+     * @param boolean $multiple @optional @default{false}
      */
     public function __construct ($name, $values = array(), $multiple = false) {
         parent::__construct('select', array('name' => $name));
@@ -33,8 +33,7 @@ class axSelectHelper extends axBaseHelper {
     }
 
     /**
-     * (non-PHPdoc)
-     * @see axBaseHelper::setValue()
+     * @copydoc axBaseHelper::setValue()
      */
     public function setValue ($value) {
         if (is_scalar($value)) {
@@ -52,15 +51,14 @@ class axSelectHelper extends axBaseHelper {
     }
 
     /**
-     * (non-PHPdoc)
-     * @see axBaseHelper::getValue()
+     * @copydoc axBaseHelper::getValue()
      */
     public function getValue () {
         return null;
     }
 
     /**
-     * Add an option to the select
+     * @brief Add an option to the select
      * @param strign $name
      * @param scalar $value
      */
@@ -70,9 +68,8 @@ class axSelectHelper extends axBaseHelper {
     }
 
     /**
-     * Add multiple options at once.
-     * The $values parameters must be formatted
-     * as follow: { [key: value, ...] }
+     * @brief Add multiple options at once.
+     * 
      * @param array $values
      * @return axSelectHelper
      */
@@ -84,10 +81,8 @@ class axSelectHelper extends axBaseHelper {
     }
 
     /**
-     * Constructor static alias
-     * @param string $name
-     * @param array $values = array()
-     * @param boolean $multiple = false
+     * @copydoc axSelectHelper::__construct()
+     * @brief Constructor static alias
      * @return axSelectHelper
      */
     public static function export ($name, $values = array(), $multiple = false) {

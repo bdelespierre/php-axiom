@@ -1,52 +1,65 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Log class file
+ * @file axLog.class.php
  */
 
 /**
- * Log Class
+ * @brief Log Class
  *
- * This class is capable of capturing PHP errors and
- * exception.
- * This class acts as a chain of responsibilities
- * where commands are instance of axLogger.
+ * This class is capable of capturing PHP errors and exception. This class acts as a chain of responsibilities where 
+ * commands are instance of axLogger.
  *
+ * @todo finish axLog long description
+ * @class axLog
  * @author Delespierre
- * @package libaxiom
- * @subpackage log
+ * @ingroup Log
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axLog {
     
     /**
-     * Configuration
-     * @var array
+     * @brief Configuration
+     * @property array $_options
      */
     protected $_options;
     
     /**
-     * First logger in the chain
-     * @var axLogger
+     * @brief First logger in the chain
+     * @property axLogger $_first
      */
     protected $_first;
     
     /**
-     * Last logger in the chain
-     * @var axLogger
+     * @brief Last logger in the chain
+     * @property axLogger $_last
      */
     protected $_last;
     
     /**
-     * Log messages history (per request)
-     * @var array
+     * @brief Log messages history (per request)
+     * @property array $_message_history
      */
     protected $_message_history = array();
     
+    /**
+     * @brief Constructor
+     * 
+     * The @c $options parameters is described as follow:
+     * @code
+     * array(
+     *		'ignore_repeated_messages' => true,
+     *		'log_errors' => true,
+     *		'log_exception' => true,
+     *	);
+     * @endcode 
+     * 
+     * @param array $options @optional @default{array()} The log options
+     */
     public function __construct (array $options = array()) {
     	$default = array(
-    		'ignore_repeated_messages' => true,
+			'ignore_repeated_messages' => true,
     		'log_errors' => true,
     		'log_exception' => true,
     	);
@@ -61,80 +74,85 @@ class axLog {
     }
     
     /**
-     * Push a message onto the chain
-     * @param string $msg
-     * @param integer $priority
-     * @return void
+     * @brief Push a message onto the chain
+     * @warning If no logger is attached to axLog, will silently return the current instance and no operation is
+     * performed
+     * @param string $msg The message
+     * @param integer $priority The priority (see axLogger constants for priorities)
+     * @return axLog
      */
     public function message ($msg, $priority) {
         if (!isset($this->_first))
-            return;
+            return $this;
         
         if ($this->_options['ignore_repeated_messages'] && array_search($msg, $this->_message_history) !== false)
-			return;
+			return $this;
         
         $this->_first->message($this->_message_history[] = $msg, $priority);
+        return $this;
     }
     
     /**
-     * Push an error message onto the chain
-     * @param string $msg
-     * @return void
+     * @brief Push an error message onto the chain
+     * @see axLog::message()
+     * @param string $msg The message
+     * @return axLog
      */
     public function error ($msg) {
-        $this->message($msg, axLogger::ERR);
+        return $this->message($msg, axLogger::ERR);
     }
     
     /**
-     * Push a notice message onto the chain
-     * @param string $msg
-     * @return void
+     * @brief Push a notice message onto the chain
+     * @see axLog::message()
+     * @param string $msg The message
+     * @return axLog
      */
     public function notice ($msg) {
-        $this->message($msg, axLogger::NOTICE);
+        return $this->message($msg, axLogger::NOTICE);
     }
     
     /**
-     * Push a warning message onto the chain
-     * @param string $msg
-     * @return void
+     * @brief Push a warning message onto the chain
+     * @see axLog::message()
+     * @param string $msg The message
+     * @return axLog
      */
     public function warning ($msg) {
-        $this->message($msg, axLogger::WARNING);
+        return $this->message($msg, axLogger::WARNING);
     }
     
     /**
-     * Push a debug message onto the chain.
-     *
-     * You may additionnaly pass a backtrace infromation
-     * for debugging purposes.
-     *
-     * @param string $msg
-     * @param array $bt
-     * @return void
+     * @brief Push a debug message onto the chain.
+     * @see axLog::message()
+     * @note You may additionnaly pass a backtrace infromation for debugging purposes.
+     * @param string $msg The message
+     * @param array $bt The backtrace (result of PHP's debug_backtrace())
+     * @return axLog
      */
     public function debug ($msg, array $bt = array()) {
         if ($bt)
             $msg .= " in {$bt[0]['file']} on line {$bt[0]['line']}";
         
-        $this->message($msg, axLogger::DEBUG);
+        return $this->message($msg, axLogger::DEBUG);
     }
     
     /**
-     * Attach a logger to the chain
-     * @param axLogger $logger
-     * @return void
+     * @brief Attach a logger to the chain
+     * @param axLogger $logger The logger instance to attach
+     * @return axLog
      */
     public function addLogger (axLogger $logger) {
         if (!isset($this->_first))
             $this->_first = $this->_last = $logger;
         else
             $this->_last->setNext($this->_last = $logger);
+        return $this;
     }
     
     /**
-     * Register Log as PHP error handler
-     * @param integer $error_types
+     * @brief Register instance as PHP error handler
+     * @param integer $error_types @optional @default{-1} The errors to catch (all errors by default)
      * @return string
      */
     public function registerErrorHandler ($error_types = -1) {
@@ -142,7 +160,7 @@ class axLog {
     }
     
     /**
-     * Unregister Log as PHP error handler
+     * @breif Unregister instance as PHP error handler
      * @return boolean
      */
     public function restoreErrorHandler () {
@@ -150,12 +168,12 @@ class axLog {
     }
     
     /**
-     * PHP error handler
-     * @param integer $errno
-     * @param string $errstr
-     * @param string $errfile
-     * @param integer $errline
-     * @throws ErrorException
+     * @breif Error handler
+     * @param integer $errno Error number
+     * @param string $errstr Error message
+     * @param string $errfile Error file
+     * @param integer $errline Error line
+     * @throws ErrorException If the error is a E_RECOVERABLE_ERROR (so you can still catch it)
      * @return void
      */
     public function handleError ($errno, $errstr, $errfile, $errline) {
@@ -184,7 +202,7 @@ class axLog {
     }
     
     /**
-     * Register Log as PHP exception handler
+     * @brief Register Log as PHP exception handler
      * @return boolean
      */
     public function registerExceptionHandler () {
@@ -192,7 +210,7 @@ class axLog {
     }
     
     /**
-     * Unregister Log as PHP exception handler
+     * @brief Unregister Log as PHP exception handler
      * @return boolean
      */
     public function restoreExceptionHandler () {
@@ -200,16 +218,12 @@ class axLog {
     }
     
     /**
-     * Handle an exception.
+     * @brief Handle an exception.
      *
-     * When called directly by PHP in case
-     * of uncatched error, the runtime will
-     * fall after this call.
-     *
-     * You may use this method to log
-     * manually any exception.
-     *
-     * @param Exception $exception
+     * When called directly by PHP in case of uncatched error, the runtime will fall after this call.
+     * @note You may use this method to log manually any exception.
+     * @note If you're running PHP >= 5.3, the previous exceptions (if any) will be registered as well.
+     * @param Exception $exception The exception to be handled
      * @retur void
      */
     public function handleException (Exception $exception) {
@@ -219,15 +233,27 @@ class axLog {
             }
         }
         
-        $error = "(PHP Exception) " . $exception->getMessage() . ' in ' . $exception->getFile() . ' on line ' . $exception->getLine();
+        $error = "(PHP Exception) " . $exception->getMessage() . ' in ' . $exception->getFile() . ' on line ' . 
+            $exception->getLine();
         $this->error($error);
     }
     
     /**
-     * Get messages history
+     * @brief Get messages history
      * @return array
      */
     public function getHistory () {
         return $this->_message_history;
     }
 }
+
+/**
+ * @brief Log Module
+ * 
+ * This module contains all classes necessary for logging facilities.
+ * 
+ * @defgroup Log
+ * @author Delespierre
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ */

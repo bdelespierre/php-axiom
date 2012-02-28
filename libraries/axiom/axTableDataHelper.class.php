@@ -1,27 +1,24 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Table data helper class file
+ * @file axTableDataHelper.class.php
  */
 
 /**
- * Table Data Helper Class
+ * @brief Table Data Helper Class
  *
+ * @class axTableDataHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axTableDataHelper extends axBaseHelper {
     
     /**
-     * Default constructor.
-     *
-     * Type parameter can be either 'data' or 'head'
-     *
-     * @param sring $value
-     * @param string $type
+     * @brief Constructor.
+     * @param sring $value @optional @default{null}
+     * @param string $type @optional @default{'data'} Can be either 'data' or 'head'
      */
     public function __construct ($value = null, $type = 'data') {
         switch (strtolower($type)) {
@@ -39,9 +36,9 @@ class axTableDataHelper extends axBaseHelper {
     }
     
     /**
-     * Constructor static alias
-     * @param string $value
-     * @param string $type
+     * @copydoc axTableDataHelper::__construct()
+     * @static
+     * @brief Constructor static alias
      * @return axTableDataHelper
      */
     public static function export ($value = null, $type = 'data') {

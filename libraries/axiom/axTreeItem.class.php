@@ -1,60 +1,68 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Tree item class file
+ * @file axTreeItem.class.php
  */
 
 /**
- * Tree Item Class
+ * @brief Tree Item Class
  * 
- * This class implements a tree.
+ * This class implements a tree on which branches can also have a value.
  *
+ * @class axTreeItem
  * @author Delespierre
- * @package libaxiom
- * @subpackage configuration
+ * @ingroup Core
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axTreeItem implements ArrayAccess, Iterator {
 
     /**
-     * Parameter value
-     * @var mixed
+     * @brief Value
+     * @property mixed $_v
      */
     protected $_v;
 
     /**
-     * Children parameters
-     * @var array
+     * @brief Children
+     * @property array $_c
      */
     protected $_c;
 
     /**
-     * Value setter
+     * @brief Value setter
      * @param mixed $v
-     * @return void
+     * @return axTreeItem
      */
     public function setValue ($v) {
         $this->_v = $v;
+        return $this;
     }
 
     /**
-     * Valxue getter
+     * @brief Valxue getter
      * @return mixed
      */
     public function getValue () {
         return isset($this->_v) ? $this->_v : null;
     }
     
+    /**
+     * @brief Tells if a child exists
+     * @param scalar $k
+     * @return boolean
+     */
+    public function __isset ($k) {
+        return isset($this->_c[$k]);
+    }
+    
 	/**
-     * Child getter
+     * @brief Child getter
      *
-     * Note: if the child doesn't exists, an
-     * empty child will be created and returned.
-     * Thus you will never face an error accessing
-     * an inexisting entry.
+     * @note If the child doesn't exists, an empty child will be created and returned. Thus you will never face an 
+     * error accessing an inexisting tree item (but you'll get empty leaf/branches).
      *
-     * @param string $k
+     * @param string $k The branche/leaf key
      * @return axConfigurationItem
      */
     public function __get ($k) {
@@ -64,7 +72,7 @@ class axTreeItem implements ArrayAccess, Iterator {
     }
 	
     /**
-     * Child setter
+     * @brief Child setter
      * @param string $k
      * @param mixed $v
      * @return void
@@ -74,79 +82,105 @@ class axTreeItem implements ArrayAccess, Iterator {
     }
     
     /**
-     * (non-PHPdoc)
-     * @see ArrayAccess::offsetExists()
+     * @brief Unset a child
+     * @param scalar $k
+     * @return void
      */
-    public function offsetExists($k) {
-    	return isset($this->_c[$k]);
+    public function __unset ($k) {
+        unset($this->_c[$k]);
     }
     
     /**
-     * (non-PHPdoc)
+     * @brief offsetExist implementation, alias of axTreeItem::__isset()
+     * @see ArrayAccess::offsetExists()
+     * @param scalar $k The offset
+     * @return boolean
+     */
+    public function offsetExists($k) {
+    	return $this->__isset($k);
+    }
+    
+    /**
+     * @brief offsetGet implementation, alias of axTreeItem::__get()
      * @see ArrayAccess::offsetGet()
+     * @param scalar $k The offset
+     * @return mixed
      */
     public function offsetGet ($k) {
     	return $this->__get($k);
     }
     
     /**
-     * (non-PHPdoc)
+     * @brief offsetSet implementation, alias of axTreeItem::__set()
      * @see ArrayAccess::offsetSet()
+     * @param scalar $k The offset
+     * @param mixed $v The value
+     * @retun void
      */
     public function offsetSet ($k,$v) {
-    	$this->__get($k)->setValue($v);
+    	$this->__set($k,$v);
     }
     
     /**
-     * (non-PHPdoc)
+     * @brief offsetUnset implementation, alias of axTreeItem::__unset()
      * @see ArrayAccess::offsetUnset()
+     * @param scalar $k The offset
+     * @return void
      */
     public function offsetUnset ($k) {
-    	unset($this->_c[$k]);
+    	$this->__unset($k);
     }
     
     /**
-     * (non-PHPdoc)
+     * @brief current implementation, returns the current child
      * @see Iterator::current()
+     * @return axTreeItem
      */
     public function current () {
     	return current($this->_c);
     }
     
     /**
-     * (non-PHPdoc)
+     * @brief key implementation, returns the current key
      * @see Iterator::key()
+     * @return scalar
      */
     public function key () {
     	return key($this->_c);
     }
     
     /**
-     * (non-PHPdoc)
+     * @brief next implementation
      * @see Iterator::next()
+     * @return axTreeItem
      */
     public function next () {
     	next($this->_c);
     }
     
     /**
-     * (non-PHPdoc)
+     * @brief rewind implementation
      * @see Iterator::rewind()
+     * @return void
      */
     public function rewind () {
     	reset($this->_c);
     }
     
     /**
-     * (non-PHPdoc)
+     * @brief valid implementation
      * @see Iterator::valid()
+     * @retun boolean
      */
     public function valid () {
     	return (bool)current($this->_c);
     }
 	
     /**
-     * toString
+     * @brief __toString implementation
+     * 
+     * Get the string representation of current instance's value.
+     * 
      * @return string
      */
     public function __toString () {
@@ -154,7 +188,9 @@ class axTreeItem implements ArrayAccess, Iterator {
     }
     
     /**
-     * set state
+     * @brief __set_state implementation
+     * @internal
+     * @static
      * @param array $props
      * @return axTreeItem
      */

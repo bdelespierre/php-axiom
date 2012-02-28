@@ -1,32 +1,31 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Option helper class file
+ * @file axOptionHelper.class.php
  */
 
 /**
- * Option Helper CLass
+ * @brief Option Helper CLass
  *
+ * @class axOptionHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axOptionHelper extends axBaseHelper {
 
     /**
-     * Default constructor
+     * @brief Constructor
      * @param string $name
-     * @param scalar $value
+     * @param scalar $value @optional @default{""}
      */
     public function __construct ($name, $value = "") {
         parent::__construct('option', array('value' => $value), $name);
     }
 
     /**
-     * (non-PHPdoc)
-     * @see axBaseHelper::setValue()
+     * @copydoc axBaseHelper::setValue()
      */
     public function setValue ($value) {
         $this->_attributes['value'] = $value;
@@ -34,17 +33,15 @@ class axOptionHelper extends axBaseHelper {
     }
 
     /**
-     * (non-PHPdoc)
-     * @see axBaseHelper::getValue()
+     * @copydoc axBaseHelper::getValue()
      */
     public function getValue () {
         return $this->_attributes['value'];
     }
 
     /**
-     * Constructor static alias
-     * @param strign $name
-     * @param scalar $value = ""
+     * @copydoc axOptionHelper::__construct()
+     * @brief Constructor static alias
      * @return axOptionHelper
      */
     public static function export ($name, $value = "") {

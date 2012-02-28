@@ -1,25 +1,26 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Missing file exception class file
+ * @file axMissingFileException.class.php
  */
 
 /**
- * Missing File Exception
+ * @brief Missing File Exception
  *
+ * This class extends PHP's RuntimeException
+ *
+ * @class axMissingFileException
  * @author Delespierre
- * @package libaxiom
- * @subpackage exception
+ * @ingroup Exception
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axMissingFileException extends RuntimeException {
     
     /**
-     * Default constructor
-     * @param string $filename
-     * @param integer $code = 0
-     * @param Exception $previous = null
+     * @brief Constructor
+     * @param string $filename The file path or name
+     * @param integer $code @optional @default{0}
      */
     public function __construct ($filename, $code = 0) {
         parent::__construct("File $filename not found", $code);

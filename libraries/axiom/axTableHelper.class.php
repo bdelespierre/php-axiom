@@ -1,41 +1,41 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Table helper class file
+ * @file axTableHelper.class.php
  */
 
 /**
- * Table Helper Class
+ * @brief Table Helper Class
  *
+ * @class axTableHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axTableHelper extends axBaseHelper {
     
     /**
-     * thead element
-     * @var axTableRowGroupHelper
+     * @brief thead element
+     * @property axTableRowGroupHelper $head
      */
     public $head = null;
     
     /**
-     * tfoot element
-     * @var axTableRowGroupHelper
+     * @brief tfoot element
+     * @property axTableRowGroupHelper $foot
      */
     public $foot = null;
     
     /**
-     * tbody element
-     * @var axTableRowGroupHelper
+     * @brief tbody element
+     * @property axTableRowGroupHelper $body
      */
     public $body = null;
     
     /**
-     * Default constructor
-     * @param string $caption = false
+     * @brief Constructor
+     * @param string $caption @optional @default{false} The table caption value
      */
     public function __construct ($caption = false) {
         parent::__construct('table');
@@ -52,9 +52,10 @@ class axTableHelper extends axBaseHelper {
     }
     
     /**
-     * Alias of axTableHelper::setHead
+     * @brief Set the table column's name (and optionaly use them as a filter for any row added to the body)
+     * @see axTableHelper::setHead()
      * @param array $columns
-     * @param boolean $filter use these columns as filter
+     * @param boolean $filter @optional @default{true} Use these columns as filter
      * @return axTableHelper
      */
     public function setColumnNames (array $columns, $filter = true) {
@@ -64,11 +65,11 @@ class axTableHelper extends axBaseHelper {
     }
     
     /**
-     * Set the header.
+     * @brief Set the header
      *
      * If previous header was set, it will be discarded.
      *
-     * @param Traversable $rows = null
+     * @param Traversable|array $rows @optional @default{null} The rows to append
      * @return axTableHelper
      */
     public function setHead ($rows = null) {
@@ -79,11 +80,11 @@ class axTableHelper extends axBaseHelper {
     }
     
     /**
-     * Set the footer.
+     * @brief Set the footer
      *
      * If previous footer was set, it will be discarded.
      *
-     * @param Traversable $rows = null
+     * @param Traversable|array $rows @optional @default{null} The rows to append
      * @return axTableHelper
      */
     public function setFoot ($rows = null) {
@@ -94,11 +95,11 @@ class axTableHelper extends axBaseHelper {
     }
     
     /**
-     * Set the body.
+     * @brief Set the body.
      *
      * If previous body was set, it will be discarded.
      *
-     * @param Traversable $rows = null
+     * @param Traversable $rows @optional @default{null} The rows to append
      * @return axTableHelper
      */
     public function setBody ($rows = null) {
@@ -109,17 +110,16 @@ class axTableHelper extends axBaseHelper {
     }
     
     /**
-     * Add a row to the given table row group.
+     * @brief Add a row to the given table row group.
      *
-     * The $to parameter can be either:
-     * - head or thead
-     * - foot or tfoot
-     * - body or tbody
-     * If the $to parameter is left to false, the
-     * row will be added to the body section.
+     * The @c $to parameter can be either:
+     * @li head or thead
+     * @li foot or tfoot
+     * @li body or tbody
+     * If the $to parameter is left to false, the row will be added to the body section.
      *
      * @param Traversable $row
-     * @param string $to = false
+     * @param string $to @optional @default{false} The section to append this row to
      * @return axTableHelper
      */
     public function addRow ($row, $to = false) {
@@ -133,10 +133,10 @@ class axTableHelper extends axBaseHelper {
     }
     
     /**
-     * Add multiple rows at once
-     * @see axTableHelper::addRow
-     * @param Traversable $rows
-     * @param strign $to
+     * @brief Add multiple rows at once
+     * @see axTableHelper::addRow()
+     * @param Traversable|array $rows
+     * @param string $to @optional @default{false} The section to append this row to
      * @return axTableHelper
      */
     public function addRows ($rows, $to = false) {
@@ -147,7 +147,7 @@ class axTableHelper extends axBaseHelper {
     }
     
     /**
-     * Add a colgroup to the table and return it
+     * @brief Add a colgroup to the table and return it
      * @return axColGroupHelper
      */
     public function addColGroup () {
@@ -155,8 +155,7 @@ class axTableHelper extends axBaseHelper {
     }
     
     /**
-     * (non-PHPdoc)
-     * @see axBaseHelper::__toString()
+     * @copydoc axBaseHelper::__toString()
      */
     public function __toString () {
         // Order the children elements according to xhtml DTD
@@ -187,8 +186,8 @@ class axTableHelper extends axBaseHelper {
     }
     
     /**
-     * Constructor static alias
-     * @param string $caption
+     * @copydoc axTableHelper::__construct()
+     * @brief Constructor static alias
      * @return axTableHelper
      */
     public static function export ($caption = false) {

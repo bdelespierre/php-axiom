@@ -1,48 +1,50 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Redirect exception class file
+ * @file axRedirectException.class.php
  */
 
 /**
- * Redirect Exception Class
+ * @brief Redirect Exception Class
  *
+ * @todo Redirect Exception long description
+ * @class axRedirectException
  * @author Delespierre
- * @package libaxiom
- * @subpackage exception
+ * @ingroup Exception
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axRedirectException extends Exception {
     
     /**
      * Constants
+     * @var integer
      */
     const REDIRECT_PERMANENT = 1;
     const REDIRECT_REFRESH = 2;
     
     /**
-     * Expressed in seconds
+     * @brief Expressed in seconds
      * @var integer
      */
     const REFRESH_DELAY = 5;
     
     /**
-     * URL to redirect to
-     * @var string
+     * @brief URL to redirect to
+     * @property string $_url
      */
     protected $_url;
     
     /**
-     * Redirect method
-     * @var integer
+     * @brief Redirect method
+     * @property integer $_method
      */
     protected $_method;
     
     /**
-     * Default constructor
+     * @brief Constructor
      * @param string $url
-     * @param integer $method
+     * @param integer $method axRedirectException::REDIRECT_PERMANENT or axRedirectException::REDIRECT_REFRESH
      */
     public function __construct ($url, $method = self::REDIRECT_PERMANENT) {
         parent::__construct("Redirect to $url");
@@ -51,7 +53,7 @@ class axRedirectException extends Exception {
     }
     
     /**
-     * Get the redirection URL
+     * @brief Get the redirection URL
      * @return string
      */
     public function getUrl () {
@@ -59,7 +61,7 @@ class axRedirectException extends Exception {
     }
     
     /**
-     * Get the redirection method
+     * @brief Get the redirection method
      * @return integer
      */
     public function getMethod () {
@@ -67,9 +69,10 @@ class axRedirectException extends Exception {
     }
     
     /**
-     * Get the proper header string to send to the browser.
+     * @brief Get the proper header string to send to the browser.
      *
      * Will return false if the redirect method is not set.
+     * 
      * @return string
      */
     public function getHeaderString () {
@@ -81,8 +84,8 @@ class axRedirectException extends Exception {
     }
     
     /**
-     * (non-PHPdoc)
-     * @see Exception::__toString()
+     * @brief Get the header from this exception as string
+     * @return string
      */
     public function __toString () {
         return ($header = $this->getHeaderString()) ? $header : "";

@@ -1,65 +1,66 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Locale class file
+ * @file axLocale.class.php
  */
 
 /**
- * Locale class
+ * @brief Locale class
  * 
- * TODO Local class description
- * 
+ * @todo Locale class description
  * @author Delespierre
  * @since 1.1.4
  * @package libaxiom
- * @subpackage core
+ * @ingroup Core
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axLocale implements IteratorAggregate {
 	
 	/**
-	 * Cache file name
+	 * @brief Cache file name
 	 * @var string
 	 */
 	const CACHE_FILE = 'locale.cache.php';
 	
 	/**
-	 * Accepted language cache
-	 * @var array
+	 * @brief Accepted language cache
+	 * @property array $_accepted_languages_cache
 	 */
 	protected static $_accepted_languages_cache;
 	
 	/**
-	 * Dictionnary file
-	 * @var string
+	 * @brief Dictionnary file
+	 * @property string $_file
 	 */
 	protected $_file;
 	
 	/**
-	 * Current lang used
-	 * @var string
+	 * @brief Current lang used
+	 * @property string $_lang
 	 */
 	protected $_lang;
 	
 	/**
-	 * Cache directory
-	 * @var string
+	 * @brief Cache directory (false if cache is disabled)
+	 * @property string $_cache_dir
 	 */
 	protected $_cache_dir;
 	
 	/**
-	 * The translations tree
-	 * @var axTreeItem
+	 * @brief The translations tree
+	 * @property axTreeItem $tree
 	 */
 	protected $tree;
 	
 	/**
-	 * Default constructor
-	 * @param string $lang_file
-	 * @param string $lang = "auto"
-	 * @param string $default_lang = "en"
-	 * @param string $cache_dir = false
+	 * @brief Constructor
+	 * @param string $lang_file The langs file path, this file MUST be an INI file
+	 * @param string $lang @optional @default{"auto"} The language to be used or @c 'auto' to determine it from the 
+	 * browser
+	 * @param string $default_lang @optional @default{"en"} The default language to use if the @c $lang isn't found in 
+	 * the dictionnary
+	 * @param string $cache_dir @optional @default{false} The cache directory (or false if cache is disabled)
 	 * @throws axMissingFileException If the lang file could not be found
 	 */
 	public function __construct ($lang_file, $lang = "auto", $default_lang = "en", $cache_dir = false) {
@@ -77,7 +78,7 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	/**
-	 * Get a translation key
+	 * @brief  Get a translation key
 	 * @param string $key
 	 * @return axTreeItem
 	 */
@@ -86,8 +87,9 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	/**
-	 * (non-PHPdoc)
+	 * @brief Get the internal iterator
 	 * @see IteratorAggregate::getIterator()
+	 * @return axTreeItem
 	 */
 	public function getIterator () {
 		if (empty($this->_tree)) {
@@ -111,12 +113,12 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	/**
-	 * Set the current lang
+	 * @brief Set the current lang
 	 * 
-	 * Returns the current axLocale instance in case of success and
-	 * false in case of failure.
+	 * Returns the current axLocale instance in case of success or false in case of failure.
 	 * 
-	 * @param string $lang you may specify "auto" to determine the language automatically
+	 * @note You may specify "auto" to determine the language automatically
+	 * @param string $lang The lang to be used
 	 * @return axLocale
 	 */
 	public function setLang ($lang) {
@@ -130,7 +132,7 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	/**
-	 * Get the current lang
+	 * @brief Get the current lang
 	 * @return string
 	 */
 	public function getLang () {
@@ -138,7 +140,8 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	/**
-	 * Get the localized formats
+	 * @brief Get the localized formats
+	 * @link http://php.net/manual/en/function.localeconv.php
 	 * @return array
 	 */
 	public function conv () {
@@ -146,24 +149,29 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	/**
-	 * Get date
-	 * @param integer $time
+	 * @brief Get date
+	 * 
+	 * Will use the current date format to generate a date. The date format must be defined as a string in the
+	 * dictionnary file (key is @c date.format).
+	 * 
+	 * @param integer $time @optional @default{null}
 	 * @return string
 	 */
 	public function date ($time = null) {
 		if ($time === null)
-			return date($this->date_format);
+			return date($this->date->format);
 		else
-			return date($this->date_format, $time);
+			return date($this->date->format, $time);
 	}
 	
 	/**
-	 * Get date string representation
+	 * @brief Get date human representation
 	 * 
-	 * E.G.
-	 * * "X hours ago"
+	 * For instance "X hours ago" where X is a number determined by the @c $date parameter against the current 
+	 * timestamp.
 	 * 
-	 * @param mixed $date
+	 * @warning You must use the ymdHi format for the $date parameter or a integer representing a timestamp.
+	 * @param mixed $date The date (ymdHi format) or a timestamp
 	 * @return string
 	 */
 	public function date2string ($date) {
@@ -235,9 +243,10 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	/**
-	 * Use a string format for identifying translations
+	 * @brief Use a string format for identifying translations
 	 * @param string $key
-	 * @param mixed $arg [optional] ...
+	 * @param mixed $arg @optional @multiple You may pass as many arguments as the translation accepts (according to
+	 * the sprintf syntax) 
 	 * @return string
 	 */
 	public function i18n ($key) {
@@ -268,9 +277,9 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	/**
-	 * Generates the translation tree
-	 * @throws axMissingFileException
-	 * @throws RuntimeException
+	 * @brief Generates the translation tree
+	 * @throws axMissingFileException If the file is not found or not readable
+	 * @throws RuntimeException If the file could not be parsed
 	 * @return void
 	 */
 	protected function _generateTree () {
@@ -297,7 +306,10 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	/**
-	 * Put the dictionnary in cache for later use
+	 * @brief Put the dictionnary in cache for later use
+	 * 
+	 * Does nothing if cache is disabled
+	 * 
 	 * @rerturn void
 	 */
 	protected function _cache () {
@@ -309,7 +321,10 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	/**
-     * Get accepeted languages using browser capabilities
+     * @brief Get accepeted languages using browser capabilities
+     * 
+     * The returned array will be ordered by browser preference (for instance en_US > en_GB > en). 
+     * 
      * @return array
      */
     protected static function _getAcceptedLanguages () {
@@ -353,7 +368,7 @@ class axLocale implements IteratorAggregate {
     }
     
     /**
-     * Determine the nearest available lang according to accepted languages
+     * @brief Determine the nearest available lang according to accepted languages
      * 
      * Will return false if no corresponding language could be found
      * 

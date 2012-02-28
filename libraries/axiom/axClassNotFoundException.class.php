@@ -24,3 +24,14 @@ class axClassNotFoundException extends Exception {
 		parent::__construct("Class {$class} not found");
 	}
 }
+
+/**
+ * @brief Exception Module
+ * 
+ * This module contains custom exception classes used by the framework.
+ * 
+ * @defgroup Exception
+ * @author Delespierre
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ */

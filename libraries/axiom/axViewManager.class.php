@@ -1,62 +1,57 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief View manager class file
+ * @file axViewManager.class.php
  */
 
 /**
- * View Manager Class
+ * @brief View Manager Class
  * 
- * TODO add long description
- *
+ * @todo axViewManager class description
+ * @class axViewManager
  * @author Delespierre
- * @package libaxiom
- * @subpackage core
+ * @ingroup Core
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axViewManager {
     
     /**
-     * Registered view paths
-     * @internal
-     * @var array
+     * @brief Registered view paths
+     * @property array $_viewPaths
      */
     protected $_viewPaths;
     
     /**
-     * Output (transformation) callback
-     * @internal
-     * @var callback
+     * @brief Output (transformation) callback
+     * @property callback $_outputCallback
      */
     protected $_outputCallback;
     
     /**
-     * Layout name
-     * @internal
-     * @var string
+     * @brief Layout name
+     * @property string $_layout
      */
     protected $_layout;
     
     /**
-     * Default view format
-     * @internal
-     * @var string
+     * @brief Default view format
+     * @property string $_defaultFormat
      */
     protected $_defaultFormat;
     
     /**
-     * Layout variables
-     * @var array
+     * @brief Layout variables
+     * @property array $_layoutVars
      */
     protected $_layoutVars;
     
     /**
-     * Default constructor
+     * @brief Constructor
      * @param string $layout
-     * @param array $view_paths [optional] [default `null`]
-     * @param string $default_format [optional] [default `"html"`]
-     * @param array $layout_vars [optional] [default `array()`]
+     * @param array $view_paths @optional @default{null}
+     * @param string $default_format @optional @default{"html"}
+     * @param array $layout_vars @optional @default{array()}
      */
     public function __construct ($layout, $view_paths = null, $default_format = 'html', array $layout_vars = array()) {
         $this->_viewPaths      = (array)$view_paths;
@@ -67,12 +62,10 @@ class axViewManager {
     }
     
     /**
-     * Add a view directory
-     * 
-     * Will throw an `axMissingFileException` if the directory does'nt exists.
+     * @brief Add a view directory
      * 
      * @param string $view The directory path to add
-     * @throws axMissingFileException 
+     * @throws axMissingFileException If the directory does'nt exists
      * @return axViewManager
      */
     public function add ($view) {
@@ -83,25 +76,26 @@ class axViewManager {
     }
     
     /**
-     * Loads a view
+     * @brief Loads a view
      * 
-     * This methods accepts 3 different prototypes:
-     * * axViewManager::load(axResponse $response)
-     * * axViewManager::load($path, array $vars = array())
-     * * axViewManager::load($section, $view, $format = "html", array $vars = array(), $layout = null)
+     * This methods has 3 different prototypes:
+     * @li axViewManager::load(axResponse $response)
+     * @li axViewManager::load($path, array $vars = array())
+     * @li axViewManager::load($section, $view, $format = "html", array $vars = array(), $layout = null)
      * 
-     * In the first and third forms, the view path is determined using the `$section` and `$view` parameters (which are
-     * extracted from the `$response` object in the first form) and by seeking for the appropriate file according to
-     * registered view paths (added with `axViewManager::add`).
+     * In the first and third forms, the view path is determined using the @c $section and @c $view parameters (which 
+     * are extracted from the @c $response object in the first form) and by seeking for the appropriate file according 
+     * to registered view paths (added with axViewManager::add()).
      * 
      * In all cases, the complete page buffer is returned.
      * 
-     * A `RuntimeException` is thrown if
-     * * the calculated view path is invalid (the file simply doesn't exist)
-     * * the layout for this view / format cannot be found
-     * * the view cannot be loaded
-     * * the layout cannot be loaded
+     * A RuntimeException is thrown if
+     * @li the calculated view path is invalid (the file simply doesn't exist)
+     * @li the layout for this view / format cannot be found
+     * @li the view cannot be loaded
+     * @li the layout cannot be loaded
      * 
+     * @throws RuntimeException
      * @return string
      */
     public function load () {
@@ -123,7 +117,7 @@ class axViewManager {
             $format   = $response->getFormat() ? $response->getFormat() : $this->_defaultFormat;
             $vars     = $response->getVars();
             
-            // TODO add scripts, stylesheet and messages incorporation here
+            //! @todo Add scripts, stylesheet and messages incorporation here
             
             if (!$response->layoutState()) {
                 $layout = false;
@@ -171,7 +165,7 @@ class axViewManager {
         if (!$this->setOutputFormat($format))
             throw new RuntimeException("Unable to set format to {$format}");
         
-        // TODO send headers as well here !
+        //! @todo send headers as well here !
         
         if (!${'view_content'} = $this->_loadView($view_path, $vars))
             throw new RuntimeException("Unable to load view {$view_path}");
@@ -185,7 +179,7 @@ class axViewManager {
     }
     
     /**
-     * Set the output callback
+     * @brief Set the output callback
      * @param callback $callback
      * @return axViewManager
      */
@@ -197,7 +191,7 @@ class axViewManager {
     }
     
     /**
-     * Set the output format (sends the content-type header)
+     * @brief Set the output format (sends the content-type header)
      * @param string $format Must be one of `html`,`json`,`csv`,`xml`,`text`
      * @return axViewManager
      */
@@ -215,9 +209,9 @@ class axViewManager {
     }
     
     /**
-     * Set the layout name and optionaly format
+     * @brief Set the layout name and optionaly format
      * @param string $layout
-     * @param string $format [optional] [default `null`] If not provided, the default format is used (as per set in the
+     * @param string $format @optional @default{null} If not provided, the default format is used (as per set in the
      * constructor)
      * @return axViewManager
      */
@@ -227,7 +221,7 @@ class axViewManager {
     }
     
     /**
-     * Get the given layout variable
+     * @brief Get the given layout variable
      * @param sring $name
      * @return mixed
      */
@@ -236,7 +230,7 @@ class axViewManager {
     }
     
     /**
-     * Set the given layout variable
+     * @brief Set the given layout variable
      * @param string $name
      * @param mixed $value
      * @return axViewManager
@@ -247,9 +241,9 @@ class axViewManager {
     }
     
     /**
-     * Add a collection to the registered view variables
+     * @brief Add a collection to the registered view variables
      * @param array $vars The map of variables to add
-     * @param string $method [optional] [default `axViewManager::MERGE_VARS`] The adding method
+     * @param string $method @optional @default{axViewManager::MERGE_VARS} The adding method
      * @return axViewManager
      */
     public function addAll (array $vars, $method = self::MERGE_VARS) {
@@ -267,9 +261,7 @@ class axViewManager {
     }
     
     /**
-     * __get implementeation
-     * 
-     * Alias of `axViewManager::getVar`
+     * @brief __get implementeation, alias of axViewManager::getVar()
      * 
      * @see axViewManager::getVar
      * @param string $key
@@ -280,9 +272,7 @@ class axViewManager {
     }
     
     /**
-     * __set implementeation
-     * 
-     * Alias of `axViewManager::setVar`
+     * @brief __set implementeation, alias of axViewManager::setVar()
      * 
      * @see axViewManager::setVar
      * @param string $key
@@ -294,9 +284,7 @@ class axViewManager {
     }
     
     /**
-     * __isset implementation
-     * 
-     * Check whenever a layout variable is set or not
+     * @brief __isset implementation, check whenever a layout variable is set or not
      * 
      * @param string $key
      * @return boolean
@@ -306,9 +294,7 @@ class axViewManager {
     }
     
     /**
-     * __unset implementation
-     * 
-     * Unset the given layout variable
+     * @brief __unset implementation, unset the given layout variable
      * 
      * @param string $key
      * @return void
@@ -318,7 +304,7 @@ class axViewManager {
     }
     
     /**
-     * Find the proper layout according to the `$layout` and `$format` parameters
+     * @breif Find the proper layout according to the `$layout` and `$format` parameters
      * 
      * Returns the path in case of success, false on errors.
      * 
@@ -340,7 +326,7 @@ class axViewManager {
     }
     
     /**
-     * Find the proper view according to the `$section`, `$view` and `$format` parameters
+     * @brief Find the proper view according to the @c $section, @c $view, and @c $format parameters
      * 
      * Return the path in case of success, false on errors.
      * 
@@ -363,9 +349,9 @@ class axViewManager {
     }
     
     /**
-     * Load (include) the view and returns the produced buffer
+     * @brief Load (include) the view and returns the produced buffer
      * @param string $__path
-     * @param array $__vars [optional] [default `array()`]
+     * @param array $__vars @optional @default{array()}
      * @return string
      */
     protected function _loadView ($__path, array $__vars = array()) {
@@ -382,9 +368,9 @@ class axViewManager {
     }
     
     /**
-     * Load (include) the layout and returns the produced buffer
+     * @brief Load (include) the layout and returns the produced buffer
      * @param string $__path
-     * @param array $__vars [optional] [default `array()`]
+     * @param array $__vars @optional @default{array()}
      * @return string
      */
     protected function _loadLayout ($__path, array $__vars = array()) {
@@ -402,8 +388,8 @@ class axViewManager {
     }
     
     /**
-     * Variable adding flags
-     * @see axViewManager::addVars
+     * @brief Variable adding flags
+     * @see axViewManager::addVars()
      * @var string
      */
     const MERGE_VARS = "merge";

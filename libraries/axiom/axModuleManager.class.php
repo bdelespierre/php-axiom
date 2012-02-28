@@ -1,64 +1,61 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Module manager class file
+ * @file axModuleManager.class.php
  */
 
 /**
- * Module Manager
+ * @brief Module Manager
  *
+ * @todo Module manager long description
+ * @class axModuleManager
  * @author Delespierre
- * @package libaxiom
- * @subpackage core
+ * @ingroup Core
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axModuleManager {
     
     /**
-     * Cache file
+     * @brief Cache file
      * @var string
      */
     const CACHE_FILE = "module.cache.php";
     
     /**
-     * Modules path
-     * @internal
-     * @var string
+     * @brief Modules path
+     * @property string $_path
      */
     protected $_path;
     
     /**
-     * Axiom version
-     * @internal
-     * @var unknown_type
+     * @brief Axiom version
+     * @property string $_axiomVersion
      */
     protected $_axiomVersion;
     
     /**
-     * Options
-     * @internal
-     * @var array
+     * @brief Options
+     * @property array $_options
      */
     protected $_options;
     
     /**
-     * Module descriptors
-     * @internal
-     * @var array
+     * @brief Module descriptors
+     * @property array $_modules
      */
     protected $_modules;
     
     /**
-     * Default constructor
+     * @brief Constructor
      * 
      * Options:
-     * * check_dependencies [boolean] wherever to check dependencies or not
-     * * cache_dir [string | false] false will disable caching
+     * @li check_dependencies [boolean] wherever to check dependencies or not
+     * @li cache_dir [string | false] false will disable caching
      * 
      * @param string $path The path to the modules directory
      * @param string $axiom_version Used during dependencies check
-     * @param array $options [optional] see above
+     * @param array $options @optional @default{array()} see above
      */
     public function __construct ($path, $axiom_version, array $options = array()) {
         $default = array(
@@ -76,7 +73,7 @@ class axModuleManager {
     }
     
     /**
-     * Get available modules
+     * @brief Get available modules
      * @return array
      */
     public function getModules () {
@@ -98,7 +95,7 @@ class axModuleManager {
     }
     
 	/**
-     * Check if the module exists
+     * @brief Check if the module exists
      * @param string $module
      * @return boolena
      */
@@ -107,7 +104,7 @@ class axModuleManager {
     }
     
     /**
-     * Get module meta-inf.
+     * @brief Get module meta-inf.
      * 
      * Wil return false in case of error.
      *  
@@ -129,7 +126,7 @@ class axModuleManager {
     }
     
     /**
-     * Load the given module
+     * @brief Load the given module
      * @param string $module
      * @return boolean
      */
@@ -150,7 +147,7 @@ class axModuleManager {
     }
     
     /**
-     * Check if updates are available for the given module
+     * @brief Check if updates are available for the given module
      * @param string $module
      * @return boolean
      */
@@ -159,9 +156,9 @@ class axModuleManager {
     }
     
     /**
-     * Get the given module dependencies
+     * @brief Get the given module dependencies
      * @param string $module
-     * @throws RuntimeException
+     * @throws RuntimeException If the module doesn't exists
      * @return array
      */
     protected function _getDependencies ($module) {
@@ -173,9 +170,9 @@ class axModuleManager {
     }
     
     /**
-     * Check dependencies according to version numbers
+     * @brief Check dependencies according to version numbers
      * @param string $module
-     * @throws RuntimeException
+     * @throws RuntimeException If a module's meta-infs cannot be found
      * @return boolean
      */
     protected function _checkDependencies ($module) {
@@ -200,7 +197,7 @@ class axModuleManager {
     }
     
     /**
-     * Load dependencies for the given module
+     * @brief Load dependencies for the given module
      * @param string $module
      * @return boolean
      */
@@ -224,7 +221,10 @@ class axModuleManager {
     }
     
     /**
-     * Store modules informations for later use
+     * @brief Store modules informations for later use
+     * 
+     * Will do nothing if cache is disabled
+     * 
      * @return boolean
      */
     protected function _cache () {
@@ -236,7 +236,7 @@ class axModuleManager {
     }
     
     /**
-     * Parses a version to an integer
+     * @brief Parses a version to an integer
      *
      * @param string $version
      * @return interger
@@ -247,12 +247,13 @@ class axModuleManager {
     }
     
     /**
-     * Check if the left version is higher than the right version
+     * @brief Check if the left version is higher than the right version
      *
-     * Both parameters can be either strings or integer so
-     * these calls are equivalents:
-     *   self::_compareVersion('1.2.3', '1.0.2');
-     *   self::_compareVersion(100203, 100002);
+     * Both parameters can be either strings or integer so these calls are equivalents:
+     * @code
+     * self::_compareVersion('1.2.3', '1.0.2');
+     * self::_compareVersion(100203, 100002);
+     * @endcode
      *
      * @param mixed $version_a
      * @param mixed $version_b

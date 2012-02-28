@@ -1,63 +1,66 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Library class file
+ * @file axLibrary.class.php
  */
 
 /**
- * Library Class
+ * @brief Library Class
  * 
- * TODO Long description here
+ * @todo axLibrary long description here
  * 
- * This class is inspired by Gerald's Blog
+ * This class is inspired by Gerald's Blog.
+ * 
  * @link http://www.croes.org/gerald/blog
  * @author Delespierre
  * @since 1.2.0
- * @package libaxiom
- * @subpackage core
+ * @ingroup Core
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axLibrary {
 	
 	/**
-	 * Cache file
-	 * @var string
+	 * @brief Cache file
+	 * @var string 
 	 */
 	const CACHE_FILE = 'library.cache.php';
 	
 	/**
-	 * Library directories
-	 * @var array
+	 * @brief Library directories
+	 * @property array $_directories
 	 */
 	protected $_directories;
 	
 	/**
-	 * Registered classes
-	 * @var array
+	 * @brief Registered classes
+	 * @property array $_classes
 	 */
 	protected $_classes;
 	
 	/**
-	 * Cache dir path
-	 * @var string
+	 * @brief Cache dir path (false if cache is disabled)
+	 * @property string $_cache_dir
 	 */
 	protected $_cache_dir;
 	
 	/**
-	 * Flag to tell if the library paths have been crawled
-	 * * true : crawl is possible
-	 * * false: crawl has been done before and will not be done again
-	 * @var boolean
+	 * @brief Flag to tell if the library paths have been crawled
+	 * 
+	 * This flag takes 2 possible values
+	 * @li true : crawl is possible
+	 * @li false: crawl has been done before and will not be done again
+	 * 
+	 * @property boolean $_regenerate_flag
 	 */
 	protected $_regenerate_flag = true;
 	
 	/**
-	 * Default constructor
+	 * @brief Constructor
 	 * 
 	 * Takes the cache directory path as only parameter.
 	 * 
-	 * @param string $cache_dir [optional]
+	 * @param string $cache_dir @optional @default{false} The cache directory (or false to disable the cache)
 	 */
 	public function __construct ($cache_dir = false) {
 		$this->_directories = array();
@@ -66,23 +69,22 @@ class axLibrary {
 	}
 	
 	/**
-	 * Add a library to discover
-	 * 
-	 * You may pass a $options parameters to set file extensions for the library or to ask for a recursive inclusion.
-	 * A reccursive inclusion consist of a complete directory tree traversing to find the class files.
+	 * @brief Add a library to discover
 	 * 
 	 * The class file must be named according to the classname:
-	 * * for instance, the file for `MyClass` has to be named `MyClass.php` (pay attention to the case sensitiveness)
-	 * * the extension is arbitrary (Axiom classes uses `.class.php` but you may use the extension you want as long as
-	 *   you specify it in the `$options` parameter.
-	 *   
-	 * Note: The axLibrary class CANNOT handle more than one class per file.
+	 * @li for instance, the file for @c MyClass has to be named @c MyClass.php (pay attention to the case 
+	 * sensitiveness)
+	 * @li the extension is arbitrary (Axiom classes uses @c .class.php but you may use the extension you want as long 
+	 * as you specify it in the @c $options parameter.
 	 * 
-	 * A RuntimeExcetion is emitted if the library path cannot be found.
+	 * @note You may pass a $options parameters to set file extensions for the library or to ask for a recursive 
+	 * inclusion. A reccursive inclusion consist of a complete directory tree traversing to find the class files.
 	 * 
-	 * @param string $name The name of a folder located in `/libraries` or `/application/libraries` or a path
-	 * @param array $options [optional]
-	 * @throws RuntimeException
+	 * @warning This class CANNOT handle more than one class per file for now.
+	 * 
+	 * @param string $name The name of a folder located in @c /libraries or @c /application/libraries, or a path
+	 * @param array $options @optional @default{array()}
+	 * @throws RuntimeException If the library path cannot be found
 	 * @return axLibrary
 	 */
 	public function add ($name, array $options = array()) {
@@ -105,14 +107,12 @@ class axLibrary {
 	}
 	
 	/**
-	 * __autoload implementation
+	 * @brief __autoload implementation
 	 * 
-	 * Will seek for the $classname in the local cache and include the proper file if found.
-	 * 
-	 * An axClassNotFoundException is thrown if such class can not be found, even after a library crawl.
+	 * Will seek for the @c $classname in the local cache and include the proper file if found.
 	 * 
 	 * @param string $classname
-	 * @throws axClassNotFoundException
+	 * @throws axClassNotFoundException If such class can not be found, even after a library crawl
 	 * @return boolean
 	 */
 	public function autoload ($classname) {
@@ -130,7 +130,7 @@ class axLibrary {
 	}
 	
 	/**
-	 * Register current instance as autoloader
+	 * @breif Register current instance as autoloader
 	 * @return boolean
 	 */
 	public function register () {
@@ -138,8 +138,9 @@ class axLibrary {
 	}
 	
 	/**
-	 * Crawls all the registered path to locate the library files according to the extension(s) provided as options
-	 * @see axLibrary::add
+	 * @brief Crawls all the registered path to locate the library files according to the extension(s) provided as 
+	 * options
+	 * @see axLibrary::add()
 	 * @return void
 	 */
 	protected function _includeAll () {
@@ -163,7 +164,7 @@ class axLibrary {
 	}
 	
 	/**
-	 * Tries to load the given class file
+	 * @brief Tries to load the given class file
 	 * @param string $classname
 	 * @return boolean
 	 */
@@ -179,7 +180,10 @@ class axLibrary {
 	}
 	
 	/**
-	 * Stores the local class cache in file for later use
+	 * @brief Stores the local class cache in file for later use
+	 * 
+	 * Does nothing if the cache is not activated.
+	 * 
 	 * @return boolean
 	 */
 	protected function _cache () {

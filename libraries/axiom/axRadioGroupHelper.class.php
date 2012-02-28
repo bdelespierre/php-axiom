@@ -1,37 +1,40 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Radio group helper class file
+ * @file axRadioGroupHelper.class.php
  */
 
 /**
- * Radio Group Helper Class
+ * @brief Radio Group Helper Class
  *
+ * @class axRadioGroupHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axRadioGroupHelper extends axBaseHelper {
 
     /**
-     * Inner input's name
-     * @var string
+     * @brief Inner input's name
+     * @property string $_name
      */
     protected $_name;
 
     /**
-     * Current position
+     * @brief Current position
      * @internal
-     * @var integer
+     * @property integer $_count
      */
     protected static $_count = 1;
 
     /**
-     * Default constructor
+     * @brief Constructor
+     * 
+     * See axRadioGroupHelper::addOptions() for more details about the @c $values parameter.
+     * 
      * @param string $name
-     * @param array $values = array()
+     * @param array $values @optional @default{array()}
      */
     public function __construct ($name, $values = array()) {
         parent::__construct('span');
@@ -42,33 +45,48 @@ class axRadioGroupHelper extends axBaseHelper {
     }
 
     /**
-     * Add an option (a checkbox) to the group
+     * @brief Add an option (a checkbox) to the group
      * @param string $label
      * @param scalar $value
      * @return axRadioGroupHelper
      */
     public function addOption ($label, $value) {
-        $this->_children[] = axInputHelper::export($this->_name, 'radio', $value)->setId($id = 'radio' . (self::$_count ++));
+        $this->_children[] = axInputHelper::export($this->_name,'radio',$value)->setId($id='radio'.(self::$_count ++));
         $this->_children[] = axLabelHelper::export($label, $id);
         return $this;
     }
 
     /**
-     * Add multiple options at once.
-     * The $values parameters must be formatted
-     * as follow: { [key: value, ...] }
+     * @brief Add multiple options at once.
+     * 
+     * The @c $values parameter is an associative array which keys are label values and value are checkbox value.
+     * Example:
+     * @code
+     * $radio_group = new RadioGroupHelper('test');
+     * $radio_group->addOptions(array(
+     *     'Label A' => 1,
+     *     'Label B' => 2,
+     *     'Label C' => 3,
+     * ));
+     * echo $radio_group; // Will generate the following HTML
+     * // <span>
+     * //   <label for="radio1">Label A</label><input type="radio" name="test" value="1" id="radio1" />
+     * //   <label for="radio2">Label B</label><input type="radio" name="test" value="2" id="radio2" />
+     * //   <label for="radio3">Label C</label><input type="radio" name="test" value="3" id="radio3" />
+     * // </span>
+     * @encode
+     * 
      * @param array $values
      * @return axRadioGroupHelper
      */
-    public function addOptions ($values) {
+    public function addOptions (array $values) {
         foreach ($values as $key => $value)
             $this->addOption($key, $value);
         return $this;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see axBaseHelper::setValue()
+     * @copydoc axBaseHelper::setValue()
      */
     public function setValue ($value) {
         foreach ($this->_children as &$node) {
@@ -81,7 +99,7 @@ class axRadioGroupHelper extends axBaseHelper {
     }
     
     /**
-     * Get group's name
+     * @brief Get group's name
      * @return string
      */
     public function getName () {
@@ -89,9 +107,8 @@ class axRadioGroupHelper extends axBaseHelper {
     }
 
     /**
-     * Constructor static alias
-     * @param string $name
-     * @param array $values = array()
+     * @copydoc axRadioGroupHelper::__construct()
+     * @brief Constructor static alias
      * @return axRadioGroupHelper
      */
     public static function export ($name, $values = array()) {

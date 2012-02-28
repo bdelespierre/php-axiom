@@ -1,24 +1,24 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Textarea helper class file
+ * @file axTextareaHelper.class.php
  */
 
 /**
- * Texarea Helper Class
+ * @brief Texarea Helper Class
  *
+ * @class axTextareaHelper
  * @author Delespierre
- * @package libaxiom
- * @subpackage helper
+ * @ingroup Helper
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axTextareaHelper extends axBaseHelper {
 
     /**
-     * Default constructor
+     * @brief Constructor
      * @param string $name
-     * @param mixed $value
+     * @param mixed $value @optional @default
      */
     public function __construct ($name, $value = "") {
         parent::__construct('textarea', array('name' => $name), $value);
@@ -28,9 +28,9 @@ class axTextareaHelper extends axBaseHelper {
     }
 
     /**
-     * Constructor static alias
-     * @param string $name
-     * @param mixed $value
+     * @copydoc axTextareaHelper::__construct()
+     * @static
+     * @brief Constructor static alias
      * @return axTextareaHelper
      */
     public static function export ($name, $value = "") {

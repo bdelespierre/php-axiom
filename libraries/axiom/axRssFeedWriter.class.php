@@ -1,35 +1,36 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief RSS feed writer class file
+ * @file axRssFeedWriter.class.php
  */
 
 /**
- * RSS Feed Writer Class
+ * @brief RSS Feed Writer Class
  *
+ * @class axRssFeedWriter
  * @author Delespierre
- * @package libaxiom
- * @subpackage feed
+ * @ingroup Feed
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axRssFeedWriter extends axFeedWriter {
     
     /**
-     * RSS element
-     * @var DOMElement
+     * @brief RSS element
+     * @property DOMElement $_rss
      */
     protected $_rss;
     
     /**
-     * Channel element
-     * @var DOMElement
+     * @brief Channel element
+     * @internal
+     * @property DOMElement $_channel
      */
     protected $_channel;
     
     /**
-     * Default constructor
-     * @param Feed $feed
+     * @brief Constructor
+     * @param axFeed $feed
      */
     public function __construct (axFeed $feed) {
         parent::__construct($feed);
@@ -43,8 +44,7 @@ class axRssFeedWriter extends axFeedWriter {
     }
     
     /**
-     * (non-PHPdoc)
-     * @see axFeedWriter::buildFeedInfo()
+     * @copydoc axFeedWriter::buildFeedInfo()
      */
     protected function buildFeedInfo () {
         $this->_channel->appendChild(new DOMElement('title', $this->_feed->getTitle()));
@@ -56,13 +56,12 @@ class axRssFeedWriter extends axFeedWriter {
     }
     
     /**
-     * (non-PHPdoc)
-     * @see axFeedWriter::buildItems()
+     * @copydoc axFeedWriter::buildItems()
      */
     protected function buildItems () {
         foreach ($this->_feed->getEntries() as $entry) {
             
-            // TODO add entry validation here.
+            //! @todo add entry validation here.
             
             $item = $this->_channel->appendChild(new DOMElement('item'));
             $item->appendChild(new DOMText($entry->getContent()));

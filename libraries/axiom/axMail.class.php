@@ -1,22 +1,19 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
 /**
- * Mail Class
+ * @brief Mail Class
  *
- * Warning: You may add as many parts
- * as you want into the mail using
- * axMail::addPart but keep the text
- * part as first part.
- *
+ * @todo Mail class long description 
+ * @warning You may add as many parts as you want into the mail using axMail::addPart but keep the text part as first 
+ * part.
+ * @warning This class has several bugs that needs to be fixed !
+ * @class axMail
  * @author Delespierre
- * @package libaxiom
- * @subpackage core
+ * @ingroup Mail
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axMail {
     
@@ -47,8 +44,8 @@ class axMail {
     const HEADER_SEPARATOR_LF = "\n";
     
     /**
-     * Allowed headers
-     * @var array
+     * @brief Allowed headers
+     * @property array $allowed_headers
      */
     public static $allowed_headers = array(
         self::HEADER_BCC,                        self::HEADER_CC,                   self::HEADER_CONTENT_DESCRIPTION,
@@ -60,59 +57,59 @@ class axMail {
     );
     
     /**
-     * Header separator
-     * @var string
+     * @brief Header separator
+     * @property string $_header_separator
      */
     protected $_header_separator = self::HEADER_SEPARATOR_CRLF;
     
     /**
-     * Sender
-     * @var string
+     * @brief Sender
+     * @property string $_from
      */
     protected $_from;
     
     /**
-     * Recipients
-     * @var array
+     * @brief Recipients
+     * @property array $_to
      */
     protected $_to = array();
     
     /**
-     * Subject
-     * @var string
+     * @brief Subject
+     * @property string $_subject
      */
     protected $_subject;
     
     /**
-     * Body parts
-     * @var array
+     * @brief Body parts
+     * @property array $_message_parts
      */
     protected $_message_parts = array();
     
     /**
-     * Headers
-     * @var array
+     * @brief Headers
+     * @property array $_headers
      */
     protected $_headers = array();
     
     /**
-     * Default constructor.
+     * @brief Constructor.
      *
-     * The $to parameter can be either a string representing
-     * one destination or an array representing multiple
+     * The @ $to parameter can be either a string representing one destination or an array representing multiple 
      * destinations.
-     *
      * Headers passed to this method follows this format:
-     *  $header = array('<header_name>' => '<header_value>' ...)
-     * Invalid headers or values will trigger InvalidArgumentException.
+     * @code
+     * $header = array('<header_name>' => '<header_value>' ...)
+     * @endcode
+     * Invalid headers names or values will trigger InvalidArgumentException.
      *
-     * @param string $from
-     * @param array $to
-     * @param string $subject
-     * @param string $message
-     * @param array $headers
-     * @param array $options
-     * @throws InvalidArgumentException
+     * @param string $from The sender
+     * @param array $to The recipient(s)
+     * @param string $subject @optional @default{"NO Subject"} The subject
+     * @param string $message @optional @default{null} The body (can be defined later)
+     * @param array $headers @optional @default{array()} The headers (can be defined later)
+     * @param array $options @optional @default{array()} TO BE IMPLEMENTED 
+     * @throws InvalidArgumentException If the @c $from parameter is not a valid email
      */
     public function __construct ($from, $to, $subject = "No Subject", $message = null, array $headers = array()) {
         if (!self::validateEmail($from))
@@ -135,8 +132,12 @@ class axMail {
     }
     
     /**
-     * Validates email address.
-     * @param string $email
+     * @brief Validates email address.
+     * 
+     * If possible, will check the dnsrr for the mail's host.
+     * 
+     * @static
+     * @param string $email The mail address to validate
      * @return boolean
      */
     public static function validateEmail ($email) {
@@ -153,26 +154,10 @@ class axMail {
     }
     
     /**
-     * Constructor static alias
-     * @see axMail::__construct
-     * @param string $from
-     * @param mixed $to
-     * @param string $subject
-     * @param array $headers
-     * @return axMail
-     */
-    public static function export ($from, $to, $subject, array $headers = array()) {
-        return new self ($from, $to, $subject, $headers);
-    }
-    
-    /**
-     * Add a destination to the mail.
+     * @brief Add a destination to the mail.
      *
-     * Will throw an InvalidArgumentException
-     * if the destination is invalid.
-     *
-     * @throws InvalidArgumentException
-     * @param string $to
+     * @throws InvalidArgumentException If the destination is invalid.
+     * @param string $to The destination
      * @return void
      */
     public function addDestination ($to) {
@@ -184,7 +169,7 @@ class axMail {
     }
     
     /**
-     * Remove a destination
+     * @brief Remove a destination
      * @param string $to
      * @return void
      */
@@ -194,20 +179,17 @@ class axMail {
     }
     
     /**
-     * Add an header to the headers list.
+     * @brief Add an header 
+     * 
+     * Header must be part of axMail::$valid_headers. Value will be checked accordingly to each header and an 
+     * InvalidArgumentException will be thrown in case of invalid value.
      *
-     * Header must be part of axMail::$valid_headers.
-     * Value will be checked accordingly to each header
-     * and an InvalidArgumentException will be thrown
-     * in cas of invalid value.
-     *
-     * Note: Date parameter is compatible with
-     * strtotime definition.
-     *
-     * @param string $header
-     * @param scalar $value
-     * @throws InvalidArgumentException
-     * return void
+     * @note Any date value will be parsed using strtotime so make sure your dates apply to a well recognized format
+     * or simply set a timestamp.
+     * @param string $header The header
+     * @param scalar $value The header's value
+     * @throws InvalidArgumentException If the header or its value is invalid
+     * return axMail
      */
     public function setHeader ($header, $value) {
         if (!in_array($header, self::$allowed_headers))
@@ -226,7 +208,8 @@ class axMail {
                 break;
                 
             case self::HEADER_CONTENT_TRANSFERT_ENCODING:
-                if (!in_array($value, array('7bits', '8bits', 'binary', 'quoted-printable', 'base64', 'ietf-token', 'x-token')))
+                if (!in_array($value, array('7bits', '8bits', 'binary', 'quoted-printable', 'base64', 'ietf-token', 
+                	'x-token')))
                     throw new InvalidArgumentException("Invalid value for $header", 2018);
                 break;
                 
@@ -264,28 +247,29 @@ class axMail {
         }
         
         $this->_headers[$header] = $value;
+        return $this;
     }
     
     /**
-     * Set the header separator.
+     * @brief Set the header separator.
      *
-     * According to the <missing RFC>,
-     * header has to be separated by a CRLF (\r\n)
-     * but some mailboxes like Gmail doesn't
-     * recognized it and expects a LF (\n).
+     * According to rfc1341, header has to be separated by a CRLF (\r\n)  but some mailboxes like Hotmail doesn't
+     * recognize it and expects a LF (\n).
      *
-     * @param string $glue
-     * @throws InvalidArgumentException
-     * @return void
+     * @link http://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
+     * @param string $glue The separator
+     * @throws InvalidArgumentException If the separator is not CRLF nor LF
+     * @return axMail
      */
     public function setHeaderSeparator ($glue) {
         if (!in_array($glue, array(self::HEADER_SEPARATOR_CRLF, self::HEADER_SEPARATOR_LF)))
             throw new InvalidArgumentException("Unrecognized separator", 2023);
         $this->_header_separator = $glue;
+        return $this;
     }
     
     /**
-     * Subject getter
+     * @brief Subject getter
      * @return string
      */
     public function getSubject () {
@@ -293,7 +277,7 @@ class axMail {
     }
     
     /**
-     * Subject setter
+     * @brief Subject setter
      * @param string $subject
      * @return void
      */
@@ -302,19 +286,15 @@ class axMail {
     }
     
     /**
-     * Add a new part to the message.
+     * @brief Add a new part to the message.
      *
-     * If the content type parameter is left
-     * to null, no header will be apended to
-     * the message part.
+     * If the content type parameter is left to null, no header will be apended to the message part.
+     * This method will add a message part to the list and return the key (useful  for part removal with 
+     * axMail::removeMessagePart()).
      *
-     * This method will add a message part to
-     * the list and return the key (useful
-     * for part removal with axMail::removeMessagePart).
-     *
-     * @param string $message
-     * @param string $content_type = null
-     * @param string $charset = "utf-8"
+     * @param string $message The part's body
+     * @param string $content_type @optional @default{null} The part content type
+     * @param string $charset @optional @default{"utf-8"} The part charset
      * @return string
      */
     public function addMessagePart ($message, $content_type = null, $charset = "utf-8") {
@@ -329,18 +309,16 @@ class axMail {
     }
     
     /**
-     * Attach a file to the mail.
+     * @brief Attach a file to the mail.
      *
-     * If the filename parameter is left
-     * empty, the file's name will be
-     * determined automaticaly.
+     * If the filename parameter is left empty, the file's name will be determined automaticaly.
+     * Returns the message part key (just like axMail::addMessagePart does)
      *
-     * Returns the message part key.
-     *
-     * @param string $path
-     * @param string $content_type = null
-     * @param string $filename = null
-     * @throws InvalidArgumentException
+     * @param string $path The file path
+     * @param string $content_type @optional @default{null} The file's content type
+     * @param string $filename @optional @default{null} Will be calculated from @c $path if null
+     * @throws axMissingFileException If the file cannot be found
+     * @throws InvalidArgumentException If the file is not a regular file (directory or link for instance)
      * @return string
      */
     public function addAttachment ($path, $content_type = null, $filename = null) {
@@ -379,7 +357,7 @@ class axMail {
     }
     
     /**
-     * Remove a message part
+     * @brief Remove a message part
      * @param string $key
      * @return void
      */
@@ -388,7 +366,7 @@ class axMail {
     }
     
     /**
-     * Alias of axMail::removeMessagePart
+     * @brief Alias of axMail::removeMessagePart()
      * @see axMail::removeMessagePart
      * @param string $key
      * @return voic
@@ -398,16 +376,11 @@ class axMail {
     }
     
     /**
-     * Send the mail.
+     * @brief Send the mail.
      *
-     * Returns an array where keys are destinations
-     * and values are booleans representing the send
-     * status.
+     * Returns an array where keys are destinations and values are booleans representing the send status.
      *
-     * If called withou a mail body, will throw a
-     * RuntimeException.
-     *
-     * @throws RuntimeException
+     * @throws RuntimeException If called whith no mail body defined
      * @return array
      */
     public function send () {
@@ -432,15 +405,11 @@ class axMail {
     }
     
     /**
-     * Get the message body as string.
+     * @brief Get the message body as string.
      *
-     * Note: this method will determine the type
-     * of mail and eventualy set its header
-     * to multipart/mixed if more than one
-     * part is found.
-     *
-     * Note: this method will set the
-     * from header for ease purpose.
+     * @note This method will determine the type of mail and eventualy set its header  to multipart/mixed if more 
+     * than one part is found.
+     * @note this method will set the from header for ease purpose.
      *
      * @return string
      */
@@ -466,3 +435,15 @@ class axMail {
         }
     }
 }
+
+/**
+ * @brief Mail Module
+ * 
+ * This module contains classes for mail manipulation.
+ * 
+ * @defgroup Mail
+ * @author Delespierre
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ */
+

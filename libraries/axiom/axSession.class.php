@@ -1,34 +1,30 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Session class file
+ * @file axSession.class.php
  */
 
 /**
- * Session Class
+ * @brief Session Class
  *
- * Note: by default any instance of
- * this class will point to the same
- * $_SESSION offset for practical
- * purposes. You may add as many
- * sub-arrays as you want.
+ * @note By default any instance of this class will point to the same $_SESSION structure for practical purposes. 
  *
+ * @class axSession
  * @author Delespierre
- * @package libaxiom
- * @subpackage core
+ * @ingroup Core
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axSession {
     
     /**
-     * axSession values
-     * @var array
+     * @brief axSession values
+     * @property array $_session_parameters
      */
     protected $_session_parameters;
 	
     /**
-     * Construct a new session handler instance
+     * @breif Construct a new session handler instance
      */
     public function __construct ($name) {
     	$this->name($name);
@@ -39,7 +35,7 @@ class axSession {
     }
     
     /**
-     * Get a session reference
+     * @brief Get a session reference
      * @param string $key
      * @return mixed
      */
@@ -48,7 +44,7 @@ class axSession {
     }
     
     /**
-     * Set any session reference
+     * @brief Set any session reference
      * @param string $key
      * @param mixed $value
      * @return void
@@ -58,7 +54,8 @@ class axSession {
     }
     
     /**
-     * Start the session
+     * @brief Start the session
+     * @static
      * @return boolean
      */
     public static function start () {
@@ -68,7 +65,8 @@ class axSession {
     }
     
     /**
-     * Destroy the session
+     * @brief Destroy the session
+     * @static
      * @return boolean
      */
     public static function destroy () {
@@ -76,8 +74,9 @@ class axSession {
     }
     
     /**
-     * Get or set the session id
-     * @param string $id
+     * @brief Get or set the session id
+     * @static
+     * @param string $id @optional @default{false}
      * @return string
      */
     public static function id ($id = false) {
@@ -85,8 +84,9 @@ class axSession {
     }
     
     /**
-     * Get or set the session name
-     * @param string $name
+     * @brief Get or set the session name
+     * @static
+     * @param string $name @optional @default{false}
      * @return string
      */
     public static function name ($name = false) {
@@ -94,7 +94,8 @@ class axSession {
     }
     
     /**
-     * Tell if session is started
+     * @brief Tell if session is started
+     * @static
      * @return boolean
      */
     public static function started () {
@@ -102,7 +103,8 @@ class axSession {
     }
     
     /**
-     * Renew the session
+     * @brief Renew the session (equivalent to start > destroy > start)
+     * @static
      * @return boolean
      */
     public static function renew () {

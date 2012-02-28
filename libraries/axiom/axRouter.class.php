@@ -1,67 +1,69 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
- * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @brief Router class file
+ * @file axRouter.class.php
  */
 
 /**
- * Router Class
+ * @brief Router and dispatcher Class
  * 
- * TODO long description
- * 
- * Note: this class rely on the Axiom class for locale and modules settings.
- *
+ * @todo axRouter long description
+ * @warning This class rely on the Axiom class for locale and module settings.
+ * @class axRouter
  * @author Delespierre
  * @package libaxiom
  * @subpackage core
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axRouter {
     
     /**
-     * Routes
-     * @internal
-     * @staticvar
-     * @var array
+     * @brief Routes
+     * @property array $_routes
      */
     protected static $_routes;
 
     /**
-     * axRequest object
-     * @internal
-     * @staticvar
-     * @var axRequest
+     * @brief axRequest object
+     * @property axRequest $_request
      */
     protected static $_request;
     
     /**
-     * axResponse object
-     * @internal
-     * @staticvar
-     * @var axResponse
+     * @brief axResponse object
+     * @property axResponse $_response
      */
     protected static $_response;
     
     /**
-     * Connect a route
+     * @brief Connect a route
      *
      * Routes are matched according to a given template. Ttemplates follow the following format:
-     * * "/[string|{:key<:pattern><:?>}]/...
+     * @code
+     * /[string|{:key<:pattern><:?>}]/...
+     * @endcode
      * 
-     * E.G.
-     * * axRouter::connect('/{:lang:\w{2}:?}/admin/{:controller}/{:id:\d+}/{:args}', 'AnyController::anyaction', $opts);
+     * Examples of valid templates:
+     * @code
+     * /a/b/c
+     * /{:controller}/{:action}
+     * /articles/{:id:\d+}
+     * /{:lang:\w{2}:?}/{:controller}/{:action}
+     * @endcode
+     * 
+     * @todo Describe completely the route management here
      *
      * Three prototypes are available:
-     * * axRouter::connect(new Route($template, $params, $options))
-     * * axRouter::connect($template, array('controller' => 'xxx', 'action' => 'yyy' ...), $options);
-     * * axRouter::connect($template, 'controller::action', $options);
+     * @li axRouter::connect(new Route($template, $params, $options))
+     * @li axRouter::connect($template, array('controller' => 'xxx', 'action' => 'yyy' ...), $options);
+     * @li axRouter::connect($template, 'controller::action', $options);
      *
      * @param mixed $template The template or the objet to match the url against
-     * @param mixed $params [optional] [default `array`] The parameters of the route (must contain at least the 
+     * @param mixed $params @optional @default{array()} The parameters of the route (must contain at least the 
      * controller's name), you may leave it blank if your template catches the controller's name
-     * @param array $options [optional] [default `array()`] The route options
-     * @throws RuntimeException
+     * @param array $options @optional @default{array()} The route options
+     * @throws RuntimeException If the route cannot be connected (not instance of axRouter)
      * @return void
      */
     public static function connect ($template, $params = array(), array $options = array()) {
@@ -80,15 +82,17 @@ class axRouter {
     }
     
     /**
-     * Run router.
+     * @brief Run router
      *
-     * If not route/action is given, the router will determine the route based on the URL. See axRouter::connect for 
+     * If not route/action is given, the router will determine the route based on the URL. See axRouter::connect() for 
      * more information about connecting routes.
+     * 
+     * @todo Describe axRouter::run behavior
      *
      * @static
-     * @param mixed $route [optional] [default `null`]
-     * @param string $action [optional] [defualt  `null`]
-     * @throws RuntimeException
+     * @param mixed $route @optional @default{null}
+     * @param string $action @optional @default{null}
+     * @throws RuntimeException If no controller is found in the route
      * @return void
      */
     public static function run ($route = null, $action = null) {
@@ -151,12 +155,13 @@ class axRouter {
     }
     
     /**
-     * Invoke the given controller / action and load the corresponding view
-     * @internal
+     * @brief Invoke the given controller / action and load the corresponding view
+     * 
+     * @todo Describe axRouter::load behavior
+     * 
      * @static
      * @param string $controller
-     * @param string $action [optional] [default `null`]
-     * @throws BadMethodCallException
+     * @param string $action @optional @default{null} If null will use the @c index action
      * @return void
      */
     protected static function _load ($controller, $action = null) {
@@ -212,11 +217,9 @@ class axRouter {
     }
     
     /**
-     * Handler for axRedirectException.
+     * @brief Handler for axRedirectException.
      *
-     * Will send the proper header to the
-     * browser and optionnaly load the
-     * ErrorController::redirection view.
+     * Will send the proper header to the browser and optionnaly load the ErrorController::redirection view.
      *
      * @static
      * @internal
@@ -232,16 +235,14 @@ class axRouter {
     }
     
     /**
-     * Parses a route param string into an array.
+     * @brief Parses a route param string into an array.
      *
-     * This method allows the Routes to be connected
-     * by providing strings as parameters instead of
-     * array for practical reasons.
-     * Thse calls are identicals:
-     * * axRouter::connect('/a/b', 'FooController::bar');
-     * * axRouter::connect('/a/b', array('controller' => 'FooController', 'action' => 'bar'));
+     * This method allows the Routes to be connected by providing strings as parameters instead of array for practical 
+     * reasons.
+     * These calls are identicals:
+     * @li axRouter::connect('/a/b', 'FooController::bar');
+     * @li axRouter::connect('/a/b', array('controller' => 'FooController', 'action' => 'bar'));
      *
-     * @internal
      * @static
      * @param string $params
      * @return array
@@ -252,7 +253,7 @@ class axRouter {
     }
     
     /**
-     * Get the route instance that matches the given URL.
+     * @brief Get the route instance that matches the given URL.
      * @internal
      * @param string $url
      */
