@@ -12,7 +12,7 @@
  * @since 1.1.4
  * @ingroup Exception
  * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @license http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axClassNotFoundException extends Exception {
 	
