@@ -25,6 +25,7 @@ class axCaptionHelper extends axBaseHelper {
     
     /**
      * @brief Constructor static helper
+     * @static
      * @param string $value The caption value
      */
     public static function export ($value) {

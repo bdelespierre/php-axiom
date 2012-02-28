@@ -82,6 +82,7 @@ class axSelectHelper extends axBaseHelper {
 
     /**
      * @copydoc axSelectHelper::__construct()
+     * @static
      * @brief Constructor static alias
      * @return axSelectHelper
      */

@@ -51,6 +51,7 @@ class axColHelper extends axBaseHelper {
     
     /**
      * @brief Constructor static alias
+     * @static
      * @return axColHelper
      */
     public static function export () {

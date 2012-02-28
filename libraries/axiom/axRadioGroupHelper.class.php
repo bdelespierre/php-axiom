@@ -108,6 +108,7 @@ class axRadioGroupHelper extends axBaseHelper {
 
     /**
      * @copydoc axRadioGroupHelper::__construct()
+     * @static
      * @brief Constructor static alias
      * @return axRadioGroupHelper
      */

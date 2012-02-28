@@ -38,3 +38,14 @@ interface axConfiguration extends IteratorAggregate {
      */
     public function __get ($key);
 }
+
+/**
+ * @brief Configuration Module
+ * 
+ * This module contains all the classes and interfaces necessary for configuration manipulation.
+ * 
+ * @defgroup Configuration
+ * @author Delespierre
+ * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
+ * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ */

@@ -11,7 +11,7 @@
  *
  * @class axLoginException
  * @author Delespierre
- * @subpackage Exception
+ * @ingroup Exception
  * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
  * @license http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */

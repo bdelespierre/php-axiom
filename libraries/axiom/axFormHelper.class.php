@@ -142,6 +142,7 @@ class axFormHelper extends axBaseHelper {
     
     /**
      * @copydoc axFormHelper::__construct()
+     * @static
      * @brief Constructor static alias
      * @return axFormHelper
      */

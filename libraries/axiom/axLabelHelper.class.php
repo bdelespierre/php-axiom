@@ -28,6 +28,7 @@ class axLabelHelper extends axBaseHelper {
 
     /**
      * @copydoc axLabelHelper::__construct()
+     * @static
      * @brief Constructor static alias
      * @return axLabelHelper
      */

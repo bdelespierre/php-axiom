@@ -49,6 +49,7 @@ class axInputHelper extends axBaseHelper {
     
 	/**
 	 * @copydoc axInputHelper::__construct()
+	 * @static
      * @brief Constructor static alias
      * @return axInputHelper
      */

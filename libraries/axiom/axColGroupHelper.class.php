@@ -32,6 +32,7 @@ class axColGroupHelper extends axBaseHelper {
     
     /**
      * @brief Constructor static alias
+     * @static
      * @return axColGroupHelper
      */
     public static function export () {

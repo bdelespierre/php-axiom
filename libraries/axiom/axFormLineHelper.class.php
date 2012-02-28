@@ -151,6 +151,7 @@ class axFormLineHelper extends axBaseHelper {
 
     /**
      * @copydoc axFormLineHelper::__construct()
+     * @static
      * @brief Constuctor static alias
      * @return axFormLineHelper
      */

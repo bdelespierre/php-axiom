@@ -187,6 +187,7 @@ class axTableHelper extends axBaseHelper {
     
     /**
      * @copydoc axTableHelper::__construct()
+     * @static
      * @brief Constructor static alias
      * @return axTableHelper
      */

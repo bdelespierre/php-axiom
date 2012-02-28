@@ -41,6 +41,7 @@ class axOptionHelper extends axBaseHelper {
 
     /**
      * @copydoc axOptionHelper::__construct()
+     * @static
      * @brief Constructor static alias
      * @return axOptionHelper
      */

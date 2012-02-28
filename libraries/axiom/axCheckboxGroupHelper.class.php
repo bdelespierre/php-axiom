@@ -86,6 +86,7 @@ class axCheckboxGroupHelper extends axBaseHelper {
     
     /**
      * @brief Constructor static alias
+     * @static
      * @see axCheckboxGroupHelper::__construct
      * @param string $name
      * @param array $values @optional @default{array()}

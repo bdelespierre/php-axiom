@@ -111,6 +111,7 @@ class axFieldsetHelper extends axBaseHelper {
     
 	/**
      * @copydoc axFieldsetHelper::__construct()
+     * @static
      * @brief Constructor static alias
      * @return axFieldsetHelper
      */
