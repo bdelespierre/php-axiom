@@ -34,6 +34,7 @@ define('AXIOM_APP_PATH', dirname(dirname(dirname(__FILE__))) . '/application');
 
 /**
  * This section defines the libraries to be used by application.
+ * 
  * Libraries must be located in `/libraries` or `/application/libraries` or in the PHP include path if you're adding
  * the library by its name using `Axiom::library()->add(...)`.
  * You may also pass a path pointing to the library to this method to add it.
@@ -74,21 +75,20 @@ Axiom::library()->add(AXIOM_APP_PATH, array('recursive' => true));
 
 /**
  * This section initialize the configuration object used by application.
+ * 
  * The second parameter to the `Axiom::configuration` method correspond to the configuration section to be used. 
- * Don't forget to change it to `prod` when deploying the project on its production environment. The configuration 
+ * Don't forget to change it to 'prod' when deploying the project on its production environment. The configuration 
  * parameters can be read anytime using the following syntax.
+ * 
  * Usage:
  * * Axiom::configuration()->key->subkey->subsubkey
  * * // or (to get the native value)
  * * Axiom::configuration()->key->subkey->subsubkey->getValue();
  * 
  * Note: object returned by the the configuration (no matter which depth level) are instances of axTreeItem. These 
- * objects have __toString implementation so you can always convert them using the cast operator 
- * E.G:
+ * objects have __toString implementation so you can always convert them using the cast operator:
  * * $option = (string)Axiom::configuration()->option->suboption;
- * 
- * Another possibility to get the native parameter type is to use the getValue method on the axTreeItem.
- * E.G:
+ * Another possibility to get the native parameter type is to use the getValue method on the axTreeItem:
  * * $option = Axiom::configuration()->option->suboption->getValue();
  * 
  * See axIniConfiguration for more details about this behavior.
@@ -101,7 +101,7 @@ Axiom::configuration(AXIOM_APP_PATH . '/config/config.ini', 'dev');
  * ---------------------------------------------------------------------------------------------------------------------
  */
 
-// TODO add section description
+// @todo add section description
 
 /*
 //Axiom::log()->addLogger(new axTextLogger(AXIOM_APP_PATH . '/ressource/log/app.log'));
@@ -112,7 +112,7 @@ Axiom::configuration(AXIOM_APP_PATH . '/config/config.ini', 'dev');
  * ---------------------------------------------------------------------------------------------------------------------
  */
 
-// TODO add section description
+// @todo add section description
 
 axRouter::connect('/{:lang::?}/{:controller}/{:action::?}');
 axRouter::connect('/{:lang::?}/', 'IndexController');

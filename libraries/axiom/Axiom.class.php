@@ -7,7 +7,7 @@
 /**
  * @brief Main framework class.
  * 
- * This class is a front-end to the most used class in the Axiom framework. It provides direct access to
+ * This class is a front-end to the most used classes in the Axiom framework. It provides direct access to
  * @li Configuration (Axiom::configuration)
  * @li Libraries (Axiom::library)
  * @li Localization (Axiom::locale)
