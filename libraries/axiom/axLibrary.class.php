@@ -7,11 +7,10 @@
 /**
  * @brief Library Class
  * 
- * @todo axLibrary long description here
- * 
  * This class is inspired by Gerald's Blog.
- * 
  * @link http://www.croes.org/gerald/blog
+ * 
+ * @todo axLibrary long description
  * @author Delespierre
  * @since 1.2.0
  * @ingroup Core

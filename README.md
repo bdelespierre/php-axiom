@@ -27,12 +27,16 @@ Axiom provide all website basics such as:
 * Browser recognition
 * Email Support
 * RSS Support (TO BE TESTED)
-* Sitemap Autogen (TO BE IMPLEMENTED)
-* Backend Administration (IN A SEPARATE PACKAGE)
-* Modules (IN SEPARATE PACKAGES)
 * Various Output Format (xhtml, json, xml, rss...)
 * PHP > 5.2 Compatible
 * And much more... 
+
+Documentation
+-------------
+
+The documentation for the lastest active branch can be found on github at:
+
+* http://bdelespierre.github.com/php-axiom/index.html
 
 Licence
 -------

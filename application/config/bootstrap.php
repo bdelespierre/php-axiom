@@ -3,7 +3,7 @@
  * Axiom: a lightweight PHP framework
  *
  * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @licence http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @license http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
 /**
@@ -103,6 +103,7 @@ Axiom::configuration(AXIOM_APP_PATH . '/config/config.ini', 'dev');
 
 // TODO add section description
 
+/*
 //Axiom::log()->addLogger(new axTextLogger(AXIOM_APP_PATH . '/ressource/log/app.log'));
 
 /**
