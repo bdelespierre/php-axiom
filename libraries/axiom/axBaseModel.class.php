@@ -5,19 +5,17 @@
  */
 
 /**
- * Model Base Class
+ * @brief Model Base Class
  * 
  * @todo axBaseModel long description
- * 
  * @warning Only tables with strictly one attribute as primary key can be used with this class. For more complex 
  * object types, you should describe your own behavior by implementing axModel.
- *
  * @class axBaseModel
  * @ingroup Model
  * @since 1.2.0
  * @author Delespierre
  * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
- * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
+ * @license http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 abstract class axBaseModel implements axModel {
 

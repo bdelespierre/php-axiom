@@ -1,57 +1,44 @@
 <?php
 /**
- * Axiom: a lightweight PHP framework
- *
+ * @brief Functions Module
+ * 
+ * This module contains some helper functions you may find useful.
+ * 
+ * @defgroup Function
+ * @author Delespierre
  * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
  * @license http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
 /**
- * Lowercase first character
- * 
- * @package libaxiom
- * @subpackage functions
- * @param string
- * @return string
- */
-if (!function_exists("lcfirst")) {
-    function lcfirst ($string) {
-        $string{0} = strtolower($string{0});
-        return $string;
-    }
-}
-
-/**
- * Removes all null, false or empty string values from an array
+ * @briefRemoves all null, false or empty string values from an array
  * 
  * The keys are preserved.
  * 
- * @package libaxiom
- * @subpackage functions
+ * @ingroup Functions
  * @param array $array
- * @param array $exclude [optional] [defualt array()] Additionnal values to exclude
+ * @param array $exclude @optional @default{array()} Additionnal values to exclude
  * @return void
  */
-if (!function_exists("array_safe_filter")) {
-    function array_safe_filter (array &$array, array $exclude = array()) {
-        $exclude = array_merge(array(null, false, ""), $exclude);
-        foreach ($array as $key => $value) {
-            if (in_array($value, $exclude, true))
-                unset($array[$key]);
-        }
+function array_safe_filter (array &$array, array $exclude = array()) {
+    $exclude = array_merge(array(null, false, ""), $exclude);
+    foreach ($array as $key => $value) {
+        if (in_array($value, $exclude, true))
+            unset($array[$key]);
     }
 }
 
 /**
- * Create an annonymous function
+ * @brief Create an annonymous function
  *
- * E.G:
- * * $alpha = callback('function ($a,$b) { return $a+$b+$c+$d; }');
+ * Usage:
+ * @code
+ * $alpha = callback('function ($a,$b) { return $a+$b+$c+$d; }');
+ * @endcode
  * 
  * Returns the anonymous function name
  * 
- * @package libaxiom
- * @subpackage functions
+ * @ingroup Functions
  * @param string $fct
  * @return string
  */
@@ -65,12 +52,11 @@ function callback ($fct) {
 }
 
 /**
- * Calculates the cartesian product of any number of array in parameter
+ * @brief Calculates the cartesian product of any number of array in parameter
  * 
- * @package libaxiom
- * @subpackage functions
+ * @ingroup Functions
  * @param mixed $a
- * @param mixed $b ...
+ * @param mixed $b [...]
  * @return array
  */
 function array_cartesian_product () {
