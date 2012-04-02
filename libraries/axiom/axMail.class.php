@@ -1,5 +1,7 @@
 <?php
 /**
+ * @brief Mail class  file
+ * @file axMail.class.php
  */
 
 /**
@@ -16,6 +18,411 @@
  * @license http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axMail {
+    
+    protected $_to;
+    protected $_subject;
+    protected $_parts = array();
+    protected $_headers = array();
+    
+    public $headerSeparator = CRLF;
+    
+    /**
+     * @brief Allowed headers
+     * @property array $allowedHeaders
+     */
+    public static $allowedHeaders = array(
+        self::HEADER_BCC,                        self::HEADER_CC,                   self::HEADER_CONTENT_DESCRIPTION,
+        self::HEADER_CONTENT_TRANSFERT_ENCODING, self::HEADER_CONTENT_TYPE,         self::HEADER_DATE,
+        self::HEADER_FROM,                       self::HEADER_MIME_VERSION,         self::HEADER_PRIORITY,
+        self::HEADER_REPLY_TO,                   self::HEADER_SENDER,               self::HEADER_SUBJECT,
+        self::HEADER_TO,                         self::HEADER_X_CONFIRM_READING_TO, self::HEADER_X_MAILER,
+        self::HEADER_X_PRIORITY,                 self::HEADER_X_UNSUBSCRIBE_WEB,    self::HEADER_X_UNSUBSCRIBE_EMAIL
+    );
+    
+    /**
+     * @brief Constructor
+     */
+    public function __construct ($from = null, $to = null, $subject = null, $message = null, array $headers = array()) {
+        if ($from && !$this->setFrom($from))
+            throw new InvalidArgumentException("Invalid from: {$from}");
+            
+        if ($to && !$this->setTo($to))
+            throw new InvalidArgumentException("Invalid to: {$to}");
+            
+        if ($subject)
+            $this->setSubject($subject);
+            
+        if ($headers) {
+            foreach ($headers as $header => $value) {
+                if (!$this->setHeader($header, $value))
+                    throw new InvalidArgumentException("Invalid header {$header} with value {$value}");
+            }
+        }
+            
+    }
+    
+	/**
+     * @brief Validates email address.
+     * 
+     * If possible, will check the dnsrr for the mail's host.
+     * 
+     * @static
+     * @param string $email The mail address to validate
+     * @return boolean
+     */
+    public static function validateEmail ($email) {
+        $email = str_replace(array('<', '>'), '', $email);
+        
+        if ($offset = strrpos($email, ' ') !== false)
+            return self::validateEmail(substr($email, $offset));
+        
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+            return false;
+        
+        if (function_exists('checkdnsrr')) {
+            $host = substr($email, strpos($email, '@') + 1);
+            return checkdnsrr($host, 'MX');
+        }
+    	
+        return true;
+    }
+    
+    public function setFrom ($from) {
+        if (!self::validateEmail($from))
+            return false;
+        $this->_headers[self::HEADER_FROM] = $from;
+        return $this;
+    }
+    
+    public function setTo ($to) {
+        if (is_string($to) && strpos($to, ','))
+            $to = explode(',',$to);
+            
+        $this->_to = array();
+        foreach((array)$to as $destination) {
+            if (!$this->addDestination($destination))
+                return false;
+        }
+        return $this;
+    }
+    
+    public function addDestination ($destination) {
+        if (!self::validateEmail($destination))
+            return false;
+        $this->_to[$destination] = $destination;
+        return $this;
+    }
+    
+    public function removeDestination ($destination) {
+        unset($this->_to[$destination]);
+        return $this;
+    }
+    
+    public function setSubject ($subject) {
+        $this->_subject = trim(strip_tags($subject));
+        return $this;
+    }
+    
+    public function setHeader ($header, $value) {
+        if (!in_array($header, self::$allowedHeaders))
+            return false;
+            
+        switch ($header) {
+            case self::HEADER_SENDER:
+            case self::HEADER_FROM:
+            case self::HEADER_CC:
+            case self::HEADER_BCC:
+            case self::HEADER_REPLY_TO:
+            case self::HEADER_X_CONFIRM_READING_TO:
+            case self::HEADER_X_UNSUBSCRIBE_EMAIL:
+                $clean_value = self::validateEmail($value) ? $value : false;
+                break;
+                
+            case self::HEADER_CONTENT_TRANSFERT_ENCODING:
+                $values = array('7bits','8bits','binary','quoted-printable','base64','ietf-token','x-token');
+                $clean_value = in_array($value, $values) ? $value : false;
+                break;
+                
+            case self::HEADER_DATE:
+                $clean_value = ($time = strtotime($value)) ? date('r', $time) : false;
+                break;
+                
+            case self::HEADER_PRIORITY:
+                $values = array('normal', 'urgent', 'non-urgent');
+                $clean_value = in_array($value, $values) ? $value : false;
+                break;
+                
+            case self::HEADER_X_UNSUBSCRIBE_WEB:
+                $clean_value = ($url = filter_var($value, FILTER_VALIDATE_URL)) ? $url : false;
+                break;
+            
+            //! @todo These heades shouldn't be set manually
+            case self::HEADER_MIME_VERSION:
+            case self::HEADER_CONTENT_TYPE:
+            case self::HEADER_CONTENT_DESCRIPTION:
+            case self::HEADER_REPLY_TO:
+            case self::HEADER_SENDER:
+            case self::HEADER_SUBJECT:
+            case self::HEADER_TO:
+            case self::HEADER_X_CONFIRM_READING_TO:
+            case self::HEADER_X_MAILER:
+            case self::HEADER_X_PRIORITY:
+                $clean_value = !empty($value) ? trim($value) : false;
+                break;
+        }
+        
+        if (!isset($clean_value) || !$clean_value) {
+            trigger_error("Invalid email value for header {$header} ({$value}), header will be ignored");
+            unset($this->_headers[$header]);
+            return false;
+        }
+        
+        $this->_headers[$header] = $clean_value;
+        return $this;
+    }
+    
+    public function addPart ($content, array $headers = array(), & $id = null) {
+        $id = uniqid('part_');
+        $this->_parts[$id] = array(
+            'content' => $content,
+            'headers' => $headers
+        );
+        return $this;
+    }
+    
+    public function removePart ($id) {
+        unset($this->_parts[$id]);
+        return $this;
+    }
+    
+    public function setBody ($message, $content_type = null, $encoding = null) {
+        $this->_parts = array();
+        
+        $headers = array();
+        if ($content_type) {
+            $headers[self::HEADER_CONTENT_TYPE] = $content_type;
+            if ($encoding)
+                $headers[self::HEADER_CONTENT_TYPE] .= "; charset={$encoding}"; 
+        }
+        
+        return $this->addPart($message, $headers);
+    }
+    
+    public function addAttachment ($file, $content_type = null, $filename = null, & $id = null) {
+        if (!is_file($file) || !is_readable($file))
+            return false;
+        
+        if (!$filename)
+            $filename = basename($file);
+            
+        if (!$content_type) {
+            if (function_exists('finfo_open') && $finfo = finfo_open(FILEINFO_MIME_TYPE)) {
+                $content_type = finfo_file($finfo, $path);
+                finfo_close($finfo);
+            }
+            else if (function_exists('mime_content_type'))
+                $content_type = mime_content_type($path);
+            else if (empty($content_type))
+                $content_type = "application/octet-stream";
+        }
+            
+        if (!$content = file_get_contents($file))
+            return false;
+            
+        $headers = array(
+            self::HEADER_INTERNAL_TYPE => 'attachment',
+            self::HEADER_CONTENT_TYPE => "{$content_type}; name={$filename}",
+            self::HEADER_CONTENT_TRANSFERT_ENCODING => 'base64',
+        );
+        
+        $content = chunk_split(base64_encode($content));
+        return $this->addPart($content, $headers, $id);
+    }
+    
+    public function hasAttachments () {
+        return in_array('attachment', $this->_getInternalTypes());
+    }
+    
+    public function addHTMLPart ($content, $encoding = null, & $id = null) {
+        $headers = array(
+            self::HEADER_INTERNAL_TYPE => 'html',
+            self::HEADER_CONTENT_TYPE => "text/html"
+        );
+        if ($encoding)
+            $headers[self::HEADER_CONTENT_TYPE] .= "; charset={$encoding}";
+            
+        return $this->addPart($content, $headers, $id);
+    }
+    
+    public function addTextPart ($content, $encoding = null, & $id = null) {
+        $headers = array(
+            self::HEADER_INTERNAL_TYPE => 'text',
+            self::HEADER_CONTENT_TYPE => "text/plain"
+        );
+        if ($encoding)
+            $headers[self::HEADER_CONTENT_TYPE] .= "; charset={$encoding}";
+            
+        return $this->addPart($content, $headers, $id);
+    }
+    
+    public function addRichTextPart ($content) {
+        $headers = array(
+            self::HEADER_INTERNAL_TYPE => 'richtext',
+            self::HEADER_CONTENT_TYPE => "text/richtext"
+        );
+        if ($encoding)
+            $headers[self::HEADER_CONTENT_TYPE] .= "; charset={$encoding}";
+            
+        return $this->addPart($content, $headers, $id);
+    }
+    
+    public function send ($send_mode = self::SEND_ALL, $multipart_mode = self::MULTIPART_AUTO) {
+        if (!$mail = $this->_build($multipart_mode))
+            throw new RuntimeException("Unable to build the mail, you may not have any part defined");
+        
+        list($to,$subject,$message,$headers) = array_values($mail);
+            
+        if ($send_mode == self::SEND_ALL) {
+            return mail($to,$subject,$message,$headers);
+        }
+        elseif ($send_mode == self::SEND_BULK) {
+            foreach (explode(',', $to) as $dest) {
+                $res[$dest] = mail($dest,$subject,$message,$headers);
+            }
+            return $res;
+        }
+        else {
+            throw new InvalidArgumentException("Invalid send mode: {$send_mode}");
+        }
+    }
+    
+    public function __toString () {
+        if (!$mail = $this->_build(self::MULTIPART_AUTO)) {
+            trigger_error("Unable to build the mail, you may not have any part defined", E_USER_WARNING);
+            return "";
+        }
+        
+        list($to,$subject,$message,$headers) = array_values($mail);
+        $hs = $this->headerSeparator;
+        
+        return "Subject: {$subject}{$hs}" .
+               "To: {$to}{$hs}" .
+               $headers . $hs . $hs .
+               $message;
+    }
+    
+    public function _build ($multipart_mode) {
+        if (!$internal_types = $this->_getInternalTypes())
+            return false;
+        
+        $to      = implode(',', $this->_to);
+        $subject = $this->_subject;
+        $headers = $this->_headers;
+        $message = "";
+        $hs      = $this->headerSeparator;
+        
+        if (count($this->_parts) === 1) {
+            
+            // Single part emails
+            
+            $part = array_shift($this->_parts);
+            $headers = $part['headers'] + $headers;
+            $message = $part['content'];
+        }
+        elseif (in_array('attachment', $internal_types)) {
+            
+            // Multiplart email with attachments
+            
+            $sub_parts = array(
+                'content'     => array(),
+                'attachments' => array(),
+            );
+            foreach ($internal_types as $id => $type)
+                $sub_parts[($type == 'attachment' ? 'attachments' : 'content')][] = $this->_parts[$id];
+                
+            // build sub content (as alternative subtype)
+            $sub_boundary = uniqid('alt_');
+            $sub_buffer   = "Content-Type: " . self::MULTIPART_ALTERNATIVE . 
+            		        "; boundary={$sub_boundary}{$hs}{$hs}";
+            
+            $sub_pieces = array();
+            foreach ($sub_parts['content'] as $part)
+                $sub_pieces[] = $this->_buildPart($part);
+            
+            $sub_buffer .= "--{$sub_boundary}{$hs}" . implode("--{$sub_boundary}{$hs}", $sub_pieces) .
+				    	   "{$hs}--{$sub_boundary}--{$hs}{$hs}";
+
+            // build attachments
+            $pieces = array($sub_buffer);
+            foreach ($sub_parts['attachments'] as $part)
+                $pieces[] = $this->_buildPart($part);
+                
+            $boundary = uniqid('mixed_');
+            $headers[self::HEADER_CONTENT_TYPE] = self::MULTIPART_MIXED . "; boundary={$boundary}";
+            
+            $message = "--{$boundary}{$hs}" . implode("--{$boundary}{$hs}", $pieces) . "{$hs}--{$boundary}--{$hs}";
+        }
+        else {
+            
+            // Multipart email without attachments
+            
+            foreach ($this->_parts as $id => $part)
+                $pieces[] = $this->_buildPart($part);
+                
+            if ($multipart_mode == self::MULTIPART_AUTO)
+                $multipart_mode = $this->_determineMultipartMode();
+            
+            $boundary = uniqid('mixed_');
+            $headers[self::HEADER_CONTENT_TYPE] = $multipart_mode . "; boundary={$boundary}";
+                
+            $message = "--{$boundary}{$hs}" . implode("--{$boundary}{$hs}", $pieces) . "{$hs}--{$boundary}--{$hs}";
+        }
+        
+        unset($headers[self::HEADER_INTERNAL_TYPE]);
+        foreach ($headers as $header => $value)
+            $headers[$header] = "{$header}: {$value}";
+        $headers = implode($hs, $headers);
+        
+        return compact('to', 'subject', 'message', 'headers');
+    }
+    
+    protected function _determineMultipartMode () {
+        if (!$internal_types = $this->_getInternalTypes())
+            return false;
+        
+        if (count(array_unique($internal_types)) === 1)
+            return self::MULTIPART_PARALLEL;
+        if (!in_array('attachment', $internal_types))
+            return self::MULTIPART_ALTERNATIVE;
+        
+        return self::MULTIPART_MIXED;
+    }
+    
+    protected function _getInternalTypes () {
+        if (empty($this->_parts))
+            return false;
+        
+        foreach ($this->_parts as $id => $part) {
+            $internal_types[$id] = isset($part['headers'][self::HEADER_INTERNAL_TYPE]) ? 
+                $part['headers'][self::HEADER_INTERNAL_TYPE]: 'unknown';
+        }
+        
+        return $internal_types;
+    }
+    
+    protected function _buildPart ($part) {
+        $part_buffer = "";
+        
+        unset($part['headers'][self::HEADER_INTERNAL_TYPE]);
+        foreach ($part['headers'] as $header => $value)
+            $part_buffer .= "{$header}: {$value}{$this->headerSeparator}";
+            
+        if (!empty($part_buffer))
+            $part_buffer .= $this->headerSeparator;
+            
+        $part_buffer .= $part['content'];
+        return $part_buffer;
+    }
     
     /**
      * Constants
@@ -44,397 +451,23 @@ class axMail {
     const HEADER_SEPARATOR_LF = "\n";
     
     /**
-     * @brief Allowed headers
-     * @property array $allowed_headers
+     * @brief This header is used only by the axMail class to recognize message parts and will not be send
+     * @var string
      */
-    public static $allowed_headers = array(
-        self::HEADER_BCC,                        self::HEADER_CC,                   self::HEADER_CONTENT_DESCRIPTION,
-        self::HEADER_CONTENT_TRANSFERT_ENCODING, self::HEADER_CONTENT_TYPE,         self::HEADER_DATE,
-        self::HEADER_FROM,                       self::HEADER_MIME_VERSION,         self::HEADER_PRIORITY,
-        self::HEADER_REPLY_TO,                   self::HEADER_SENDER,               self::HEADER_SUBJECT,
-        self::HEADER_TO,                         self::HEADER_X_CONFIRM_READING_TO, self::HEADER_X_MAILER,
-        self::HEADER_X_PRIORITY,                 self::HEADER_X_UNSUBSCRIBE_WEB,    self::HEADER_X_UNSUBSCRIBE_EMAIL
-    );
+    const HEADER_INTERNAL_TYPE = "X-Internal";
     
-    /**
-     * @brief Header separator
-     * @property string $_header_separator
-     */
-    protected $_header_separator = self::HEADER_SEPARATOR_CRLF;
+    const MULTIPART_AUTO = "auto";
+    const MULTIPART_MIXED = "multipart/mixed";
+    const MULTIPART_ALTERNATIVE = "multipart/alternative";
+    const MULTIPART_DIGEST = "multipart/digest";
+    const MULTIPART_PARALLEL = "mutlipart/parallel";
     
-    /**
-     * @brief Sender
-     * @property string $_from
-     */
-    protected $_from;
-    
-    /**
-     * @brief Recipients
-     * @property array $_to
-     */
-    protected $_to = array();
-    
-    /**
-     * @brief Subject
-     * @property string $_subject
-     */
-    protected $_subject;
-    
-    /**
-     * @brief Body parts
-     * @property array $_message_parts
-     */
-    protected $_message_parts = array();
-    
-    /**
-     * @brief Headers
-     * @property array $_headers
-     */
-    protected $_headers = array();
-    
-    /**
-     * @brief Constructor.
-     *
-     * The @ $to parameter can be either a string representing one destination or an array representing multiple 
-     * destinations.
-     * Headers passed to this method follows this format:
-     * @code
-     * $header = array('<header_name>' => '<header_value>' ...)
-     * @endcode
-     * Invalid headers names or values will trigger InvalidArgumentException.
-     *
-     * @param string $from The sender
-     * @param array $to The recipient(s)
-     * @param string $subject @optional @default{"NO Subject"} The subject
-     * @param string $message @optional @default{null} The body (can be defined later)
-     * @param array $headers @optional @default{array()} The headers (can be defined later)
-     * @param array $options @optional @default{array()} TO BE IMPLEMENTED 
-     * @throws InvalidArgumentException If the @c $from parameter is not a valid email
-     */
-    public function __construct ($from, $to, $subject = "No Subject", $message = null, array $headers = array()) {
-        if (!self::validateEmail($from))
-            throw new InvalidArgumentException('First parameter is expected to be a valid email', 2014);
-            
-        $this->_from = $from;
-            
-        $to = (array)$to;
-        foreach ($to as $destination)
-            $this->addDestination($destination);
-        
-        if (!empty($subject))
-            $this->setSubject($subject);
-            
-        if (!empty($message))
-            $this->addMessagePart($message);
-        
-        foreach ($headers as $header => $value)
-            $this->setHeader($header, $value);
-    }
-    
-    /**
-     * @brief Validates email address.
-     * 
-     * If possible, will check the dnsrr for the mail's host.
-     * 
-     * @static
-     * @param string $email The mail address to validate
-     * @return boolean
-     */
-    public static function validateEmail ($email) {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return false;
-        }
-        
-        if (function_exists('checkdnsrr')) {
-            $host = substr($email, strpos($email, '@') + 1);
-            return checkdnsrr($host, 'MX');
-        }
-    	
-        return true;
-    }
-    
-    /**
-     * @brief Add a destination to the mail.
-     *
-     * @throws InvalidArgumentException If the destination is invalid.
-     * @param string $to The destination
-     * @return void
-     */
-    public function addDestination ($to) {
-        if (!self::validateEmail($to))
-            throw new InvalidArgumentException("Invalid destination", 2015);
-        
-        if (!array_keys($this->_to, $to))
-            $this->_to[] = $to;
-    }
-    
-    /**
-     * @brief Remove a destination
-     * @param string $to
-     * @return void
-     */
-    public function removeDestination ($to) {
-        foreach (array_keys($this->_to, $to) as $key)
-            unset($this->_to[$key]);
-    }
-    
-    /**
-     * @brief Add an header 
-     * 
-     * Header must be part of axMail::$valid_headers. Value will be checked accordingly to each header and an 
-     * InvalidArgumentException will be thrown in case of invalid value.
-     *
-     * @note Any date value will be parsed using strtotime so make sure your dates apply to a well recognized format
-     * or simply set a timestamp.
-     * @param string $header The header
-     * @param scalar $value The header's value
-     * @throws InvalidArgumentException If the header or its value is invalid
-     * return axMail
-     */
-    public function setHeader ($header, $value) {
-        if (!in_array($header, self::$allowed_headers))
-            throw new InvalidArgumentException("Invalid Header $header", 2016);
-            
-        switch ($header) {
-            case self::HEADER_SENDER:
-            case self::HEADER_FROM:
-            case self::HEADER_CC:
-            case self::HEADER_BCC:
-            case self::HEADER_REPLY_TO:
-            case self::HEADER_X_CONFIRM_READING_TO:
-            case self::HEADER_X_UNSUBSCRIBE_EMAIL:
-                if (!self::validateEmail($value))
-                    throw new InvalidArgumentException("Invalid email for $header", 2017);
-                break;
-                
-            case self::HEADER_CONTENT_TRANSFERT_ENCODING:
-                if (!in_array($value, array('7bits', '8bits', 'binary', 'quoted-printable', 'base64', 'ietf-token', 
-                	'x-token')))
-                    throw new InvalidArgumentException("Invalid value for $header", 2018);
-                break;
-                
-            case self::HEADER_DATE:
-                if ($time = strtotime($value))
-                    $value = date('r', $time);
-                else
-                    throw new InvalidArgumentException("Invalid date format for $header", 2019);
-                break;
-                
-            case self::HEADER_PRIORITY:
-                if (!in_array($value, array('normal', 'urgent', 'non-urgent')))
-                    throw new InvalidArgumentException("Invalid priority for $header", 2020);
-                break;
-                
-            case self::HEADER_X_UNSUBSCRIBE_WEB:
-                if (!$value = filter_var($value, FILTER_VALIDATE_URL))
-                    throw new InvalidArgumentException("Invalid url for $header", 2021);
-                break;
-                
-            case self::HEADER_MIME_VERSION:
-            case self::HEADER_CONTENT_TYPE:
-            case self::HEADER_CONTENT_DESCRIPTION:
-            case self::HEADER_REPLY_TO:
-            case self::HEADER_SENDER:
-            case self::HEADER_SUBJECT:
-            case self::HEADER_TO:
-            case self::HEADER_X_CONFIRM_READING_TO:
-            case self::HEADER_X_MAILER:
-            case self::HEADER_X_PRIORITY:
-                $value = trim($value);
-                if (empty($value))
-                    throw new InvalidArgumentException("A non empty value is mandatory for $header", 2022);
-                break;
-        }
-        
-        $this->_headers[$header] = $value;
-        return $this;
-    }
-    
-    /**
-     * @brief Set the header separator.
-     *
-     * According to rfc1341, header has to be separated by a CRLF (\r\n)  but some mailboxes like Hotmail doesn't
-     * recognize it and expects a LF (\n).
-     *
-     * @link http://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
-     * @param string $glue The separator
-     * @throws InvalidArgumentException If the separator is not CRLF nor LF
-     * @return axMail
-     */
-    public function setHeaderSeparator ($glue) {
-        if (!in_array($glue, array(self::HEADER_SEPARATOR_CRLF, self::HEADER_SEPARATOR_LF)))
-            throw new InvalidArgumentException("Unrecognized separator", 2023);
-        $this->_header_separator = $glue;
-        return $this;
-    }
-    
-    /**
-     * @brief Subject getter
-     * @return string
-     */
-    public function getSubject () {
-        return $this->_subject;
-    }
-    
-    /**
-     * @brief Subject setter
-     * @param string $subject
-     * @return void
-     */
-    public function setSubject ($subject) {
-        $this->_subject = strip_tags(trim($subject));
-    }
-    
-    /**
-     * @brief Add a new part to the message.
-     *
-     * If the content type parameter is left to null, no header will be apended to the message part.
-     * This method will add a message part to the list and return the key (useful  for part removal with 
-     * axMail::removeMessagePart()).
-     *
-     * @param string $message The part's body
-     * @param string $content_type @optional @default{null} The part content type
-     * @param string $charset @optional @default{"utf-8"} The part charset
-     * @return string
-     */
-    public function addMessagePart ($message, $content_type = null, $charset = "utf-8") {
-        $part  = $content_type ? "Content-Type: {$content_type}; charset={$charset}": "";
-        $part .= $this->_header_separator;
-        $part .= $this->_header_separator;
-        $part .= $message;
-        $part .= $this->_header_separator;
-        $this->_message_parts[$key = uniqid("part-")] = $part;
-        
-        return $key;
-    }
-    
-    /**
-     * @brief Attach a file to the mail.
-     *
-     * If the filename parameter is left empty, the file's name will be determined automaticaly.
-     * Returns the message part key (just like axMail::addMessagePart does)
-     *
-     * @param string $path The file path
-     * @param string $content_type @optional @default{null} The file's content type
-     * @param string $filename @optional @default{null} Will be calculated from @c $path if null
-     * @throws axMissingFileException If the file cannot be found
-     * @throws InvalidArgumentException If the file is not a regular file (directory or link for instance)
-     * @return string
-     */
-    public function addAttachment ($path, $content_type = null, $filename = null) {
-        if (!is_file($path))
-            throw new axMissingFileException($path, 2024);
-            
-        if (is_dir($path))
-            throw new InvalidArgumentException("First parameter is expected to be regular file, directory given", 2025);
-            
-        if (!$filename)
-            $filename = basename($path);
-            
-        if (function_exists('finfo_open') && $finfo = finfo_open(FILEINFO_MIME_TYPE)) {
-            $content_type = finfo_file($finfo, $path);
-            finfo_close($finfo);
-        }
-        else if (function_exists('mime_content_type'))
-            $content_type = mime_content_type($path);
-        else if (empty($content_type))
-            $content_type = "application/octet-stream";
-            
-        if (!$content = file_get_contents($path, false))
-            throw new RuntimeException("Cannot read $path", 2027);
-            
-        $part  = "Content-Type: $content_type; name=$filename";
-
-		$part .= $this->_header_separator;
-        $part .= "Content-transfer-encoding: base64";
-		$part .= $this->_header_separator;
-        $part .= $this->_header_separator;
-        $part .= chunk_split(base64_encode($content));
-        $part .= $this->_header_separator;
-        $this->_message_parts[$key = uniqid("part-")] = $part;
-        
-        return $key;
-    }
-    
-    /**
-     * @brief Remove a message part
-     * @param string $key
-     * @return void
-     */
-    public function removeMessagePart ($key) {
-        unset($this->_message_parts[$key]);
-    }
-    
-    /**
-     * @brief Alias of axMail::removeMessagePart()
-     * @see axMail::removeMessagePart
-     * @param string $key
-     * @return voic
-     */
-    public function removeAttachement ($key) {
-        return $this->removeMessagePart($key);
-    }
-    
-    /**
-     * @brief Send the mail.
-     *
-     * Returns an array where keys are destinations and values are booleans representing the send status.
-     *
-     * @throws RuntimeException If called whith no mail body defined
-     * @return array
-     */
-    public function send () {
-        if (empty($this->_message_parts))
-            throw new RuntimeException("Cannot send mail with empty body");
-        
-        $message = (string)$this;
-        $headers = "";
-        $results = array();
-        
-        if (empty($message))
-            throw new RuntimeException("Cannot send empty mail");
-
-        foreach ($this->_headers as $name => $value)
-            $headers .= "{$name}: {$value}{$this->_header_separator}";
-        $headers .= $this->_header_separator;
-        
-        foreach ($this->_to as $destination)
-            $results[$destination] = mail($destination, $this->_subject, $message, $headers);
-        
-        return $results;
-    }
-    
-    /**
-     * @brief Get the message body as string.
-     *
-     * @note This method will determine the type of mail and eventualy set its header  to multipart/mixed if more 
-     * than one part is found.
-     * @note this method will set the from header for ease purpose.
-     *
-     * @return string
-     */
-    public function __toString () {
-        try {
-            $c = count($this->_message_parts);
-            $this->setHeader(self::HEADER_FROM, $this->_from);
-            
-            if ($c > 1) {
-                $boundary = md5(uniqid(microtime(), true));
-                $this->setHeader(self::HEADER_CONTENT_TYPE, "multipart/mixed;boundary=$boundary");
-				$str  = "--" . $boundary;
-				$str .= $this->_header_separator;
-				$str .= implode("--" . $boundary . $this->_header_separator, $this->_message_parts);
-				$str .= "--" . $boundary . "--";
-                return $str;
-            }
-            
-            return $c == 1 ? array_shift($this->_message_parts) : "";
-        }
-        catch (Exception $e) {
-            return "";
-        }
-    }
+    const SEND_ALL = "all";
+    const SEND_BULK = "bulk";
 }
+
+defined('LF')   or define('LF',   "\n");
+defined('CRLF') or define('CRLF', "\r\n");
 
 /**
  * @brief Mail Module
@@ -446,4 +479,3 @@ class axMail {
  * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
  * @copyright http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
-
