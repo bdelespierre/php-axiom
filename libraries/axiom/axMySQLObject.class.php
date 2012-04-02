@@ -224,9 +224,6 @@ class axMySQLObject extends axBaseModel {
             throw new InvalidArgumentException("Fourth argument is expected to be a valid `axModel` instance or ".
                 "string, " . gettype($arg) . " given");
         }
-            
-        if (!isset($mysql_obj))
-            $mysql_obj = new self($table);
 
         $query  = self::_generateSelectQuery(
                 $mysql_obj->getTable(),
