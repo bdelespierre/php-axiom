@@ -7,10 +7,10 @@
 /**
  * @brief MySQL Object
  *
- * Helper class to map a MySQL row record into an axModel object. Basicaly, this class is just an axModel class 
+ * Helper class to map a MySQL row record into an axModel object. Basicaly, this class is just an axModel class
  * capable of understanding a MySQL table structure and to translate it to generic CRUD queries.
  *
- * @warning Only tables with strictly one attribute as primary key can be used with this class. For more complex 
+ * @warning Only tables with strictly one attribute as primary key can be used with this class. For more complex
  * object types, you should describe your own behavior by implementing `axModel`.
  *
  * @class axMySQLObject
@@ -49,36 +49,44 @@ class axMySQLObject extends axBaseModel {
     protected function _init ($statement) {
         if (isset($this->_statements[$statement]))
             return $this->_statements[$statement];
-            
-        $pieces  = array();
-        $columns = array();
-        foreach ($this->_structure as $column => $infs) {
-            $columns[] = "`$column`";
-            if ($column == $this->_idKey && strpos($infs['EXTRA'], 'auto_increment') !== false)
-                continue;
-            $pieces[]  = "`{$column}`=:{$column}";
-        }
+        
+        if (empty($this->_table) || empty($this->_structure))
+            throw new RuntimeException("Invalid instance");
+        
+        $columns = $this->getColumns();
+        if (($offset = array_search($this->_idKey, $columns)) !== false)
+            unset($columns[$offset]);
+        
+        $search_clause = array($this->_idKey => null);
         
         switch ($statement) {
             case 'create':
-                $query = "INSERT INTO {$this->_table} SET " . implode(',', $pieces);
+                $query = self::_generateInsertQuery(
+                    $this->_table,
+                    $columns
+                );
                 break;
-                
             case 'retrieve':
-                $query = "SELECT " . implode(',', $columns) . " " .
-                		 "FROM {$this->_table} " .
-                		 "WHERE `{$this->_idKey}`=:{$this->_idKey}";
+                $scla  = array($this->_idKey => null);
+                $query = $this->_generateSelectQuery(
+                    $this->_table,
+                    array(),
+                    $search_clause
+                );
                 break;
-                
             case 'update':
-                $query = "UPDATE {$this->_table} SET " . implode(',', $pieces) . " " .
-                         "WHERE `{$this->_idKey}`=:{$this->_idKey}";
+                $query = self::_generateUpdateQuery(
+                    $this->_table,
+                    $columns,
+                    $search_clause
+                );
                 break;
-                
             case 'delete':
-                $query = "DELETE FROM {$this->_table} WHERE `{$this->_idKey}`=:{$this->_idKey}";
+                $query = self::_generateDeleteQuery(
+                    $this->_table,
+                    $search_clause
+                );
                 break;
-                
             default:
                 throw new InvalidArgumentException("Invalid statement $statement");
         }
@@ -90,7 +98,7 @@ class axMySQLObject extends axBaseModel {
      * @brief constructor
      *
      * You may pass an $id to get the row data directly so no further calls to axModel::retrieve is necessary.
-     * 
+     *
      * @param PDO $pdo The database connection instance
      * @param string $tablename The MySQL table name
      * @param string $id @optional @default{null} The ID of the mysql row to match
@@ -123,49 +131,49 @@ class axMySQLObject extends axBaseModel {
     
     /**
      * @brief Obtain a collection of MySQL Objects optionaly filtered by @c $search_params and @c $options parameters
-     * 
+     *
      * The last @c $object parameter can be either an axModel instance or a valid table name. axMySQLOjbect::all() will
      * generate a generic SQL `SELECT` query to fetch any row that match the @c $search_params and @c $options
-     *  conditions (if any). An axPDOStatement instance is returned in case of success, which lets you iterate over the 
+     *  conditions (if any). An axPDOStatement instance is returned in case of success, which lets you iterate over the
      * collection. Each collection item is a valid instance of axModel you can obviously perform any CRUD operation on.
-     * 
+     *
      * Usage:
      * @code
      * // Retrive all items in the `mydb`.`users` table
      * axMySQLObject::all($pdo, array(), array(), 'mydb.users');
-     * 
+     *
      * // Retrive all items in the `mydb`.`users` table having the `mail` field set to `foo@bar.com`
      * axMySQLObject::all($pdo, array('mail' => 'foo@bar.com'), array(), 'mydb.users');
-     * 
+     *
      * // Retrieve all items in the `mydb`.`users` and order them by login name
      * axMySQLObject::all($pdo, array(), array('order by' => 'login'), 'mydb.users');
-     * 
+     *
      * // Retrieve all items in the `mydb`.`users` having a `privilege_level` higher than 5
      * axMySQLObject::all($pdo, array('privilege_level >=' => 5), array(), 'mydb.users');
-     * 
+     *
      * // Retrive all users using a valid user instance
      * $user = new User($pdo, $id); // User class implements axModel
      * axMySQLObject::add($pdo, array(), array(), $user);
      * @endcode
-     * 
+     *
      * @warning A field listed in @c $search_params cannot be listed twice, even if you specify the operator.
      * Example:
      * @code
      * // The following call will result as a query error
      * axMySQLObject::all($pdo, array('privilege_level >=' => 5, 'privilege_level <=' => 10), array(), 'mydb.users');
      * @endcode
-     * 
+     *
      * @note you may use the `BETWEEN` operator to restrict results in a given range.
      * Example:
      * @code
      * // Retrieve all items in the `mydb`.`users` having a `privilege_level` higher than 5 and lower than 10
      * axMySQLObject::all($pdo, array('privilege_level BETWEEN' => array(5,10)), array(), 'mydb.users');
      * @endcode
-     * 
-     * @note The `WHERE` clause generation engine will produce prepared statements compliant string (see 
+     *
+     * @note The `WHERE` clause generation engine will produce prepared statements compliant string (see
      * http://php.net/manual/en/class.pdostatement.php). You should not use invalid replacement values like sub-queries
      * or string containing SQL keywords like 'xxx AND yyy'.
-     * 
+     *
      * The @c $options parameters may have the following parameters (in any order):
      * @li group by : any string or array of strings value describing a field or a list of fields
      * @li limit : an integer or an array containing 2 integers describing the limit bounds
@@ -181,9 +189,9 @@ class axMySQLObject extends axBaseModel {
      *     'limit'         => array(0,10)
      * );
      * @endcode
-     * 
+     *
      * Will return false if the generated query execution fails.
-     * 
+     *
      * @warning All parameters are mandatory.
      *
      * @param PDO $pdo
@@ -194,7 +202,7 @@ class axMySQLObject extends axBaseModel {
      * @throws InvalidArgumentException If the fourth argument is not a string or instance of axModel
      * @return axPDOStatementIterator
      */
-    public static function all (PDO $pdo, array $search_params = array(), array $options = array()) {    
+    public static function all (PDO $pdo, array $search_params = array(), array $options = array()) {
         if (func_num_args() < 4)
             throw new InvalidArgumentException('Missing fourth parameter');
         
@@ -219,11 +227,13 @@ class axMySQLObject extends axBaseModel {
             
         if (!isset($mysql_obj))
             $mysql_obj = new self($table);
-            
-        // @todo replace this by self::_generateSelectQuery ;)
-        $query  = "SELECT `" . implode('`,`', $mysql_obj->getColumns()) . "` FROM " . $mysql_obj->getTable();
-        $query .= self::_generateWhereClause($search_params);
-        $query .= self::_generateOptionClause($options);
+
+        $query  = self::_generateSelectQuery(
+                $mysql_obj->getTable(),
+                $mysql_obj->getColumns(),
+                $search_params,
+                $options
+        );
         
         $stmt = $pdo->prepare($query);
         if ($stmt->execute($search_params)) {
@@ -267,7 +277,7 @@ class axMySQLObject extends axBaseModel {
 	/**
      * @brief Get the structure from any table name
      *
-     * The structure is parsed from the MySQL DESCRIBE (DESC) query result. Will return true in case of success, false 
+     * The structure is parsed from the MySQL DESCRIBE (DESC) query result. Will return true in case of success, false
      * otherwise.
      *
      * @internal
@@ -281,7 +291,7 @@ class axMySQLObject extends axBaseModel {
             
         $table = self::_sanitizeTablename($table);
             
-        if ($stmt = $this->pdo->query("DESC $table")) {
+        if ($stmt = $this->_pdo->query("DESC $table")) {
             $this->_structure = array();
             foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $column) {
                 if (isset($column['Key']) && strpos($column['Key'], 'PRI') !== false)
@@ -296,14 +306,14 @@ class axMySQLObject extends axBaseModel {
     
 	/**
      * @brief Sanitize the tablename
-     * 
+     *
      * Escape properly the given tablename
      * Example:
      * @code
      * $table = self::_sanitizeTablename('database.table');
      * echo $table; // will display `database`.`table`
      * @endcode
-     * 
+     *
      * @param string $table
      * @return string
      */
@@ -313,9 +323,9 @@ class axMySQLObject extends axBaseModel {
     
     /**
      * @brief Generates a `SELECT` query according to the given parameters
-     * 
+     *
      * See axMySQLObject::all() for more details about @c $search_params and @c $options parameters format.
-     * 
+     *
      * @param string $tablename
      * @param array $columns @optional @default{array()} The column names
      * @param array $search_params @optional @default{array()}
@@ -324,8 +334,8 @@ class axMySQLObject extends axBaseModel {
      * @return string
      */
     protected static function _generateSelectQuery ($tablename,
-                                                    array $columns = array(), 
-                                                    array $search_params = array(),
+                                                    array $columns = array(),
+                                                    array & $search_params = array(),
                                                     array $options = array()) {
         if (!$tablename)
             throw new InvalidArgumentException('`$tablename` cannot be empty');
@@ -334,7 +344,7 @@ class axMySQLObject extends axBaseModel {
             $columns = '*';
         else
             $columns = '`' . implode('`,`', $columns) .  '`';
-                                                       
+        
         $query  = "SELECT {$columns} FROM " . self::_sanitizeTablename($tablename);
         $query .= self::_generateWhereClause($search_params);
         $query .= self::_generateOptionClause($options);
@@ -344,9 +354,10 @@ class axMySQLObject extends axBaseModel {
     
     /**
      * @brief Generate a SQL `INSERT` query
-     * @todo To be implemented
+     *
      * @param string $tablename
      * @param array $columns
+     * @param string $mode @optional @default{"INSERT"} Possible values are "INSERT" or "REPLACE"
      * @return string
      */
     protected static function _generateInsertQuery ($tablename, array $columns, $mode = self::INSERT) {
@@ -362,9 +373,11 @@ class axMySQLObject extends axBaseModel {
         $tablename = self::_sanitizeTablename($tablename);
 
         foreach ($columns as $value) {
-            $columns[] = $value;
-            $holders[] = ":{$value}";
+            $cols[] = "`$value`";
+            $hold[] = ":{$value}";
         }
+        $columns = implode(',', $cols);
+        $holders = implode(',', $hold);
 
         return "{$mode} INTO {$tablename} ({$columns}) VALUES ({$holders})";
     }
@@ -372,25 +385,24 @@ class axMySQLObject extends axBaseModel {
     /**
      * @brief Generate a SQL `UPDATE` query
      *
-     *
-     * 
      * @param string $tablename
      * @param array $columns
+     * @param array $search_params @optional @default{array()}
      * @return string
      */
-    protected static function _generateUpdateQuery ($tablename, 
-                                                    array $columns, 
-                                                    array $search_params = array()) {
+    protected static function _generateUpdateQuery ($tablename,
+                                                    array $columns,
+                                                    array & $search_params = array()) {
         if (!$tablename)
             throw new InvalidArgumentException('`$tablename` cannot be empty');
 
         if (empty($columns))
             throw new InvalidArgumentException('`$columns` cannot be empty');
 
-        $tablename = slef::_sanitizeTablename($tablename);
-
+        $tablename = self::_sanitizeTablename($tablename);
+        
         foreach ($columns as $value)
-            $pieces = "`{$value}`=:{$value}";
+            $pieces[] = "`{$value}`=:{$value}";
 
         $query  = "UPDATE {$tablename} SET " . implode(',', $pieces);
         $query .= self::_generateWhereClause($search_params);
@@ -400,20 +412,28 @@ class axMySQLObject extends axBaseModel {
     
     /**
      * @brief Generate a SQL `DELETE` query
-     * @todo To be implemented
+     *
      * @param string $tablename
-     * @param array $columns
+     * @param array $search_params @optional @default{array()}
      * @return string
      */
-    protected static function _generateDeleteQuery ($tablename, array $search_params = array()) {
+    protected static function _generateDeleteQuery ($tablename, array & $search_params = array()) {
+        if (!$tablename)
+            throw new InvalidArgumentException('`$tablename` cannot be empty');
+        
+        $tablename = self::_sanitizeTablename($tablename);
+        $query     = "DELETE FROM $tablename";
+        $query    .= self::_generateWhereClause($search_params);
+        
+        return $query;
     }
     
     /**
      * @brief Generates a query `WHERE` clause
-     * 
+     *
      * See axMySQLObject::all() for more details about @c $search_params parameter format.
      * Will return an empty string if the @c $search_params parameter is empty.
-     * 
+     *
      * @param array $search_params
      * @return string
      */
@@ -422,9 +442,12 @@ class axMySQLObject extends axBaseModel {
             $pieces = array();
             
             foreach ($search_params as $key => $value) {
-                if (preg_match('~\s*(?<field>\w+)\s*(?<operator>.*)\s*~', $key, $matches)) {
+                if (preg_match('~\s*(?<field>\w+)\s*(?<operator>\W+)\s*~', $key, $matches)) {
                     $field    = $matches['field'];
                     $operator = $matches['operator'];
+                    
+                    // @todo operator detection and replacement (LIKE, WHERE, IN, NOT IN etc.)
+                    
                     unset($search_params[$key]);
                     $search_params['field'] = $value;
                     $pieces[] = "`{$field}`{$operator}:{$field}";
@@ -441,10 +464,10 @@ class axMySQLObject extends axBaseModel {
     
     /**
      * @brief Generates a query `GROUP BY`, `ORDER BY` and `LIMIT` clauses
-     * 
+     *
      * See axMySQLObject::all() description for more details about the @c $options structure.
      * Will return an empty string if the @c $options parameter is empty.
-     * 
+     *
      * @param array $search_params
      * @return string
      */
@@ -468,7 +491,7 @@ class axMySQLObject extends axBaseModel {
             
             $query .= " ORDER BY ".implode(',' ,$pieces);
             
-            if (isset($options['order by type']) 
+            if (isset($options['order by type'])
              && in_array(strtoupper($options['order by type']), array('ASC', 'DESC')))
                 $query .= " " . strtoupper($options['order by type']);
         }
