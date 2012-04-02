@@ -22,6 +22,16 @@
 class axMySQLObject extends axBaseModel {
     
     /**
+     * @cond IGNORE
+     * Insert query generation constants
+     */
+    const INSERT  = "INSERT";
+    const REPLACE = "REPLACE";
+    /**
+     * @endcond
+     */
+
+    /**
      * @brief Table name
      * @property string $_table
      */
@@ -104,11 +114,11 @@ class axMySQLObject extends axBaseModel {
             
         list($pdo,$tablename,$id) = $args + array(null,'',null);
         
-        if (!$this->_getTableStructure($tablename))
-            throw new RuntimeException("Cannot determine {$tablename} structure");
-            
         $this->_table = self::_sanitizeTablename($tablename);
         parent::__construct($pdo, $id);
+
+        if (!$this->_getTableStructure($tablename))
+            throw new RuntimeException("Cannot determine {$tablename} structure");
     }
     
     /**
@@ -210,6 +220,7 @@ class axMySQLObject extends axBaseModel {
         if (!isset($mysql_obj))
             $mysql_obj = new self($table);
             
+        // @todo replace this by self::_generateSelectQuery ;)
         $query  = "SELECT `" . implode('`,`', $mysql_obj->getColumns()) . "` FROM " . $mysql_obj->getTable();
         $query .= self::_generateWhereClause($search_params);
         $query .= self::_generateOptionClause($options);
@@ -270,7 +281,7 @@ class axMySQLObject extends axBaseModel {
             
         $table = self::_sanitizeTablename($table);
             
-        if ($stmt = Axiom::database()->query("DESC $table")) {
+        if ($stmt = $this->pdo->query("DESC $table")) {
             $this->_structure = array();
             foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $column) {
                 if (isset($column['Key']) && strpos($column['Key'], 'PRI') !== false)
@@ -338,17 +349,53 @@ class axMySQLObject extends axBaseModel {
      * @param array $columns
      * @return string
      */
-    protected static function _generateInsertQuery ($tablename, array $columns) {
+    protected static function _generateInsertQuery ($tablename, array $columns, $mode = self::INSERT) {
+        if (!$tablename)
+            throw new InvalidArgumentException('`$tablename` cannot be empty');
+
+        if (empty($columns))
+            throw new InvalidArgumentException('`$columns` cannot be empty');
+
+        if ($mode != self::INSERT && $mode!= self::REPLACE)
+            throw new InvalidArgumentException("Incorrect insert mode {$mode}");
+
+        $tablename = self::_sanitizeTablename($tablename);
+
+        foreach ($columns as $value) {
+            $columns[] = $value;
+            $holders[] = ":{$value}";
+        }
+
+        return "{$mode} INTO {$tablename} ({$columns}) VALUES ({$holders})";
     }
     
     /**
      * @brief Generate a SQL `UPDATE` query
-     * @todo To be implemented
+     *
+     *
+     * 
      * @param string $tablename
      * @param array $columns
      * @return string
      */
-    protected static function _generateUpdateQuery ($tablename, array $columns, array $search_params = array()) {
+    protected static function _generateUpdateQuery ($tablename, 
+                                                    array $columns, 
+                                                    array $search_params = array()) {
+        if (!$tablename)
+            throw new InvalidArgumentException('`$tablename` cannot be empty');
+
+        if (empty($columns))
+            throw new InvalidArgumentException('`$columns` cannot be empty');
+
+        $tablename = slef::_sanitizeTablename($tablename);
+
+        foreach ($columns as $value)
+            $pieces = "`{$value}`=:{$value}";
+
+        $query  = "UPDATE {$tablename} SET " . implode(',', $pieces);
+        $query .= self::_generateWhereClause($search_params);
+
+        return $query;
     }
     
     /**
@@ -370,7 +417,7 @@ class axMySQLObject extends axBaseModel {
      * @param array $search_params
      * @return string
      */
-    protected static function _generateWhereClause (array $search_params) {
+    protected static function _generateWhereClause (array & $search_params) {
         if (!empty($search_params)) {
             $pieces = array();
             
