@@ -6,7 +6,7 @@
 
 /**
  * @brief View Manager Class
- * 
+ *
  * @todo axViewManager class description
  * @class axViewManager
  * @author Delespierre
@@ -63,7 +63,7 @@ class axViewManager {
     
     /**
      * @brief Add a view directory
-     * 
+     *
      * @param string $view The directory path to add
      * @throws axMissingFileException If the directory does'nt exists
      * @return axViewManager
@@ -77,24 +77,24 @@ class axViewManager {
     
     /**
      * @brief Loads a view
-     * 
+     *
      * This methods has 3 different prototypes:
      * @li axViewManager::load(axResponse $response)
      * @li axViewManager::load($path, array $vars = array())
      * @li axViewManager::load($section, $view, $format = "html", array $vars = array(), $layout = null)
-     * 
-     * In the first and third forms, the view path is determined using the @c $section and @c $view parameters (which 
-     * are extracted from the @c $response object in the first form) and by seeking for the appropriate file according 
+     *
+     * In the first and third forms, the view path is determined using the @c $section and @c $view parameters (which
+     * are extracted from the @c $response object in the first form) and by seeking for the appropriate file according
      * to registered view paths (added with axViewManager::add()).
-     * 
+     *
      * In all cases, the complete page buffer is returned.
-     * 
+     *
      * A RuntimeException is thrown if
      * @li the calculated view path is invalid (the file simply doesn't exist)
      * @li the layout for this view / format cannot be found
      * @li the view cannot be loaded
      * @li the layout cannot be loaded
-     * 
+     *
      * @throws RuntimeException
      * @return string
      */
@@ -132,11 +132,11 @@ class axViewManager {
             if (!is_file($view_path = $this->_findView($section, $view, $format)))
                 throw new RuntimeException("Unable to find view {$section}/{$view} with {$format} format");
         }
-        elseif ((count($args) == 2 && is_array($args[1])) || count($args) == 1) {
+        elseif (count($args) == 1  || (count($args) >= 2 && is_array($args[1])))  {
             
             /**
              * Second Form:
-             * axViewManager::load($path, array $vars = array());
+             * axViewManager::load($path, array $vars = array(), $layout = null, $format = null));
              */
             
             list($view_path,$vars,$layout,$format) = $args + array('', array(), $this->_layout, $this->_defaultFormat);
@@ -262,7 +262,7 @@ class axViewManager {
     
     /**
      * @brief __get implementeation, alias of axViewManager::getVar()
-     * 
+     *
      * @see axViewManager::getVar
      * @param string $key
      * @return mixed
@@ -273,7 +273,7 @@ class axViewManager {
     
     /**
      * @brief __set implementeation, alias of axViewManager::setVar()
-     * 
+     *
      * @see axViewManager::setVar
      * @param string $key
      * @param mixed $value
@@ -285,7 +285,7 @@ class axViewManager {
     
     /**
      * @brief __isset implementation, check whenever a layout variable is set or not
-     * 
+     *
      * @param string $key
      * @return boolean
      */
@@ -295,7 +295,7 @@ class axViewManager {
     
     /**
      * @brief __unset implementation, unset the given layout variable
-     * 
+     *
      * @param string $key
      * @return void
      */
@@ -305,9 +305,9 @@ class axViewManager {
     
     /**
      * @breif Find the proper layout according to the `$layout` and `$format` parameters
-     * 
+     *
      * Returns the path in case of success, false on errors.
-     * 
+     *
      * @param string $layout
      * @param string $format
      * @return string
@@ -327,9 +327,9 @@ class axViewManager {
     
     /**
      * @brief Find the proper view according to the @c $section, @c $view, and @c $format parameters
-     * 
+     *
      * Return the path in case of success, false on errors.
-     * 
+     *
      * @param string $section
      * @param string $view
      * @param string $format
