@@ -6,9 +6,10 @@
 
 /**
  * @brief Router and dispatcher Class
- * 
+ *
  * @todo axRouter long description
- * @warning This class rely on the Axiom class for locale and module settings.
+ * @todo Add route caching
+ *
  * @class axRouter
  * @author Delespierre
  * @ingroup Core
@@ -18,22 +19,72 @@
 class axRouter {
     
     /**
+     * @brief Logging object
+     * @property axLog $_log
+     */
+    protected $_log;
+    
+    /**
+     * @brief Locale object
+     * @property axLocale $_locale
+     */
+    protected $_locale;
+    
+    /**
+     * @brief Module manager object
+     * @property axModuleManager $_module
+     */
+    protected $_module;
+    
+    /**
+     * @brief View manager object
+     * @property axViewManager $_view
+     */
+    protected $_view;
+    
+    /**
      * @brief Routes
      * @property array $_routes
      */
-    protected static $_routes;
+    protected $_routes;
 
     /**
      * @brief axRequest object
      * @property axRequest $_request
      */
-    protected static $_request;
+    protected $_request;
     
     /**
      * @brief axResponse object
      * @property axResponse $_response
      */
-    protected static $_response;
+    protected $_response;
+    
+    /**
+     * @brief Constructor
+     *
+     * @todo Add route caching
+     *
+     * @param axViewManager The view manager
+     * @param axLog $log @optional @default{null} The log object to be used for reporting
+     * @param axLocale $locale @optional @default{null} The locale object to be used
+     * @param axModuleManager $module_manger @optional @default{null}
+     * @param array $routes @optional @default{array()} The default routes to be added
+     */
+    public function __construct (axViewManager   $view_manager,
+                                 axLog           $log               = null,
+                                 axLocale        $locale            = null,
+                                 axModuleManager $module_manager    = null,
+                                 array           $routes            = array()) {
+        if (!$view_manager)
+            throw new InvalidArgumentException("You must provide an instance of view manager to router constructor");
+        
+        $this->_view   = $view_manager;
+        $this->_log    = $log;
+        $this->_locale = $locale;
+        $this->_module = $module_manager;
+        $this->_routes = array_filter($routes, callback('function ($i) { return $i instanceof axRoute; }'));
+    }
     
     /**
      * @brief Connect a route
@@ -42,7 +93,7 @@ class axRouter {
      * @code
      * /[string|{:key<:pattern><:?>}]/...
      * @endcode
-     * 
+     *
      * Examples of valid templates:
      * @code
      * /a/b/c
@@ -50,7 +101,7 @@ class axRouter {
      * /articles/{:id:\d+}
      * /{:lang:\w{2}:?}/{:controller}/{:action}
      * @endcode
-     * 
+     *
      * @todo Describe completely the route management here
      *
      * Three prototypes are available:
@@ -59,13 +110,13 @@ class axRouter {
      * @li axRouter::connect($template, 'controller::action', $options);
      *
      * @param mixed $template The template or the objet to match the url against
-     * @param mixed $params @optional @default{array()} The parameters of the route (must contain at least the 
+     * @param mixed $params @optional @default{array()} The parameters of the route (must contain at least the
      * controller's name), you may leave it blank if your template catches the controller's name
      * @param array $options @optional @default{array()} The route options
      * @throws RuntimeException If the route cannot be connected (not instance of axRouter)
      * @return void
      */
-    public static function connect ($template, $params = array(), array $options = array()) {
+    public function connect ($template, $params = array(), array $options = array()) {
         if (!is_object($template)) {
             if (is_string($params))
                 $params = self::_parseParamString($params);
@@ -75,7 +126,7 @@ class axRouter {
         }
         
         if ($template instanceof axRoute)
-            self::$_routes[] = $template;
+            $this->_routes[] = $template;
         else
             throw new RuntimeException("Cannot connect route", 2049);
     }
@@ -83,26 +134,25 @@ class axRouter {
     /**
      * @brief Run router
      *
-     * If not route/action is given, the router will determine the route based on the URL. See axRouter::connect() for 
+     * If not route/action is given, the router will determine the route based on the URL. See axRouter::connect() for
      * more information about connecting routes.
-     * 
+     *
      * @todo Describe axRouter::run behavior
      *
-     * @static
      * @param mixed $route @optional @default{null}
      * @param string $action @optional @default{null}
      * @throws RuntimeException If no controller is found in the route
      * @return void
      */
-    public static function run ($route = null, $action = null) {
-        if (!isset(self::$_request))
-            self::$_request = new axRequest;
+    public function run ($route = null, $action = null) {
+        if (!isset($this->_request))
+            $this->_request = new axRequest;
             
-        if (!isset(self::$_response))
-            self::$_response = new axResponse;
+        if (!isset($this->_response))
+            $this->_response = new axResponse;
             
         if (empty($route))
-            $route = self::_getRoute(self::$_request->url);
+            $route = $this->_getRoute($this->_request->url);
         
         if ($route instanceof axRoute) {
             $params  = $route->getParams();
@@ -111,7 +161,7 @@ class axRouter {
             if (empty($params['controller']))
                 throw new RuntimeException("No controller specified");
 
-            self::$_request->add($params);
+            $this->_request->add($params);
             $controller = ucfirst($params['controller']);
             $action     = !empty($params['action']) ? $params['action'] : 'index';
             
@@ -121,21 +171,22 @@ class axRouter {
             if (!empty($params['lang']))
                 $lang = $params['lang'];
             
-            if (!empty($lang) && Axiom::locale() && $lang != Axiom::locale()->getLang())
-                Axiom::locale()->setLang($lang);
+            if (!empty($lang) && $this->_locale && $lang != $this->_locale->getLang())
+                $this->_locale->setLang($lang);
             
             if (!empty($options['module'])) {
                 try {
-                    Axiom::module()->load($options['module']);
+                    $this->_module->load($options['module']);
                 }
                 catch (Exception $e) {
-                    return self::run('error', 'http500');
+                    $this->_log->handleException($e);
+                    return $this->run('error', 'http500');
                 }
             }
         }
         elseif (is_string($route)) {
-            if (Axiom::module()->exists($route))
-                Axiom::module()->load($route);
+            if ($this->_module->exists($route))
+                $this->_module->load($route);
             
             $controller = ucfirst($route);
             $action     = !empty($action) ? $action : 'index';
@@ -150,68 +201,72 @@ class axRouter {
         if (!class_exists($controller, true))
             list($controller, $action) = array('ErrorController', 'http404');
         
-        self::_load($controller, $action);
+        $this->_load($controller, $action);
     }
     
     /**
      * @brief Invoke the given controller / action and load the corresponding view
-     * 
+     *
      * @todo Describe axRouter::load behavior
-     * 
-     * @static
+     *
      * @param string $controller
      * @param string $action @optional @default{null} If null will use the @c index action
      * @return void
      */
-    protected static function _load ($controller, $action = null) {
+    protected function _load ($controller, $action = null) {
         if (empty($action))
             $action = "index";
             
+        $this->_log->debug("Loading $controller::$action");
         try {
-            call_user_func_array(array($controller, '_init'), array(&self::$_request, &self::$_response));
+            call_user_func(array($controller, '_init'), $this->_request, $this->_response);
             if (!is_callable(array($controller, $action)))
                 throw new BadMethodCallException("No such action for $controller", 2003);
-            self::$_response->add(call_user_func(array($controller, $action)));
+            $this->_response->add(call_user_func(array($controller, $action)));
         }
         catch (BadMethodCallException $e) {
-            return self::run("error", "http404");
+            $this->_log->handleException($e);
+            return $this->run("error", "http404");
         }
         catch (axLoginException $e) {
-            return self::run("error", "http403");
+            return $this->run("error", "http403");
         }
         catch (axForwardException $e) {
-            return self::load($e->getController(), $e->getAction());
+            return $this->_load($e->getController(), $e->getAction());
         }
         catch (axRedirectException $e) {
-            return self::_redirect($e);
+            return $this->_redirect($e);
         }
         catch (Exception $e) {
+            $this->_log->handleException($e);
             if ($code = $e->getCode())
-                self::$_response->error_code = $code;
-            return self::run("error", "http500");
+                $this->_response->error_code = $code;
+            return $this->run("error", "http500");
         }
         
-        if (!self::$_response->getViewSection()) {
+        if (!$this->_response->getViewSection()) {
             $section = strtolower($controller);
-            $section = ($offset = strpos($section, 'controller')) !== false ? 
-                substr($section, 0, $offset): 
+            $section = ($offset = strpos($section, 'controller')) !== false ?
+                substr($section, 0, $offset):
                 $section;
-            self::$_response->setViewSection($section);
+            $this->_response->setViewSection($section);
         }
         
-        if (!self::$_response->getView()) {
+        if (!$this->_response->getView()) {
             $view = strtolower($action);
-            self::$_response->setView($view);
+            $this->_response->setView($view);
         }
         
+        $this->_log->debug("Loading view " . $this->_response->getViewSection() . '/' . $this->_response->getView());
         try {
-            echo Axiom::view()->load(self::$_response);
+            echo $this->_view->load($this->_response);
         }
         catch (Exception $e) {
-            self::$_response->reset();
+            $this->_log->handleException($e);
+            $this->_response->reset();
             if ($code = $e->getCode())
-                self::$_response->error_code = $code;
-            return self::run("error", "http500");
+                $this->_response->error_code = $code;
+            return $this->run("error", "http500");
         }
     }
     
@@ -220,23 +275,37 @@ class axRouter {
      *
      * Will send the proper header to the browser and optionnaly load the ErrorController::redirection view.
      *
-     * @static
      * @internal
      * @return void
      */
-    protected static function _redirect (axRedirectException $exception) {
+    protected function _redirect (axRedirectException $exception) {
         header((string)$exception);
         
         if ($exception->getMethod() == axRedirectException::REDIRECT_REFRESH) {
-            self::$_response->addAll(array('url' => $exception->getUrl()));
-            self::load('ErrorController', 'redirection');
+            $this->_response->addAll(array('url' => $exception->getUrl()));
+            $this->load('ErrorController', 'redirection');
         }
+    }
+    
+    /**
+     * @brief Get the route instance that matches the given URL.
+     * @internal
+     * @param string $url
+     */
+    protected function _getRoute ($url) {
+        foreach ($this->_routes as $route) {
+            if ($params = $route->match($url)) {
+                $this->_log->debug("Identified route " . $route->getTemplate() . " for $url");
+                return $route;
+            }
+        }
+        return false;
     }
     
     /**
      * @brief Parses a route param string into an array.
      *
-     * This method allows the Routes to be connected by providing strings as parameters instead of array for practical 
+     * This method allows the Routes to be connected by providing strings as parameters instead of array for practical
      * reasons.
      * These calls are identicals:
      * @li axRouter::connect('/a/b', 'FooController::bar');
@@ -249,19 +318,5 @@ class axRouter {
     protected static function _parseParamString ($params) {
         list($controller, $action) = (strpos($params, '::') !== false) ? explode('::', $params) : array($params, 'index');
         return array('controller' => $controller, 'action' => $action);
-    }
-    
-    /**
-     * @brief Get the route instance that matches the given URL.
-     * @internal
-     * @param string $url
-     */
-    protected static function _getRoute ($url) {
-        foreach (self::$_routes as $route) {
-            if ($params = $route->match($url)) {
-                return $route;
-            }
-        }
-        return false;
     }
 }

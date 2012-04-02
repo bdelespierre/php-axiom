@@ -14,4 +14,4 @@ require dirname(dirname(dirname(__FILE__))) . "/application/config/bootstrap.php
 /**
  * Let's get started !
  */
-axRouter::run();
+Axiom::router()->run();
