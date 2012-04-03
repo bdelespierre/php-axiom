@@ -201,15 +201,17 @@ class axRouter {
             $action     = !empty($action) ? $action : 'index';
         }
         else {
-            log::debug("No route identified");
+            $this->_log->debug("No route identified");
             list($controller, $action) = array('ErrorController', 'http404');
         }
         
         if (strpos(strtolower($controller), 'controller') === false)
             $controller .= 'Controller';
         
-        if (!class_exists($controller, true))
+        if (!class_exists($controller, true)) {
+            $this->_log->debug("No such controller $controller");
             list($controller, $action) = array('ErrorController', 'http404');
+        }
         
         $this->_load($controller, $action);
     }
@@ -232,7 +234,7 @@ class axRouter {
         try {
             call_user_func_array(array($controller, '_init'), array(&$this->_request, &$this->_response));
             if (!is_callable(array($controller, $action)))
-                throw new BadMethodCallException("No such action for $controller", 2003);
+                throw new BadMethodCallException("No such action $action for $controller");
             $this->_response->add(call_user_func(array($controller, $action)));
         }
         catch (BadMethodCallException $e) {
