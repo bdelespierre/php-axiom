@@ -42,12 +42,17 @@ class axTextLogger extends axLogger {
     /**
      * @brief Constructor.
      *
-     * If $format parameter is not specified, the default format will be used (which is "[%s] %s: %s\n"). If 
-     * @c $open_mode parameter is not specified, the 'a' (Write + Append) open mode will be used
+     * If $format parameter is not specified, the default format will be used (which is "[%s] %s: %s\n"). If
+     * @c $open_mode parameter is not specified, the 'a' (Write + Append) open mode will be used.
+     * The format string parameter are (in order):
+     * @li date
+     * @li logger id
+     * @li severity
+     * @li message
      *
      * @param string $filename
      * @param interger $mask @optional @default{false} If false, will handle all priorities
-     * @param string $format @optional @default{false} If false, will use "[%s] %s: %s\n" as format
+     * @param string $format @optional @default{false} If false, will use "[%s] [%s] %s: %s\n" as format
      * @param char $open_mode @optional @default{'a'}
      */
     public function __construct ($filename, $mask = false, $format = false, $open_mode = 'a') {
@@ -58,13 +63,13 @@ class axTextLogger extends axLogger {
         catch (RuntimeException $e) {
             return;
         }
-        $this->format = $format === false ? "[%s] %s: %s\n" : $format;
+        $this->format = $format === false ? "[%s] [%s] %s: %s\n" : $format;
     }
     
     /**
      * @copydoc axLogger::writeMessage()
      */
     public function writeMessage ($msg, $severity) {
-        $this->_file->fwrite(sprintf($this->format, date('r'), $severity, $msg));
+        $this->_file->fwrite(sprintf($this->format, date('r'), $this->_loggerId, $severity, $msg));
     }
 }

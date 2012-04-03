@@ -6,12 +6,12 @@
 
 /**
  * @brief Logger Abstract Class
- * 
+ *
  * This class is the base implementation for any logger class. When extending this class, you just have to implement the
  * @c writeMessage method and optionaly to override the constructor to build your own custom loggers.
  * Logger are designed in a way they will always forward the message to the next logger (see axLogger::setNext()) after
  * writing it (if the priority match its mask).
- * 
+ *
  * @class axLogger
  * @author Delespierre
  * @ingroup Log
@@ -42,13 +42,20 @@ abstract class axLogger {
     protected $_next;
     
     /**
+     * @brief Logger identifier (to prevent log collision)
+     * @property string $_loggerId
+     */
+    protected $_loggerId;
+    
+    /**
      * @brief Constructor
      * @param integer $mask The mask of priorities to match (or false to match all priorities)
      */
     public function __construct ($mask = false) {
-        if (!$mask)
-            $mask = 15;
-        $this->_mask = $mask;
+        $mask or $mask = 2147483647; // 32b integer
+        
+        $this->_mask     = $mask;
+        $this->_loggerId = uniqid('log_');
     }
     
     /**
@@ -62,22 +69,31 @@ abstract class axLogger {
     
     /**
      * @brief Send a message through the chain
-     * 
+     *
      * Will write the message using the writeMessage method if the @c $priority parameter match the mask (defined in
      * constructor). In any case, will send the message and its priority to the next logger (if any).
-     * The the @c $priority parameter doesn't match any of axLogger constant, then the axLogger::ERR will be used.
-     * 
+     * The @c $priority parameter will be translated to a severity string and passed to axLogger::writeMessage.
+     *
+     * Translations:
+     * @li axLogger::ERR > "Error"
+     * @li axLogger::NOTICE > "Notice"
+     * @li axLogger::WARNING > "Warning"
+     * @li axLogger::DEBUG > "Debug"
+     * @li others > "User"
+     *
+     * @note We recommand you to extend this method in you concrete logger class to override this behavior.
+     *
      * @param string $msg The message
-     * @param integer $priority @optional @default{axLogger::NOTICE} The message's priority
+     * @param integer $priority @optional @default{axLogger::NOTICE} The message priority
      * @return axLogger
      */
     public function message ($msg, $priority = self::NOTICE) {
         switch ($priority) {
-            default:
             case self::ERR:     $severity = "Error";   break;
             case self::NOTICE:  $severity = "Notice";  break;
             case self::WARNING: $severity = "Warning"; break;
             case self::DEBUG:   $severity = "Debug";   break;
+            default:            $severity = "User";    break;
         }
         
         if ($priority & $this->_mask)
@@ -91,10 +107,13 @@ abstract class axLogger {
     
     /**
      * @brief Write the message
+     *
+     * Writes the message down.
+     *
      * @abstract
      * @param string $msg The message to write
      * @param string $severity (one of 'Error','Notice','Warning', or 'Debug')
-     * @return axLogger
+     * @return void
      */
     abstract public function writeMessage ($msg, $severity);
 }

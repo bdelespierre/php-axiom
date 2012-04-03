@@ -7,7 +7,7 @@
 /**
  * @brief Log Class
  *
- * This class is capable of capturing PHP errors and exception. This class acts as a chain of responsibilities where 
+ * This class is capable of capturing PHP errors and exception. This class acts as a chain of responsibilities where
  * commands are instance of axLogger.
  *
  * @todo finish axLog long description
@@ -45,7 +45,7 @@ class axLog {
     
     /**
      * @brief Constructor
-     * 
+     *
      * The @c $options parameters is described as follow:
      * @code
      * array(
@@ -53,15 +53,15 @@ class axLog {
      *		'log_errors' => true,
      *		'log_exception' => true,
      *	);
-     * @endcode 
-     * 
+     * @endcode
+     *
      * @param array $options @optional @default{array()} The log options
      */
     public function __construct (array $options = array()) {
     	$default = array(
 			'ignore_repeated_messages' => true,
-    		'log_errors' => true,
-    		'log_exception' => true,
+    		'log_errors'               => true,
+    		'log_exception'            => true,
     	);
     	
     	$this->_options = $options;
@@ -139,10 +139,61 @@ class axLog {
     
     /**
      * @brief Attach a logger to the chain
+     *
+     * This method accepts several forms:
+     * @li axLog::addLogger( axLogger $logger );
+     * @li axLog::addLogger( string $log_class, $param1, $param2 ... );
+     *
+     * The following calls are equivalents:
+     * @code
+     * $log->addLogger(new axTextLogger('error.log', axLogger::ERR + axLogger::WARNING));
+     * $log->addLogger('axTextLogger', 'error.log', axLogger::ERR + axLogger::WARNING));
+     * @endcode
+     *
      * @param axLogger $logger The logger instance to attach
      * @return axLog
      */
-    public function addLogger (axLogger $logger) {
+    public function addLogger () {
+        $argc = func_num_args();
+        $args = func_get_args();
+        
+        if (!$argc)
+            throw new RuntimeException("At least one argument is madatory");
+        
+        if ($argc == 1 && $args[0] instanceof axLogger) {
+            $logger = $args[0];
+        }
+        else {
+            $class = array_shift($args);
+            
+            if (!class_exists($class, true))
+                throw new axClassNotFoundException($class);
+            
+            if (!in_array('axLogger', class_parents($class)))
+                throw new LogicException("Class $class does not extend axLogger");
+            
+            try {
+                switch (count($args)) {
+                    case 0: $logger = new $class; break;
+                    case 1: $logger = new $class($args[0]); break;
+                    case 2: $logger = new $class($args[0], $args[1]); break;
+                    case 3: $logger = new $class($args[0], $args[1], $args[2]); break;
+                    case 4: $logger = new $class($args[0], $args[1], $args[2], $args[3]); break;
+                    case 5: $logger = new $class($args[0], $args[1], $args[2], $args[3], $args[4]); break;
+                    default:
+                        $reflect = new ReflectionClass($class);
+                        $logger  = $reflect->newInstanceArgs($args);
+                        break;
+                }
+            }
+            catch (Exception $e) {
+                if (PHP_VERSION_ID >= 50300)
+                    throw new RuntimeException("Cannot instanciate $class", 0, $e);
+                else
+                    throw new RuntimeException("Cannot instanciate $class: " . $e->getMessage());
+            }
+        }
+        
         if (!isset($this->_first))
             $this->_first = $this->_last = $logger;
         else
@@ -233,7 +284,7 @@ class axLog {
             }
         }
         
-        $error = "(PHP Exception) " . $exception->getMessage() . ' in ' . $exception->getFile() . ' on line ' . 
+        $error = "(PHP Exception) " . $exception->getMessage() . ' in ' . $exception->getFile() . ' on line ' .
             $exception->getLine();
         $this->error($error);
     }
@@ -249,9 +300,9 @@ class axLog {
 
 /**
  * @brief Log Module
- * 
+ *
  * This module contains all classes necessary for logging facilities.
- * 
+ *
  * @defgroup Log
  * @author Delespierre
  * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)

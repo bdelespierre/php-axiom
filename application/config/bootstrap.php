@@ -50,7 +50,7 @@ require_once AXIOM_LIB_PATH . '/axiom/axLibrary.class.php';
 /**
  * Uncomment this line to disable cache globally
  */
-//Axiom::$cache = false;
+Axiom::$cache = false;
 
 /**
  * Adding the Axiom core library
@@ -101,10 +101,39 @@ Axiom::configuration(AXIOM_APP_PATH . '/config/config.ini', 'dev');
  * ---------------------------------------------------------------------------------------------------------------------
  */
 
-// @todo add section description
+/**
+ * This section initialize the logger
+ *
+ * No parameter is required to initialiez the log manager (`Axiom::log()`).
+ * You may register log entries using
+ * * `Axiom::log()->debug($message)`
+ * * `Axiom::log()->notice($message)`
+ * * `Axiom::log()->warning($message)`
+ * * `Axiom::log()->error($message)`
+ * * `Axiom::log()->message($message, $level)`
+ *
+ * Using the last form, the `$level` parameter is an integer that describe the error level, you may use
+ * * axLogger::ERR     for errors         (value 1)
+ * * axLogger::NOTICE  for notices        (value 2)
+ * * axLogger::WARNING for warnings       (value 4)
+ * * axLogger::DEBUG   for debug messages (value 8)
+ * Or, at your option, any greater value that is a power of 2 (16,32,64,128 and so on), in this case, the severity
+ * level will be set to 'User' by default (see `axLogger::message` for more details about this behavior).
+ *
+ * Note: All loggers registered through `Axiom::log()->addLogger()` are connected each other forming a chain, thus the
+ * message that is recieved by `Axiom::log()->xxx($message)` will get through all the registered loggers, it'll be
+ * recorded by them only if the level matches the logger's mask (see `axLogger::__construct`).
+ */
 
-/*
-//Axiom::log()->addLogger(new axTextLogger(AXIOM_APP_PATH . '/ressource/log/app.log'));
+/**
+ * General log
+ */
+Axiom::log()->addLogger('axTextLogger', AXIOM_APP_PATH . '/ressource/log/app.log');
+
+/**
+ * Error log
+ */
+Axiom::log()->addLogger('axTextLogger', AXIOM_APP_PATH . '/ressource/log.error.log', 5);
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------
