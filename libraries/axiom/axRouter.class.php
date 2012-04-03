@@ -19,6 +19,13 @@
 class axRouter {
     
     /**
+     * @brief Max number of 'bounces'
+     * @see axRouter::_bounce
+     * @property integer $_bounces
+     */
+    protected $_bounces = 25;
+    
+    /**
      * @brief Logging object
      * @property axLog $_log
      */
@@ -150,7 +157,7 @@ class axRouter {
             
         if (!isset($this->_response))
             $this->_response = new axResponse;
-            
+        
         if (empty($route))
             $route = $this->_getRoute($this->_request->url);
         
@@ -158,8 +165,10 @@ class axRouter {
             $params  = $route->getParams();
             $options = $route->getOptions();
             
-            if (empty($params['controller']))
-                throw new RuntimeException("No controller specified");
+            if (empty($params['controller'])) {
+                $this->_log->error("No controller specified for this route");
+                return $this->_load('ErrorController', 'http500');
+            }
 
             $this->_request->add($params);
             $controller = ucfirst($params['controller']);
@@ -180,7 +189,7 @@ class axRouter {
                 }
                 catch (Exception $e) {
                     $this->_log->handleException($e);
-                    return $this->run('error', 'http500');
+                    return $this->load('ErrorController', 'http500');
                 }
             }
         }
@@ -192,6 +201,7 @@ class axRouter {
             $action     = !empty($action) ? $action : 'index';
         }
         else {
+            log::debug("No route identified");
             list($controller, $action) = array('ErrorController', 'http404');
         }
         
@@ -216,20 +226,21 @@ class axRouter {
     protected function _load ($controller, $action = null) {
         if (empty($action))
             $action = "index";
-            
+        
+        $this->_bounce();
         $this->_log->debug("Loading $controller::$action");
         try {
-            call_user_func(array($controller, '_init'), $this->_request, $this->_response);
+            call_user_func_array(array($controller, '_init'), array(&$this->_request, &$this->_response));
             if (!is_callable(array($controller, $action)))
                 throw new BadMethodCallException("No such action for $controller", 2003);
             $this->_response->add(call_user_func(array($controller, $action)));
         }
         catch (BadMethodCallException $e) {
             $this->_log->handleException($e);
-            return $this->run("error", "http404");
+            return $this->load("ErrorController", "http404");
         }
         catch (axLoginException $e) {
-            return $this->run("error", "http403");
+            return $this->load("ErrorController", "http403");
         }
         catch (axForwardException $e) {
             return $this->_load($e->getController(), $e->getAction());
@@ -241,7 +252,7 @@ class axRouter {
             $this->_log->handleException($e);
             if ($code = $e->getCode())
                 $this->_response->error_code = $code;
-            return $this->run("error", "http500");
+            return $this->load("ErrorController", "http500");
         }
         
         if (!$this->_response->getViewSection()) {
@@ -266,7 +277,7 @@ class axRouter {
             $this->_response->reset();
             if ($code = $e->getCode())
                 $this->_response->error_code = $code;
-            return $this->run("error", "http500");
+            return $this->load("ErrorController", "http500");
         }
     }
     
@@ -295,7 +306,8 @@ class axRouter {
     protected function _getRoute ($url) {
         foreach ($this->_routes as $route) {
             if ($params = $route->match($url)) {
-                $this->_log->debug("Identified route " . $route->getTemplate() . " for $url");
+                $this->_log->debug("Requested ressource: " . $this->_request->getServer('REQUEST_URI'))
+                           ->debug("Identified route "     . $route->getTemplate());
                 return $route;
             }
         }
@@ -318,5 +330,28 @@ class axRouter {
     protected static function _parseParamString ($params) {
         list($controller, $action) = (strpos($params, '::') !== false) ? explode('::', $params) : array($params, 'index');
         return array('controller' => $controller, 'action' => $action);
+    }
+    
+    /**
+     * @brief Stuck in a loop security
+     *
+     * This method allows a maximum number of bounces to occur before the application stop, preventing the application
+     * from bouncing until the max execution time is reached.
+     *
+     * This method is intended to provide security for the axRouter::load method. Each time the axRouter::load method
+     * is invoked for a single request, the 'bouncing' counter is decreased. If it reaches zero, the application is
+     * stopped.
+     *
+     * For example, suppose that one has unproperly set an route/action that forwards on itself, the load method
+     * would then be stuck in a loop (invoke > forward > invoke > forward and so on), it's just like being stuck in
+     * portals. The axRouter::_bounce method prevent that from happening.
+     *
+     * @return void
+     */
+    protected function _bounce () {
+        if (($this->_bounces--) == 0) {
+            $this->_log->error("CRITICAL ERROR: load loop detected, exiting");
+            exit('Stuck in a loop');
+        }
     }
 }

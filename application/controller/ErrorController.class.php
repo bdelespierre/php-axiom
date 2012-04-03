@@ -6,6 +6,8 @@
  * @license http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 
+// DO NOT REMOVE THIS CONTROLLER //
+
 class ErrorController extends axBaseController {
     
     public static function _init (axRequest &$request, axResponse &$response) {
