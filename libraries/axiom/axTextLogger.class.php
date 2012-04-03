@@ -56,9 +56,6 @@ class axTextLogger extends axLogger {
      * @param char $open_mode @optional @default{'a'}
      */
     public function __construct ($filename, $mask = false, $format = false, $open_mode = 'a') {
-        if (!is_file($filename))
-            throw new axMissingFileException($filename);
-        
         parent::__construct($mask);
         try {
             $this->_file = new SplFileObject($filename, $open_mode);
