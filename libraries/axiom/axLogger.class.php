@@ -24,10 +24,10 @@ abstract class axLogger {
      * Constants
      * @var string
      */
-    const ERR = 1;
-    const NOTICE = 2;
+    const ERR     = 1;
+    const NOTICE  = 2;
     const WARNING = 4;
-    const DEBUG = 8;
+    const DEBUG   = 8;
     
     /**
      * @breif axLogger's mask
