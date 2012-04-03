@@ -50,7 +50,7 @@ require_once AXIOM_LIB_PATH . '/axiom/axLibrary.class.php';
 /**
  * Uncomment this line to disable cache globally
  */
-Axiom::$cache = false;
+//Axiom::$cache = false;
 
 /**
  * Adding the Axiom core library
@@ -123,6 +123,9 @@ Axiom::configuration(AXIOM_APP_PATH . '/config/config.ini', 'dev');
  * Note: All loggers registered through `Axiom::log()->addLogger()` are connected each other forming a chain, thus the
  * message that is recieved by `Axiom::log()->xxx($message)` will get through all the registered loggers, it'll be
  * recorded by them only if the level matches the logger's mask (see `axLogger::__construct`).
+ *
+ * To disable the logs, simply comment these lines or set the `log` key to `Off` in config.ini.
+ * You may add as many loggers you need by calling `Axiom::log()->addLogger()`.
  */
 
 /**
@@ -133,7 +136,7 @@ Axiom::log()->addLogger('axTextLogger', AXIOM_APP_PATH . '/ressource/log/app.log
 /**
  * Error log
  */
-Axiom::log()->addLogger('axTextLogger', AXIOM_APP_PATH . '/ressource/log.error.log', 5);
+Axiom::log()->addLogger('axTextLogger', AXIOM_APP_PATH . '/ressource/log/error.log', 5);
 
 /**
  * ---------------------------------------------------------------------------------------------------------------------

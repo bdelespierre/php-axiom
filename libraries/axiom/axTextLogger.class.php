@@ -56,12 +56,18 @@ class axTextLogger extends axLogger {
      * @param char $open_mode @optional @default{'a'}
      */
     public function __construct ($filename, $mask = false, $format = false, $open_mode = 'a') {
+        if (!is_file($filename))
+            throw new axMissingFileException($filename);
+        
         parent::__construct($mask);
         try {
             $this->_file = new SplFileObject($filename, $open_mode);
         }
         catch (RuntimeException $e) {
-            return;
+            if (PHP_VERSION_ID >= 50300)
+                throw new RuntimeException("Error occured while opening file", 0, $e);
+            else
+                throw new RuntimeException("Error occured while opening file: " . $e->getMessage());
         }
         $this->format = $format === false ? "[%s] [%s] %s: %s\n" : $format;
     }
@@ -70,6 +76,6 @@ class axTextLogger extends axLogger {
      * @copydoc axLogger::writeMessage()
      */
     public function writeMessage ($msg, $severity) {
-        $this->_file->fwrite(sprintf($this->format, date('r'), $this->_loggerId, $severity, $msg));
+        @$this->_file->fwrite(sprintf($this->format, date('r'), $this->_loggerId, $severity, $msg));
     }
 }
