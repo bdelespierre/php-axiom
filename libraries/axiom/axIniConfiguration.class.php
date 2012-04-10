@@ -14,12 +14,6 @@
  * @license http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
 class axIniConfiguration implements axConfiguration {
-
-	/**
-	 * @brief Cache file
-	 * @var string
-	 */
-	const CACHE_FILE = "config.cache.php";
 	
 	/**
 	 * @brief Configuration file path
@@ -32,12 +26,6 @@ class axIniConfiguration implements axConfiguration {
 	 * @property string $_section
 	 */
 	protected $_section;
-	
-	/**
-	 * @brief Cache directory (false if cache is disabled)
-	 * @property string $_cache_dir
-	 */
-	protected $_cache_dir;
 
     /**
      * @brief INI Tree structure
@@ -50,12 +38,12 @@ class axIniConfiguration implements axConfiguration {
      * @note If the @c $cache_dir isn't valid, the cache will be silently disabled
      * @param string $file The INI file path to parse
      * @param string $section The section to be used
-     * @param string $cache_dir @optional @default{false} The directory for caching (or false if cache is disabled)
      */
-    public function __construct ($file, $section, $cache_dir = false) {
+    public function __construct ($file, $section) {
     	$this->_file      = $file;
     	$this->_section   = $section;
-    	$this->_cache_dir = $cache_dir !== false ? realpath($cache_dir) : false;
+    	
+    	$this->_generateTree($this->_section);
     }
 
     /**
@@ -69,17 +57,6 @@ class axIniConfiguration implements axConfiguration {
      * @copydoc IteratorAggregate::getIterator()
      */
     public function getIterator() {
-    	if (!isset($this->_tree)) {
-	    	if ($this->_cache_dir && is_readable($c = $this->_cache_dir . '/' . self::CACHE_FILE)) {
-	    		require $c;
-	    		$this->_tree = $tree;
-	    	}
-	    	else {
-	        	$this->_generateTree($this->_section);
-	        	$this->_cache();
-	    	}
-    	}
-    	
     	return $this->_tree;
     }
 	
@@ -117,17 +94,29 @@ class axIniConfiguration implements axConfiguration {
     }
     
     /**
-     * @brief Put current configuration tree in cache for later use
-     * 
-     * Does nothing if the cache is disabled.
-     * 
-     * @return boolean
+     * @brief Serializable serialize method
+     * @return string
      */
-	protected function _cache () {
-		if (!$this->_cache_dir)
-			return false;
-		
-		$buffer = '<?php $tree=' . var_export($this->_tree, true) . '; ?>';
-		return (boolean)file_put_contents($this->_cache_dir . '/' . self::CACHE_FILE, $buffer);
-	}
+    public function serialize () {
+        return serialize(array(
+            'file'    => $this->_file,
+            'section' => $this->_section,
+            'tree'    => $this->_tree,
+        ));
+    }
+    
+    /**
+     * @brief Serializable unserialize method
+     * @param string serialized
+     * @return void
+     */
+    public function unserialize ($serialized) {
+        $struct = unserialize($serialized);
+        if (!isset($struct['file'], $struct['section'], $struct['tree']))
+            throw new RuntimeException("Cannot unserialize " . __CLASS__ . " instance, cache is corrupted");
+        
+        $this->_file    = $struct['file'];
+        $this->_section = $struct['section'];
+        $this->_tree    = $struct['tree'];
+    }
 }

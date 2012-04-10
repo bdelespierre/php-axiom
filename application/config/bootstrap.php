@@ -60,7 +60,8 @@ Axiom::library()->add('axiom');
 /**
  * Add the application
  */
-Axiom::library()->add(AXIOM_APP_PATH, array('recursive' => true));
+Axiom::library()->add('controller');
+Axiom::library()->add('model');
 
 /**
  * Adding the browser capabilities detection library.

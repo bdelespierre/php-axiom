@@ -101,7 +101,14 @@ abstract class axBaseCache implements axCache {
      * @copydoc axCaceh::get
      */
     public function get ($key) {
-        return $this->validate($key) ? $this->_read($key) : null;
+        if (!$this->validate($key))
+            return null;
+        
+        $value = $this->_read($key);
+        if ($this->_options['serialize'])
+            $value = unserialize($value);
+        
+        return $value;
     }
 
     /**

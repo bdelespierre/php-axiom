@@ -6,7 +6,7 @@
 
 /**
  * @brief Locale class
- * 
+ *
  * @todo Locale class description
  * @author Delespierre
  * @since 1.1.4
@@ -14,13 +14,7 @@
  * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
  * @license http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence version 3
  */
-class axLocale implements IteratorAggregate {
-	
-	/**
-	 * @brief Cache file name
-	 * @var string
-	 */
-	const CACHE_FILE = 'locale.cache.php';
+class axLocale implements IteratorAggregate, Serializable {
 	
 	/**
 	 * @brief Accepted language cache
@@ -35,45 +29,61 @@ class axLocale implements IteratorAggregate {
 	protected $_file;
 	
 	/**
-	 * @brief Current lang used
+	 * @brief Current locale used
 	 * @property string $_lang
 	 */
-	protected $_lang;
+	protected $_locale;
 	
 	/**
-	 * @brief Cache directory (false if cache is disabled)
-	 * @property string $_cache_dir
+	 * @brief Default locale
+	 * @property string $_defaultLand
 	 */
-	protected $_cache_dir;
+	protected $_defaul;
 	
 	/**
 	 * @brief The translations tree
 	 * @property axTreeItem $tree
 	 */
-	protected $tree;
+	protected $_tree;
 	
 	/**
 	 * @brief Constructor
-	 * @param string $lang_file The langs file path, this file MUST be an INI file
-	 * @param string $lang @optional @default{"auto"} The language to be used or @c 'auto' to determine it from the 
-	 * browser
-	 * @param string $default_lang @optional @default{"en"} The default language to use if the @c $lang isn't found in 
-	 * the dictionnary
-	 * @param string $cache_dir @optional @default{false} The cache directory (or false if cache is disabled)
-	 * @throws axMissingFileException If the lang file could not be found
+	 * @param string $lang_file
+	 * @param unknown_type $default_locale @optional @default{'en'} This section MUST exist in your locales file
 	 */
-	public function __construct ($lang_file, $lang = "auto", $default_lang = "en", $cache_dir = false) {
-		$this->_lang      = strtolower($lang);
-		$this->_cache_dir = $cache_dir !== false ? realpath($cache_dir) : false;
-		$this->_tree      = array();
-		
-		if (!$this->_file = realpath($lang_file)) {
-			throw new axMissingFileException($lang_file);
-		}
-		
-		if ($this->_lang !== 'auto' && !setlocale(LC_ALL^LC_MESSAGES, $this->_lang)) {
-			throw new RuntimeException("Cannot set locale to {$this->_lang}");
-		}
+	public function __construct ($locales_file, $default_locale = "en") {
+	    $this->_file        = $locales_file;
+	    $this->_default = $default_locale;
+	    
+	    $this->_generateTree();
+	    $this->setLocale($default_lang);
+	}
+	
+	/**
+	 * @brief Get the current locale
+	 * @return string
+	 */
+	public function getLocale () {
+	    return $this->_locale ? $this->_locale : $this->_default;
+	}
+	
+	/**
+	 * @brief Set the current locale
+	 *
+	 * If the specified locale is 'auto', it will be automatically determined according to request headers.
+	 *
+	 * @param string $locale @optional @default{'auto'} The locale to use
+	 * @return void
+	 */
+	public function setLocale ($locale) {
+	    if ($locale === "auto") {
+	        $locale = in_array($locale, array_keys($languages = self::_getAcceptedLanguages())) ?
+	            reset($languages):
+	            $this->_default;
+	    }
+	    
+	    $this->_locale = isset($this->_tree[$locale]) ? $locale : $this->_default;
+	    setlocale(LC_ALL, $this->_locale);
 	}
 	
 	/**
@@ -91,51 +101,7 @@ class axLocale implements IteratorAggregate {
 	 * @return axTreeItem
 	 */
 	public function getIterator () {
-		if (empty($this->_tree)) {
-			if ($this->_cache_dir && is_readable($c = $this->_cache_dir . '/' . self::CACHE_FILE)) {
-				require $c;
-				$this->_tree = $tree;
-			}
-			else {
-				$this->_generateTree();
-				$this->_cache();
-			}
-		}
-		
-		if ($this->_lang === 'auto' && !($this->_lang = $this->_determineLanguage()))
-			$this->_lang = $this->_default_lang;
-		
-		if (!isset($this->_tree[$this->_lang]))
-			throw new RuntimeException("Lang {$this->_lang} not available");
-		
-		return $this->_tree[$this->_lang];
-	}
-	
-	/**
-	 * @brief Set the current lang
-	 * 
-	 * Returns the current axLocale instance in case of success or false in case of failure.
-	 * 
-	 * @note You may specify "auto" to determine the language automatically
-	 * @param string $lang The lang to be used
-	 * @return axLocale
-	 */
-	public function setLang ($lang) {
-		if ($lang === "auto" && !($this->_lang = $this->_determineLanguage()))
-			return false;
-		
-		if (!setlocale(LC_ALL, $this->_lang = $lang))
-			return false;
-		
-		return $this;
-	}
-	
-	/**
-	 * @brief Get the current lang
-	 * @return string
-	 */
-	public function getLang () {
-	    return $this->_lang;
+		return $this->_tree[$this->getLocale()];
 	}
 	
 	/**
@@ -149,26 +115,24 @@ class axLocale implements IteratorAggregate {
 	
 	/**
 	 * @brief Get date
-	 * 
+	 *
 	 * Will use the current date format to generate a date. The date format must be defined as a string in the
 	 * dictionnary file (key is @c date.format).
-	 * 
+	 *
 	 * @param integer $time @optional @default{null}
 	 * @return string
 	 */
 	public function date ($time = null) {
-		if ($time === null)
-			return date($this->date->format);
-		else
-			return date($this->date->format, $time);
+	    $this->getIterator();
+	    return $time === null ? strftime($this->date->format) : strftime($this->date->format, (int)$time);
 	}
 	
 	/**
 	 * @brief Get date human representation
-	 * 
-	 * For instance "X hours ago" where X is a number determined by the @c $date parameter against the current 
+	 *
+	 * For instance "X hours ago" where X is a number determined by the @c $date parameter against the current
 	 * timestamp.
-	 * 
+	 *
 	 * @warning You must use the ymdHi format for the $date parameter or a integer representing a timestamp.
 	 * @param mixed $date The date (ymdHi format) or a timestamp
 	 * @return string
@@ -245,7 +209,7 @@ class axLocale implements IteratorAggregate {
 	 * @brief Use a string format for identifying translations
 	 * @param string $key
 	 * @param mixed $arg @optional @multiple You may pass as many arguments as the translation accepts (according to
-	 * the sprintf syntax) 
+	 * the sprintf syntax)
 	 * @return string
 	 */
 	public function i18n ($key) {
@@ -255,7 +219,7 @@ class axLocale implements IteratorAggregate {
 		$msg = $this->getIterator();
 		foreach (explode('.', $key) as $k)
 			$msg = $msg->$k;
-			
+		
 		if (!$msg->getValue()) {
 			trigger_error("Undefined translation {$key}");
 			return "";
@@ -273,6 +237,33 @@ class axLocale implements IteratorAggregate {
                 return call_user_func_array('sprintf', $args);
                 break;
         }
+	}
+	
+	/**
+	 * @brief Serializable serialize method
+	 * @return string
+	 */
+	public function serialize () {
+	    return serialize(array(
+            'file'    => $this->_file,
+            'default' => $this->_default,
+            'tree'    => $this->_tree,
+        ));
+	}
+	
+	/**
+	 * @brief Serializable unserialize method
+	 * @param string serialized
+	 * @return void
+	 */
+	public function unserialize ($serialized) {
+	    $struct = unserialize($serialized);
+	    if (!isset($struct['file'], $struct['default'], $struct['tree']))
+	        throw new RuntimeException("Cannot unserialize " . __CLASS__ . " instance, cache is corrupted");
+	    
+	    $this->_file    = $struct['file'];
+	    $this->_default = $struct['default'];
+	    $this->_tree    = $struct['tree'];
 	}
 	
 	/**
@@ -305,25 +296,10 @@ class axLocale implements IteratorAggregate {
 	}
 	
 	/**
-	 * @brief Put the dictionnary in cache for later use
-	 * 
-	 * Does nothing if cache is disabled
-	 * 
-	 * @rerturn void
-	 */
-	protected function _cache () {
-		if (!$this->_cache_dir)
-			return false;
-		
-		$buffer = '<?php $tree=' . var_export($this->_tree, true) . '; ?>';
-		return (boolean)file_put_contents($this->_cache_dir . '/' . self::CACHE_FILE, $buffer);
-	}
-	
-	/**
      * @brief Get accepeted languages using browser capabilities
-     * 
-     * The returned array will be ordered by browser preference (for instance en_US > en_GB > en). 
-     * 
+     *
+     * The returned array will be ordered by browser preference (for instance en_US > en_GB > en).
+     *
      * @return array
      */
     protected static function _getAcceptedLanguages () {
@@ -337,7 +313,11 @@ class axLocale implements IteratorAggregate {
         }
         
         foreach (explode(',', $httplanguages) as $accept) {
-            $result = preg_match('/^([a-z]{1,8}(?:[-_][a-z]{1,8})*)(?:;\s*q=(0(?:\.[0-9]{1,3})?|1(?:\.0{1,3})?))?$/i', $accept, $match);
+            $result = preg_match(
+                '/^([a-z]{1,8}(?:[-_][a-z]{1,8})*)(?:;\s*q=(0(?:\.[0-9]{1,3})?|1(?:\.0{1,3})?))?$/i',
+                $accept,
+                $match
+            );
 
             if (!$result) {
                 continue;
@@ -364,20 +344,5 @@ class axLocale implements IteratorAggregate {
         }
         
         return self::$_accepted_languages_cache = $languages;
-    }
-    
-    /**
-     * @brief Determine the nearest available lang according to accepted languages
-     * 
-     * Will return false if no corresponding language could be found
-     * 
-     * @return string
-     */
-    protected function _determineLanguage () {
-    	foreach ($this->_getAcceptedLanguages() as $accept => $priority) {
-    		if (isset($this->_tree[$accept]))
-    			return $accept;
-    	}
-    	return false;
     }
 }

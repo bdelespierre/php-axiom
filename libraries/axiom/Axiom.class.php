@@ -49,6 +49,12 @@ final class Axiom {
     private static $_router;
     
     /**
+     * @brief Cache manager object
+     * @property axCacheManager $_cache
+     */
+    private static $_cache;
+    
+    /**
      * @brief Configuration object
      * @internal
      * @property axConfiguration $_config
@@ -127,11 +133,42 @@ final class Axiom {
 	}
 	
 	/**
+	 * @brief Get the cache manager object
+	 *
+	 * If the cache manager object is not defined, it will be intitialized.
+	 *
+	 * @param string $manager_cache_file @optional @default{'/ressources/cache/manager.cache'} When calling this method
+	 * for the first time, you are able to set a custom cache file for the manager
+	 * @return axCacheManager
+	 */
+	public static function cache () {
+	    if (isset(self::$_cache))
+	        return self::$_cache;
+	    
+	    if (!self::$cache)
+	        return false;
+	    
+	    list($manager_cache_file) = func_get_args() + array(AXIOM_APP_PATH . '/ressource/cache/manager.cache');
+	    self::$_cache = new axCacheManager($manager_cache_file);
+	    
+	    if (!self::$_cache->hasCache('axiom')) {
+	        self::$_cache->setCache('axiom', 'file', AXIOM_APP_PATH . '/ressource/cache/', array(
+                'serialize' => true,
+	            'silent'    => true,
+            ));
+	    }
+	    
+	    return self::$_cache;
+	}
+	
+	/**
 	 * @brief Get the configuration object
 	 *
-	 * If the configuration object is not defined it will be initialized according to the method parameters.
-	 * If no parameter is provided for the first call (implicit initialization) then the default parameters will be
-	 * used.
+	 * If the configuration object is not defined it will be initialized. The parameter are only used during
+	 * intitialization (Axiom::configuration first call).
+	 *
+	 * @note When cache is enabled, changing initialization parameters won't take effect until the cache expires. You
+	 * may still clear the cache manually.
 	 *
 	 * @param string $file @optional @default{"/application/config/config.ini"} The configuration file to be used
 	 * @param string $section @optional @default{"default"} The configuration section to be used
@@ -143,18 +180,26 @@ final class Axiom {
 		if (isset(self::$_config))
 			return self::$_config;
 		
-		if (!func_num_args())
-			trigger_error("Configuration initialized with default parameters", E_USER_WARNING);
+		if (self::cache()
+        && ($cache = self::cache()->getCache('axiom'))
+	    && ($configuration = $cache->get('configuration'))) {
+	        self::$_config = $configuration;
+		}
+		else {
+		    $defaults = array(AXIOM_APP_PATH . '/config/config.ini', 'default', 'axIniConfiguration');
+		    list($file, $section, $class) = func_get_args() + $defaults;
+		    
+		    if (!class_exists($class, true))
+		        throw new axClassNotFoundException($class);
+		    
+		    self::$_config = new $class($file, $section);
+		    
+		    if (self::cache() && ($cache = self::cache()->getCache('axiom'))) {
+		        $cache->set('configuration', self::$_config, array('lifetime' => 7200));
+		    }
+		}
 		
-		$defaults = array(AXIOM_APP_PATH . '/config/config.ini', 'default', 'axIniConfiguration');
-		list($file, $section, $class) = func_get_args() + $defaults;
-		
-		if (!class_exists($class, true))
-			throw new axClassNotFoundException($class);
-		
-        $cache_dir = self::$cache ? AXIOM_APP_PATH . '/ressource/cache' : false;
-        
-		return self::$_config = new $class($file, $section, $cache_dir);
+		return self::$_config;
 	}
 	
 	/**
@@ -169,11 +214,7 @@ final class Axiom {
 		if (isset(self::$_library))
 			return self::$_library;
 		
-		$cache_dir = self::$cache ? AXIOM_APP_PATH . '/ressource/cache' : false;
-			
-		self::$_library = new axLibrary($cache_dir);
-		self::$_library->register();
-		return self::$_library;
+		return self::$_library = new axLibrary(AXIOM_LIB_PATH, AXIOM_APP_PATH);
 	}
 	
 	/**
@@ -189,20 +230,30 @@ final class Axiom {
 		if (isset(self::$_locale))
 			return self::$_locale;
 		
-		$conf = self::configuration();
-		if (!$conf->localization->getValue())
+		$conf = self::configuration()->localization;
+		if (!$conf->getValue())
 			return false;
 		
-		$lang_file    = (string)$conf->localization->lang->file;
-		$lang         = (string)$conf->localization->lang;
-		$default_lang = (string)$conf->localization->lang->default;
+		if (self::cache()
+        && ($cache = self::cache()->getCache('axiom'))
+        && ($locale = $cache->get('locale'))) {
+		    self::$_locale = $locale;
+		}
+		else {
+		    $file         = (string)$conf->file;
+		    $default      = (string)$conf->default;
+		    
+		    if (strpos($file, '//') === 0)
+		        $file = str_replace("//", AXIOM_APP_PATH . '/', $file);
+		    
+		    self::$_locale = new axLocale($file, $default);
+		    
+		    if (self::cache() && ($cache = self::cache()->getCache('axiom'))) {
+		        $cache->set('locale', self::$_locale, array('lifetime' => 7200));
+		    }
+		}
 		
-		$cache_dir = self::$cache ? AXIOM_APP_PATH . '/ressource/cache' : false;
-		
-		if (strpos($lang_file, '//') === 0)
-			$lang_file = str_replace("//", AXIOM_APP_PATH . '/', $lang_file);
-		
-		return self::$_locale = new axLocale($lang_file, $lang, $default_lang, $cache_dir);
+		return self::$_locale;
 	}
 	
 	/**
@@ -326,6 +377,8 @@ final class Axiom {
 	        
         if (!self::configuration()->module->getValue())
             return false;
+        
+        // @todo add cache
 	        
         $opts = array(
             'check_dependencies' => true,

@@ -180,8 +180,8 @@ class axRouter {
             if (!empty($params['lang']))
                 $lang = $params['lang'];
             
-            if (!empty($lang) && $this->_locale && $lang != $this->_locale->getLang())
-                $this->_locale->setLang($lang);
+            if (!empty($lang) && $this->_locale && $lang != $this->_locale->getLocale())
+                $this->_locale->setLocale($lang);
             
             if (!empty($options['module'])) {
                 try {
@@ -208,8 +208,14 @@ class axRouter {
         if (strpos(strtolower($controller), 'controller') === false)
             $controller .= 'Controller';
         
-        if (!class_exists($controller, true)) {
-            $this->_log->debug("No such controller $controller");
+        try {
+            if (!class_exists($controller, true)) {
+                $this->_log->debug("No such controller $controller");
+                list($controller, $action) = array('ErrorController', 'http404');
+            }
+        }
+        catch (Exception $e) {
+            $this->_log->handleException($e);
             list($controller, $action) = array('ErrorController', 'http404');
         }
         
