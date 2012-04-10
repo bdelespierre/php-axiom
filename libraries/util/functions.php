@@ -1,9 +1,9 @@
 <?php
 /**
  * @brief Functions Module
- * 
+ *
  * This module contains some helper functions you may find useful.
- * 
+ *
  * @defgroup Function
  * @author Delespierre
  * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
@@ -12,9 +12,9 @@
 
 /**
  * @briefRemoves all null, false or empty string values from an array
- * 
+ *
  * The keys are preserved.
- * 
+ *
  * @ingroup Functions
  * @param array $array
  * @param array $exclude @optional @default{array()} Additionnal values to exclude
@@ -35,9 +35,9 @@ function array_safe_filter (array &$array, array $exclude = array()) {
  * @code
  * $alpha = callback('function ($a,$b) { return $a+$b+$c+$d; }');
  * @endcode
- * 
+ *
  * Returns the anonymous function name
- * 
+ *
  * @ingroup Functions
  * @param string $fct
  * @return string
@@ -53,7 +53,7 @@ function callback ($fct) {
 
 /**
  * @brief Calculates the cartesian product of any number of array in parameter
- * 
+ *
  * @ingroup Functions
  * @param mixed $a
  * @param mixed $b [...]
@@ -81,4 +81,31 @@ function array_cartesian_product () {
     }
 
     return $r;
+}
+
+/**
+ * @brief Find the closest item in a list
+ *
+ * Return the closest item from @c $haystack that match @c $needle (with less than @c $approx different characters) or
+ * false if no match is found.
+ *
+ * @param string $needle The item you're looking for
+ * @param array $haystack The list (of strings) you're looking in
+ * @param integer $approx @optional @default{3} The tolerance threshold
+ * @return string
+ */
+function array_find_closest ($needle, $haystack, $approx = 3) {
+    if (($offset = array_search($needle, $haystack)) !== false)
+        return $haystack[$offset];
+
+    $distances = array();
+    foreach ($haystack as $item) {
+        $lev = levenshtein($needle, $item);
+
+        // if needle is  not completely differen and not 'too' different
+        if ($lev <= strlen($item) && $lev <= $approx)
+            $distances[$item] = $lev;
+    }
+    asort($distances);
+    return !empty($distances) ? key($distances) : false;
 }
