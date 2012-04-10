@@ -34,7 +34,7 @@ final class Axiom {
     /**
      * @brief Axiom Framework Version
      */
-    const VERSION = '1.2.3';
+    const VERSION = '1.2.4';
 
     /**
      * @brief Flag used to toggle cache
