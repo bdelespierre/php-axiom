@@ -25,6 +25,7 @@ Axiom provide all website basics such as:
 * URL Rewriting
 * Custom Routing
 * Browser recognition
+* Caching capabilities (NEW)
 * Email Support
 * RSS Support (TO BE TESTED)
 * Various Output Format (xhtml, json, xml, rss...)
