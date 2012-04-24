@@ -251,4 +251,12 @@ abstract class axBaseCache implements axCache {
         $this->_options  = $struct['options'];
         $this->_metadata = $struct['metadata'];
     }
+    
+    /**
+     * @brief Get the number of entries in cache
+     * @return integer
+     */
+    public function count () {
+        return count($this->_metadata);
+    }
 }

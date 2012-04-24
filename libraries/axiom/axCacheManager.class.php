@@ -18,7 +18,7 @@
  * @copyright Copyright 2010-2011, Benjamin Delespierre (http://bdelespierre.fr)
  * @license http://www.gnu.org/licenses/lgpl.html Lesser General Public Licence
  */
-class axCacheManager {
+class axCacheManager implements IteratorAggregate {
 
     /**
      * @brief The manager cache file (in fact, where caches themselves are persisted)
@@ -114,6 +114,14 @@ class axCacheManager {
      */
     public function save () {
         return (bool)file_put_contents($this->_cacheFile, serialize($this->_caches));
+    }
+    
+    /**
+     * @brief Get iterator
+     * @return ArrayIterator
+     */
+    public function getIterator() {
+        return new ArrayIterator($this->_caches);
     }
 
     /**
