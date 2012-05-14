@@ -123,10 +123,13 @@ class axMySQLObject extends axBaseModel {
         list($pdo,$tablename,$id) = $args + array(null,'',null);
         
         $this->_table = self::_sanitizeTablename($tablename);
-        parent::__construct($pdo, $id);
-
+        $this->_pdo   =  $pdo;
+        
         if (!$this->_getTableStructure($tablename))
             throw new RuntimeException("Cannot determine {$tablename} structure");
+        
+        if ($id !== null && $id !== false && !$this->retrieve($id))
+            throw new RuntimeException("Cannot instanciate model");
     }
     
     /**
