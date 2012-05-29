@@ -87,7 +87,7 @@ class axRouter {
             throw new InvalidArgumentException("You must provide an instance of view manager to router constructor");
         
         $this->_view   = $view_manager;
-        $this->_log    = $log instanceof axLog ? $log : null;
+        $this->_log    = $log instanceof axLog ? $log : new axDummy;
         $this->_locale = $locale;
         $this->_module = $module_manager;
         $this->_routes = array_filter($routes, callback('function ($i) { return $i instanceof axRoute; }'));
