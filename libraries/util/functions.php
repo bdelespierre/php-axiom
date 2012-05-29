@@ -109,3 +109,14 @@ function array_find_closest ($needle, $haystack, $approx = 3) {
     asort($distances);
     return !empty($distances) ? key($distances) : false;
 }
+
+/**
+ * @brief Sanitize a string to change every accented chars to unaccented ones
+ * @param string $str The string to be sanitized
+ * @return string
+ */
+function unaccent_chars ($str) {
+    $search  = explode(",","ç,æ ,œ ,á,é,í,ó,ú,à,è,ì,ò,ù,ä,ë,ï,ö,ü,ÿ,â,ê,î,ô,û,å,e,i,ø,u");
+    $replace = explode(",","c,ae,oe,a,e,i,o,u,a,e,i,o,u,a,e,i,o,u,y,a,e,i,o,u,a,e,i,o,u"); 
+    return str_replace($search, $replace, $str);
+}
