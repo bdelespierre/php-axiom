@@ -101,15 +101,4 @@ class axSession {
     public static function started () {
         return self::id() !== "";
     }
-    
-    /**
-     * @brief Renew the session (equivalent to start > destroy > start)
-     * @static
-     * @return boolean
-     */
-    public static function renew () {
-        self::start();
-        self::destroy();
-        return self::start();
-    }
 }
