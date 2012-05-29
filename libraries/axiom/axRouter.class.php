@@ -79,7 +79,7 @@ class axRouter {
      * @param array $routes @optional @default{array()} The default routes to be added
      */
     public function __construct (axViewManager   $view_manager,
-                                 axLog           $log               = null,
+                                                 $log               = null,
                                  axLocale        $locale            = null,
                                  axModuleManager $module_manager    = null,
                                  array           $routes            = array()) {
@@ -87,7 +87,7 @@ class axRouter {
             throw new InvalidArgumentException("You must provide an instance of view manager to router constructor");
         
         $this->_view   = $view_manager;
-        $this->_log    = $log;
+        $this->_log    = $log instanceof axLog ? $log : null;
         $this->_locale = $locale;
         $this->_module = $module_manager;
         $this->_routes = array_filter($routes, callback('function ($i) { return $i instanceof axRoute; }'));
