@@ -301,7 +301,7 @@ class axRouter {
         header((string)$exception);
         
         if ($exception->getMethod() == axRedirectException::REDIRECT_REFRESH) {
-            $this->_response->addAll(array('url' => $exception->getUrl()));
+            $this->_response->add(array('url' => $exception->getUrl()));
             $this->load('ErrorController', 'redirection');
         }
     }
