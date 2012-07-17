@@ -1,5 +1,7 @@
 <IfModule mod_rewrite.c>
     RewriteEngine on
+    # relative to server's root directory
+    RewriteBase /~delespierre/php-axiom/
     RewriteRule ^$   webroot/   [L]
     RewriteRule (.*) webroot/$1 [L]
 </IfModule>
