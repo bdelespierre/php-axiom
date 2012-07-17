@@ -102,7 +102,7 @@ function array_find_closest ($needle, $haystack, $approx = 3) {
     foreach ($haystack as $item) {
         $lev = levenshtein($needle, $item);
 
-        // if needle is  not completely differen and not 'too' different
+        // if needle is  not completely different and not 'too' different
         if ($lev <= strlen($item) && $lev <= $approx)
             $distances[$item] = $lev;
     }

@@ -42,9 +42,9 @@ define('AXIOM_APP_PATH', dirname(dirname(dirname(__FILE__))) . '/application');
  * (located at `/application/ressource/cache/library.cache.php`) to refresh the library structure.
  */
 require_once AXIOM_LIB_PATH . '/util/functions.php';
-require_once AXIOM_LIB_PATH . '/axiom/Axiom.class.php';
-require_once AXIOM_LIB_PATH . '/axiom/axClassNotFoundException.class.php';
-require_once AXIOM_LIB_PATH . '/axiom/axExtensionFilterIterator.class.php';
+require_once AXIOM_LIB_PATH . '/Axiom.class.php';
+require_once AXIOM_LIB_PATH . '/axiom-exception/axClassNotFoundException.class.php';
+require_once AXIOM_LIB_PATH . '/axiom-exception/axExtensionFilterIterator.class.php';
 require_once AXIOM_LIB_PATH . '/axiom/axLibrary.class.php';
 
 /**
@@ -53,7 +53,7 @@ require_once AXIOM_LIB_PATH . '/axiom/axLibrary.class.php';
 //Axiom::$cache = false;
 
 /**
- * Adding the Axiom core library
+ * Add the Axiom core library
  */
 Axiom::library()->add('axiom');
 
@@ -64,8 +64,12 @@ Axiom::library()->add('controller');
 Axiom::library()->add('model');
 
 /**
- * Adding the browser capabilities detection library.
+ * Add various libraries
  */
+Axiom::library()->add('axiom-helper');
+Axiom::library()->add('axiom-cache');
+Axiom::library()->add('axiom-database');
+Axiom::library()->add('axiom-feed');
 //Axiom::library()->add('browser');
 
 /**
