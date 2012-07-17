@@ -21,6 +21,8 @@
  * This class is also a bridge between the different libraries compounded in the framework and their configuration that
  * is being held by the axConfiguration object. Axiom class brings all these items together so you don't have to setup
  * the configuration manually.
+ * 
+ * @note If any of the above items are disabled in configuration file (e.g. localisation = Off), NULL will be returned.
  *
  * @class Axiom
  * @author Delespierre
@@ -146,7 +148,7 @@ final class Axiom {
 	        return self::$_cache;
 	    
 	    if (!self::$cache)
-	        return false;
+	        return null;
 	    
 	    list($manager_cache_file) = func_get_args() + array(AXIOM_APP_PATH . '/ressource/cache/manager.cache');
 	    self::$_cache = new axCacheManager($manager_cache_file);
@@ -232,7 +234,7 @@ final class Axiom {
 		
 		$conf = self::configuration()->localization;
 		if (!$conf->getValue())
-			return false;
+			return null;
 		
 		if (self::cache()
         && ($cache = self::cache()->getCache('axiom'))
@@ -276,7 +278,7 @@ final class Axiom {
 	    
 		$conf = self::configuration();
 		if (!$conf->database->getValue())
-			return false;
+			return null;
 			
 		$dsn = "{$conf->database->type}:dbname={$conf->database->database};host={$conf->database->host}";
 		$user = (string)$conf->database->user;
@@ -302,7 +304,7 @@ final class Axiom {
 			
 		$conf = self::configuration();
 		if (!$conf->session->getValue())
-			return false;
+			return null;
 			
 		return self::$_session = new axSession((string)$conf->session->name);
 	}
@@ -351,7 +353,7 @@ final class Axiom {
 			
 		$conf = self::configuration();
 		if (!$conf->captcha->getValue())
-			return false;
+			return null;
 			
 		$opts = array(
 			'dictionnaries_path' => (string)$conf->captcha->dictionnary->path,
@@ -376,7 +378,7 @@ final class Axiom {
 	        return self::$_module;
 	        
         if (!self::configuration()->module->getValue())
-            return false;
+            return null;
         
         // @todo add cache
 	        

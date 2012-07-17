@@ -486,7 +486,7 @@ class axMySQLObject extends axBaseModel {
         if (!empty($options['order by'])) {
             $pieces = array();
             
-            foreach($options['order by'] as $field)
+            foreach((array)$options['order by'] as $field)
                 $pieces[] = "`{$field}`";
             
             $query .= " ORDER BY ".implode(',' ,$pieces);

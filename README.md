@@ -10,7 +10,7 @@ Axiom is an OOP MVC Framework written in PHP. Focused on simplicity and scalabil
 it is designed to be fast to learn, fast to program with and fast to extend.
 Contrary to many other PHP Frameworks, it is intended to create small and 
 medium web application easily, without the complexity of Zend Framework or 
-Symphony, but keeps the code clear and reusable through its MVC architecture.
+Symfony, but keeps the code clear and reusable through its MVC architecture.
 
 
 Features
